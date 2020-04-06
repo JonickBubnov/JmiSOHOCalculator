@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Bill" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4879ba38-123d-4dc0-b6f0-0fb20b5127c3">
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Dataset1" uuid="c7f3b287-de24-44eb-afc0-7be97ac63ceb">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="rowId" class="java.lang.String"/>
+		<field name="articul" class="java.lang.String"/>
+		<field name="name" class="java.lang.String"/>
+		<field name="count" class="java.lang.Float"/>
+		<field name="unit" class="java.lang.String"/>
+		<field name="price" class="java.lang.Float"/>
+		<field name="sum" class="java.lang.Float"/>
+	</subDataset>
+	<parameter name="bank" class="java.lang.String"/>
+	<parameter name="inn" class="java.lang.String"/>
+	<parameter name="kpp" class="java.lang.String"/>
+	<parameter name="pname" class="java.lang.String"/>
+	<parameter name="bik" class="java.lang.String"/>
+	<parameter name="acc" class="java.lang.String"/>
+	<parameter name="kacc" class="java.lang.String"/>
+	<parameter name="num" class="java.lang.String"/>
+	<parameter name="date" class="java.lang.String"/>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="contragent" class="java.lang.String"/>
+	<parameter name="sum" class="java.lang.String"/>
+	<parameter name="discount" class="java.lang.String"/>
+	<parameter name="total" class="java.lang.String"/>
+	<parameter name="weight" class="java.lang.String"/>
+	<parameter name="count" class="java.lang.String"/>
+	<parameter name="strsum" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="551" height="39" uuid="196c9775-c269-4045-bb38-1eb219bd8420"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Внимание! Оплата данного счета означает согласие с условиями поставки товара.
+Уведомление об оплате обязательно, в противном случае не гарантируется наличие товара на складе.
+Товар отпускается по факту прихода денег на р/с Поставщика, самовывозом, при наличии доверенности и паспорта.]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="176" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="6" width="551" height="61" uuid="2bc7be36-3b7f-4d2e-bc5e-70e85f99bbc4"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="6" width="309" height="61" uuid="fa70af0c-01d1-4482-9733-a1bbad6fe330"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="310" y="6" width="71" height="61" uuid="e541b7aa-3993-467f-ac12-8a06758d09c9"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="310" y="6" width="71" height="21" uuid="6e687712-0c44-41c6-991c-7fb35c92a76a"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="310" y="26" width="71" height="21" uuid="d2cd1262-9d59-47bd-b726-22b2ee0750b2"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="381" y="47" width="170" height="20" uuid="8c2a46d8-febc-4340-8dc1-1ea05219850c"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="26" width="309" height="20" uuid="7e9c60e0-04bf-4c22-9126-41c5f243dee4"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="26" width="160" height="20" uuid="cd4e00c3-ba31-4b97-b994-3a7049f67d81"/>
+			</rectangle>
+			<textField>
+				<reportElement x="6" y="6" width="294" height="19" uuid="02da2803-dcf6-4b86-b37d-a3b08721a5e2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{bank}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="25" width="23" height="20" uuid="cefe228c-a82b-41e9-b12e-676b6e1d820e"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[ИНН]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="30" y="27" width="130" height="18" uuid="4927e3c4-f6ed-4a9a-ba6a-fe32fda57d32"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{inn}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="160" y="26" width="30" height="19" uuid="05ddc21c-fc27-4fc6-92b0-69deb6059152"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[КПП]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="190" y="25" width="119" height="20" uuid="af9409f3-15ad-4385-809f-00a69782242f"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{kpp}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="310" y="6" width="71" height="19" uuid="1577091e-fe0e-412f-a14c-9a298f546c2e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[БИК]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="310" y="27" width="71" height="19" uuid="13558f80-e045-450b-aec3-e4f6e418cedf"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Сч. №]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="310" y="47" width="71" height="19" uuid="69e02e8f-e80c-4fb3-86db-fccd70f40f37"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Кор.сч. №]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="6" y="47" width="294" height="19" uuid="3b2d988f-9989-4ea9-9a96-f4757ecaa43d"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{pname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="382" y="6" width="168" height="18" uuid="0d16618b-bd02-47ec-ac7e-e58e967de329"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{bik}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="382" y="27" width="168" height="20" uuid="4c3d9c36-6277-4c97-9433-8a2e0142a332"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{acc}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="382" y="47" width="168" height="19" uuid="f83a799f-e9aa-4472-95a0-120e4ff24036"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{kacc}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="70" width="100" height="22" uuid="116a69e7-0d57-440b-864c-cfb37417fa88"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Счет на оплату №]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="70" width="50" height="22" uuid="d4a0ed18-a3cf-4a29-bee8-2271160a4629"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{num}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="150" y="70" width="20" height="22" uuid="b333d0a7-0982-4c54-b888-f96bfd53c9a8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[от]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="170" y="70" width="211" height="22" uuid="5267fed1-d98c-409a-ad50-05bd8fe02646"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{date}]]></textFieldExpression>
+				<patternExpression><![CDATA[$P{date}]]></patternExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="96" width="550" height="1" uuid="f246f284-c632-42d4-b41d-913ece0e9c67"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="100" y="131" width="429" height="16" uuid="8aa4f21f-47ab-4efc-a0c5-b63219fb3d5c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{contragent}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="130" width="89" height="16" uuid="77d07237-0ea2-4250-946a-24b8e985fa0f"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Заказчик:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="106" width="89" height="17" uuid="51c3990b-9ca6-4788-8b96-a3bd1d8e1a7d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Исполнитель:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="107" width="429" height="16" uuid="f5de29f6-56df-4a17-bb7d-8c2a8e627835"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="78" splitType="Stretch">
+			<componentElement>
+				<reportElement x="1" y="0" width="550" height="40" uuid="2e8ecc1f-7db8-4815-8aab-4c302b00b823">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Dataset1" uuid="a11e29c8-652d-4666-8c7f-f01e8c9475a3">
+						<dataSourceExpression><![CDATA[$P{REPORT_DATA_SOURCE}]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="30" uuid="acb92e2a-4c50-4cf8-a295-b8e79555b7ac">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="30" height="20" uuid="af10538d-12ae-41d5-8ab2-053620f6704a"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[№]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="30" height="20" uuid="c47b0e58-e96e-4ea1-be4a-af0ecc70a806"/>
+								<textFieldExpression><![CDATA[$F{rowId}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="3a9c2bcc-b8ae-4b23-ba00-23ae9fc8b36b">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="20" uuid="82017124-2cf5-47b5-a452-28b1cfbb78b1"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Артикул]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="100" height="20" uuid="c19c9136-8a85-4dbe-b0da-45d2b71f7bf4"/>
+								<textFieldExpression><![CDATA[$F{articul}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="190" uuid="28e43ecd-8c37-431e-b51a-a775778722cc">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="190" height="20" uuid="4db93169-7704-40a3-82f1-546c3ff5ff6b"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Наименование]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="190" height="20" uuid="c0304c1b-06ea-429a-976a-3b5052755b35"/>
+								<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="d17909f1-d6a6-4565-903c-4b9f2bdfee7e">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="60" height="20" uuid="742113a3-b0e3-4b22-ac68-f77e4dcdfc3e"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Кол-во]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="60" height="20" uuid="8a3e232f-0f5e-4ba4-b866-52a40d1f135a"/>
+								<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="40" uuid="17fcf719-8b99-4ad6-a186-b744c6c4bc3f">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="40" height="20" uuid="a17f2c48-f0e1-4af3-a5fd-8ef3e63f916d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Ед.изм.]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="40" height="20" uuid="94c311cb-b425-4c37-ac1d-045056203e8e"/>
+								<textFieldExpression><![CDATA[$F{unit}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="b759dd43-5ec7-4952-bffd-3e6fa05b98f5">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="60" height="20" uuid="df988ac4-4835-4b3d-81ba-734169e85d09"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Цена]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="60" height="20" uuid="5d3f2042-0ddd-46b4-84cc-02cbee78cacf"/>
+								<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="70" uuid="204258f6-3f0a-4373-a25c-a3c02077483c">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="70" height="20" uuid="198f5010-6c48-403e-a447-7a4e631d529c"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Сумма]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="70" height="20" uuid="867eaa39-f965-48c4-9239-18d5708c713c"/>
+								<textFieldExpression><![CDATA[$F{sum}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</detail>
+	<summary>
+		<band height="185" splitType="Stretch">
+			<textField>
+				<reportElement x="366" y="31" width="52" height="16" uuid="2a9ed335-76dd-4b68-8ba8-7c52840f95c6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{weight}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="76" width="552" height="1" uuid="783477e5-1b35-4ace-97c5-eeea54b2cd4b"/>
+			</line>
+			<staticText>
+				<reportElement x="419" y="31" width="27" height="16" uuid="e7af0e20-085e-4dad-8ec1-31faf86d9130"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[кг.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="328" y="31" width="36" height="16" uuid="20dd777e-e4be-4b57-b247-68553c63b025"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Вес:  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="151" y="31" width="55" height="16" uuid="238fe9f7-6864-4c2f-8a1c-9d3c8484c394"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[на сумму ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="31" width="121" height="16" uuid="9698319a-2546-4579-b5f3-151fd5878659"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Всего наименований: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="483" y="0" width="69" height="15" uuid="290e0ccb-82ef-4e02-834b-558348c88918"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="132" width="275" height="25" uuid="92200727-c838-4153-b411-2ff6479126e2"/>
+				<text><![CDATA[Руководитель __________________________]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="126" y="31" width="25" height="16" uuid="3a882611-1415-44b6-8b6b-72cbeac250ae"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{count}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="206" y="31" width="88" height="16" uuid="1a603b48-7f6d-442f-bfde-137cb2e2036d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="421" y="0" width="57" height="15" uuid="b55ae544-9421-412d-8028-7c79da20050c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Итого:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="31" width="34" height="16" uuid="38194761-e8e4-4834-9918-8357a0487ebb"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[ руб.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="5" y="49" width="549" height="22" uuid="dbb37594-29bf-4fc3-a6a6-10b89860565b"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{strsum}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="283" y="132" width="261" height="25" uuid="da138852-de73-4c3f-b56d-6ab80dcb88d8"/>
+				<text><![CDATA[Бухгалтер ________________________________]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
