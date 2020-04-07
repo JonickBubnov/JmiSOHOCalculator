@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.text.SimpleDateFormat;
@@ -16,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.DAO.GroupDAO;
@@ -42,9 +45,9 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
     JToolBar tb;
     JButton dockButton = new JButton("Док. Продажа |");    
     
-    String frameTitle = "Продажа";
+    String frameTitle = "Розничная продажа";
     SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-    static ArrayList<SaleProduct> products = new ArrayList<>();
+    ArrayList<SaleProduct> products = new ArrayList<>();
     SaleProduct saleProduct;
     Product product;
     Sale docSale;
@@ -52,9 +55,15 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
     int groupId = 1;
     StockDAO stockDAO;
     
+    static float pCount = 1;
+    static float pCost = 0;
+    static boolean add = false;
+    
     
     DocumentDAO documentDAO;
     ProductDAO productDAO;
+    
+    ProductToSaleCountDialog ptscd;
     
     // модели таблицы
     DefaultTableModel tableModelDocument = new DefaultTableModel(){
@@ -163,6 +172,22 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         
         jTable1.getColumnModel().getColumn(0).setMaxWidth(32);
         jTable1.getColumnModel().getColumn(1).setMaxWidth(150);
+        
+        jFormattedTextField1.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                float total = docSale.getTotal() - 
+                        docSale.getTotal() * 
+                        Float.parseFloat(jFormattedTextField1.getText().replace(",", "."))/100;                
+                jLabel8.setText(String.format("%.2f", total));
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {}
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {}
+        });        
 
         getStorageList();
         getPriceNameList();
@@ -185,6 +210,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         docSale.setStorage(getSelectedStorage());
         docSale.setDescr("");
     }
+    
     private void getGroupList() { 
         for (int i=tableModelGroup.getRowCount(); i > 0; i--) {
             tableModelGroup.removeRow(i-1);
@@ -204,6 +230,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
             Logger.getLogger(ProductsIf.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
+    
     public void getProductsFromSelectedGroup(int id) {
         for (int i=tableModelProduct.getRowCount(); i > 0; i--) {
             tableModelProduct.removeRow(i-1);
@@ -216,13 +243,6 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
             while (it.hasNext()) {
                 product = (Product)it.next();
                 
-//                float count = 0;
-//                stocks = product.getStock();        
-//                for (int i =0; i < stocks.size(); i++) {
-//                    if (storage.getId() == stocks.get(i).getStorage().getId())
-//                        count += stocks.get(i).getCount();
-//                }
-                
                 
                 tableModelProduct.addRow(new Object[]{product.getId(), 
                     product.getArticul(),  product.getName()});                 
@@ -233,7 +253,18 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
 
     @Override
     public void repaintDocument() {
-        
+        this.setTitle(frameTitle + " ["+docSale.getStatus().getName()+"]");
+        if (docSale.getId() != 0)
+            jLabel2.setText(""+docSale.getId());  
+        jLabel4.setText(format.format(new Date()));
+        jLabel19.setText(String.format("%.3f", getWeight()));
+        jLabel11.setText(MainFrame.sessionParams.getUser().getName());
+        jLabel21.setText(MainFrame.sessionParams.getOrganization().getName());
+        jComboBox1.setSelectedItem(docSale.getStorage().getName());
+        if (docSale.getStatus().getId() == 2 || docSale.getStatus().getId() == 3) {
+            closeButtons();
+        }         
+        jLabel23.setText("НЕ ОПЛАЧЕН");
     }
     // расчитать вес
     Float getWeight() {
@@ -243,6 +274,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         docSale.setWeight(weight);
         return weight;
     }
+    
     // получить товары из документа и заполнить таблицу
     void getSaleProducts(Sale sale) {
         products.clear();
@@ -250,34 +282,26 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
                 products.addAll(sale.getSaleProducts());                
             
             updateProductsTable();
-    }    
+    }   
+    
     // пересчитать таблицу
     void recalculateDocument() {
-//        Float sum = 0f;
+        Float sum = 0f;
 //        Float price;
-//        Float cost;
-//        for (int i = 0; i < tableModelDocument.getRowCount(); i++) { 
-//            price = Float.parseFloat(jTable1.getValueAt(i, 5).toString()) -
-//                    Float.parseFloat(jTable1.getValueAt(i, 5).toString()) *
-//                    Float.parseFloat(jTable1.getValueAt(i, 6).toString())/100;
-//            cost = Float.parseFloat(jTable1.getValueAt(i, 3).toString())*price;            
-//            
-//            sum += cost;
-//            tableModel.setValueAt(i+1, i, 0);
-//            tableModel.setValueAt(price, i, 7);
-//            tableModel.setValueAt(cost, i, 8);
-//            products.get(i).setCount(Float.parseFloat(jTable1.getValueAt(i, 3).toString()));
-//            products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
-//            products.get(i).setDiscount(Float.parseFloat(jTable1.getValueAt(i, 6).toString()));
-//        }
-//        jLabel10.setText(String.format("%.2f", sum));
-//        float total = sum-sum*Float.parseFloat(jFormattedTextField1.getText().replace(",", "."))/100;
-//        float nds = total*docInvoice.getOrganization().getNds()/100;
-//        jLabel24.setText(String.format("%.2f", nds));
-//        jLabel11.setText(String.format("%.2f", total));
-//        jLabel19.setText(String.format("%.3f", getWeight()));
-//        docInvoice.setTotal(Float.parseFloat(jLabel11.getText().replace(",", ".")));
-    }    
+        Float cost;
+        for (int i = 0; i < tableModelDocument.getRowCount(); i++) { 
+            cost = Float.parseFloat(jTable2.getValueAt(i, 3).toString()) * Float.parseFloat(jTable2.getValueAt(i, 5).toString());            
+            sum += cost;
+            tableModelDocument.setValueAt(i+1, i, 0);
+            tableModelDocument.setValueAt(cost, i, 6);
+        }
+        float total = sum-sum*Float.parseFloat(jFormattedTextField1.getText().replace(",", "."))/100;        
+        jLabel8.setText(String.format("%.2f", total));
+
+        docSale.setTotal(Float.parseFloat(jLabel8.getText().replace(",", ".")));
+        repaintDocument();
+    } 
+    
     // обновить таблицу с товарами
     void updateProductsTable() {
         for (int i=tableModelDocument.getRowCount(); i > 0; i--) {
@@ -326,6 +350,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         }
         return priceName;        
     } 
+    
     // установить склады
     void getStorageList() {        
         jComboBox1.removeAllItems();                
@@ -351,7 +376,33 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
     }    
     
     @Override
-    public void saveDocument(long satus) {
+    public void saveDocument(long status) {                                      
+            try {            
+                docSale.setIndate(new Date());
+                docSale.setDescr("");
+                docSale.setDiscount(Integer.parseInt(jFormattedTextField1.getText().replace(",", ".")));
+                docSale.setStorage(getSelectedStorage());
+                docSale.setPriceName(getSelectedPriceName());
+                docSale.setUsr(docSale.getSessionUser());
+                docSale.setOrganization(docSale.getOrganization());
+                docSale.setTotal(Float.valueOf(jLabel8.getText().replace(",", ".")));
+                docSale.setStatus(documentDAO.getStatus(status));
+
+                for (int i = 0; i < products.size(); i++) {                    
+                    products.get(i).setSale(docSale);
+                }  
+            
+                docSale.setSaleProducts(products);
+            
+                documentDAO.updateDocument(docSale);
+                
+                if (status == 2)
+                    executeDocument();
+            
+                repaintDocument();
+            
+            } catch (Exception ex) {
+                Logger.getLogger(DocInvoice.class.getName()).log(Level.SEVERE, null, ex); }      
     }
 
     @Override
@@ -393,6 +444,10 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         jFormattedTextField1 = new javax.swing.JFormattedTextField();
         jLabel13 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -402,11 +457,14 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox<>();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle(frameTitle);
         setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cash-register.png"))); // NOI18N
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -417,10 +475,12 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
 
         jLabel14.setText("Цена");
 
+        jLabel15.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel15.setText("0,00");
 
         jLabel16.setText("На складе");
 
+        jLabel17.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel17.setText("0");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -429,16 +489,14 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel14)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel16)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(318, Short.MAX_VALUE))
+                .addComponent(jLabel14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(208, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -446,12 +504,10 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
-                    .addComponent(jLabel15))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
                     .addComponent(jLabel16)
                     .addComponent(jLabel17))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel4, java.awt.BorderLayout.PAGE_END);
@@ -509,6 +565,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
 
         jLabel7.setText("Итого");
 
+        jLabel8.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("0,00");
 
@@ -516,11 +573,17 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
 
         jLabel10.setText("Пользователь");
 
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel11.setText("____");
 
         jButton1.setText("Закрыть");
 
         jButton2.setText("Сохранить");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel12.setText("%");
 
@@ -537,6 +600,17 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
 
         jButton3.setText("Выполнить");
 
+        jLabel18.setText("Вес");
+
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel19.setText("____");
+        jLabel19.setToolTipText("");
+
+        jLabel22.setText("Оплата");
+
+        jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel23.setText("___");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -544,30 +618,41 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 230, Short.MAX_VALUE)
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1)))
+                        .addComponent(jButton1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel22)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel9)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addGap(67, 67, 67)
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel12)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -580,12 +665,17 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
                     .addComponent(jLabel9)
                     .addComponent(jLabel12)
                     .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel18)
+                    .addComponent(jLabel19))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
-                    .addComponent(jLabel11))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                    .addComponent(jLabel11)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel23)
+                        .addComponent(jLabel22)))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
@@ -618,6 +708,10 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
 
         jComboBox2.setPreferredSize(new java.awt.Dimension(200, 20));
 
+        jLabel20.setText("Организация");
+
+        jLabel21.setText("____");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
@@ -636,7 +730,10 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                         .addComponent(jLabel6))
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel21)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel5)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -658,7 +755,9 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel20)
+                    .addComponent(jLabel21))
                 .addContainerGap(8, Short.MAX_VALUE))
         );
 
@@ -683,12 +782,36 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
     }//GEN-LAST:event_jTable3MouseClicked
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        String id = tableModelProduct.getValueAt(jTable1.getSelectedRow(), 0).toString();
+        String id = tableModelProduct.getValueAt(jTable1.getSelectedRow(), 0).toString();        
         product = productDAO.getProduct(id);
-        jLabel15.setText(String.valueOf(product.getActualPrice(getSelectedPriceName()).getPrice()));
+        float price = product.getActualPrice(getSelectedPriceName()).getPrice();
+        jLabel15.setText(String.valueOf(price));
         float count = stockDAO.findStock(getSelectedStorage(), product).getCount();
+        if (count >= 0)
+            jLabel17.setForeground(Color.GREEN);
+        else jLabel17.setForeground(Color.RED);
         jLabel17.setText(String.valueOf(count));
+        if (evt.getClickCount() == 2) {
+            ptscd = new ProductToSaleCountDialog(null, true, product, price);
+            ptscd.setLocationRelativeTo(this);
+            ptscd.setVisible(true);
+            
+            if (add) {
+                saleProduct = new SaleProduct();
+                    saleProduct.setProduct(product);
+                    saleProduct.setCost(pCost);
+                    saleProduct.setCount(pCount);
+                    saleProduct.setDiscount(0);
+                products.add(saleProduct);
+                updateProductsTable();
+                add = false;
+            }            
+        }
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        saveDocument(1L);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -707,7 +830,13 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

@@ -69,6 +69,9 @@ public Sale(){}
    public List<SaleProduct> getSaleProducts() {
         return saleProducts;
     }  
+    public void setSaleProducts(List<SaleProduct> saleProducts) {
+        this.saleProducts = saleProducts;
+    }   
 
 @Override
     public long getId() {
