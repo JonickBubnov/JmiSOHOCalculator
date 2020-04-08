@@ -18,15 +18,13 @@ import org.hibernate.service.ServiceRegistry;
 
 /**
  *
- * @author seostella.com
+ * @author Jonick
  */
 public class DAO {
     
     private static Session sessionObj;
     private static SessionFactory sessionFactoryObj;    
     private static final Logger log = Logger.getAnonymousLogger();
-    private static CriteriaBuilder criteriaBuilderObj;
-
     
     
         private static SessionFactory buildSessionFactory() {
@@ -76,13 +74,15 @@ public class DAO {
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.SaleProduct.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Inventory.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.InventoryProduct.class);
+            configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Parameters.class);
+            configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Okv.class);
             
             
         try {
             ServiceRegistry serviceRegistryObj = new StandardServiceRegistryBuilder().applySettings(configObj.getProperties()).build(); 
             sessionFactoryObj = configObj.buildSessionFactory(serviceRegistryObj);
             return sessionFactoryObj; 
-            } catch (HibernateException e) {JOptionPane.showMessageDialog(null, "Не могу установить соединение с базой.\n"+e, "Ошибка",
+            } catch (HibernateException e) {JOptionPane.showMessageDialog(null, "[DAO]\nНе могу установить соединение с базой.\n"+e, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);
             System.exit(0);}
         return null;
@@ -95,7 +95,7 @@ public class DAO {
 
     public Session getSession() {
         if (sessionObj == null) {
-            sessionObj = buildSessionFactory().openSession(); //  sessionFactory.openSession();            
+            sessionObj = buildSessionFactory().openSession();           
         } 
         if (!sessionObj.isOpen()) {
             System.out.println("OPEN SESSION");

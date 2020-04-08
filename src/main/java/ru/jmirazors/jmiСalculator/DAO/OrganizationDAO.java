@@ -14,6 +14,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import ru.jmirazors.jmiСalculator.entity.Organization;
+import ru.jmirazors.jmiСalculator.entity.Parameters;
 
 /**
  *
@@ -33,7 +34,7 @@ public class OrganizationDAO extends DAO {
             rollback();
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, 
-                    "Ошибка чтения списка организаций", "Ошибка", JOptionPane.ERROR_MESSAGE);                        
+                    "[OrganizationDAO]\nОшибка чтения списка организаций", "Ошибка", JOptionPane.ERROR_MESSAGE);                        
         } 
         return organizations;
     }  
@@ -41,7 +42,7 @@ public class OrganizationDAO extends DAO {
         Organization organization = null;
         try{
             begin();            
-            Query query = getSession().createQuery("From Organization where name= :name");
+            Query query = getSession().createQuery("FROM Organization WHERE name= :name");
             query.setParameter("name", name);
             organization = (Organization)query.uniqueResult();
             commit();            
@@ -49,7 +50,7 @@ public class OrganizationDAO extends DAO {
             rollback();            
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, 
-                    "Ошибка поиска организации <"+name+">", "Ошибка", JOptionPane.ERROR_MESSAGE);            
+                    "[OrganizationDAO]\nОшибка поиска организации <"+name+">", "Ошибка", JOptionPane.ERROR_MESSAGE);            
         } 
         return organization;
     }    
@@ -64,7 +65,7 @@ public class OrganizationDAO extends DAO {
             rollback();            
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, 
-                    "Ошибка поиска организации <"+id+">", "Ошибка", JOptionPane.ERROR_MESSAGE);            
+                    "[OrganizationDAO]\nОшибка поиска организации <"+id+">", "Ошибка", JOptionPane.ERROR_MESSAGE);            
         } 
         return organization;
     }    
@@ -77,9 +78,22 @@ public class OrganizationDAO extends DAO {
             rollback();
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, 
-                    "Ошибка создания оплаты \n" + ex, "Ошика", JOptionPane.ERROR_MESSAGE);          
+                    "[OrganizationDAO]\nОшибка создания организации\n" + ex, "Ошибка", JOptionPane.ERROR_MESSAGE);          
         } 
         return org;
     } 
+    public Parameters getParam(Organization org) {
+        Parameters param = null;
+        try {
+            begin();
+            Query query = getSession().createQuery("FROM Parameters p WHERE p.organization=:org");
+                query.setParameter("org", org);
+            param = (Parameters)query.uniqueResult();
+            commit();
+        } catch (HibernateException ex) {
+            JOptionPane.showMessageDialog(null, 
+                    "[OrganizationDAO]\nОшибка параметров организации\n" + ex, "Ошибка", JOptionPane.ERROR_MESSAGE);}
+        return param;
+    }
     
 }

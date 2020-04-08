@@ -6,16 +6,12 @@
 package ru.jmirazors.jmiСalculator.jmiframes;
 
 import java.awt.Image;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import ru.jmirazors.jmiCalculator.beans.IFBean;
 import ru.jmirazors.jmiCalculator.beans.SessionParams;
-import ru.jmirazors.jmiСalculator.DAO.PriceDAO;
-import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
-import ru.jmirazors.jmiСalculator.entity.PriceName;
+import ru.jmirazors.jmiСalculator.DAO.OrganizationDAO;
 
 
 
@@ -41,7 +37,11 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() throws Exception, Exception {
         //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        new LoginDialog(this, true).setVisible(true);        
+        new LoginDialog(this, true).setVisible(true);      
+        
+        sessionParams.setParam(new OrganizationDAO().getParam(sessionParams.getOrganization()));
+        
+        System.out.println("OKV " + sessionParams.getParam().getOkv().getName());
         
         initComponents();
         
@@ -139,6 +139,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu6 = new javax.swing.JMenu();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem20 = new javax.swing.JMenuItem();
+        jMenuItem28 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem27 = new javax.swing.JMenuItem();
         jMenu7 = new javax.swing.JMenu();
@@ -609,6 +610,9 @@ public class MainFrame extends javax.swing.JFrame {
             });
             jMenu6.add(jMenuItem20);
 
+            jMenuItem28.setText("Настройки организации");
+            jMenu6.add(jMenuItem28);
+
             jMenuItem9.setText("Интерфейс");
             jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1075,6 +1079,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem25;
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem27;
+    private javax.swing.JMenuItem jMenuItem28;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;

@@ -6,6 +6,7 @@
 package ru.jmirazors.jmiCalculator.beans;
 
 import ru.jmirazors.jmiСalculator.entity.Organization;
+import ru.jmirazors.jmiСalculator.entity.Parameters;
 import ru.jmirazors.jmiСalculator.entity.User;
 
 /**
@@ -16,7 +17,8 @@ public class SessionParams {
     
     private User user;
     private Organization organization;
-
+    private Parameters param;
+    
     public User getUser() {
         return user;
     }
@@ -32,7 +34,13 @@ public class SessionParams {
     public void setOrganization(Organization organization) {
         this.organization = organization;
     }
-    
-    
+
+    public Parameters getParam() {
+        return param;
+    }
+
+    public void setParam(Parameters param) {
+        this.param = param;
+    }        
     
 }
