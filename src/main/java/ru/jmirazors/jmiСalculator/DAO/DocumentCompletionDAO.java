@@ -25,6 +25,8 @@ import ru.jmirazors.jmiСalculator.entity.Pay;
 import ru.jmirazors.jmiСalculator.entity.Price;
 import ru.jmirazors.jmiСalculator.entity.Receipt;
 import ru.jmirazors.jmiСalculator.entity.ReceiptProduct;
+import ru.jmirazors.jmiСalculator.entity.Sale;
+import ru.jmirazors.jmiСalculator.entity.SaleProduct;
 import ru.jmirazors.jmiСalculator.entity.SetPrice;
 import ru.jmirazors.jmiСalculator.entity.SetPriceProduct;
 import ru.jmirazors.jmiСalculator.entity.Sklad;
@@ -46,13 +48,49 @@ public class DocumentCompletionDAO extends DAO {
     //IFBean ifBean = new IFBean();
     DocumentUtil docUtil =  new DocumentUtil();   
     
+    public void completion(Sale document, List<SaleProduct> products) {
+        Stock stock;
+        StockDAO stDAO = new StockDAO();
+        Sklad sklad;
+        SkladDAO skDAO = new SkladDAO();  
+
+        for (int i = 0; i < products.size(); i++) {
+            sklad = new Sklad();
+            sklad.setProduct(products.get(i).getProduct());
+            sklad.setIndate(document.getIndate());
+            sklad.setRashod(products.get(i).getCount());
+            sklad.setCost(products.get(i).getCost());
+            sklad.setDoc(document.getId());
+            sklad.setDocuments(document.getDocuments());
+            
+            float count = 0f;
+            stock = stDAO.findStock(document.getStorage(), products.get(i).getProduct());
+            if (products.get(i).getProduct().getOnstock() == 1) {
+                if (stock == null) {                    
+                    stock = new Stock();
+                    stock.setStorage(document.getStorage());
+                    stock.setProduct(products.get(i).getProduct());
+                    stock.setCount(0);
+                }
+                count = stock.getCount() - products.get(i).getCount();
+                stock.setCount(count);
+            }
+            try {
+                skDAO.updateSklad(sklad);
+                if (stock != null)
+                    stDAO.updateStock(stock);
+            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
+                    JOptionPane.ERROR_MESSAGE);}            
+        }
+        MainFrame.ifManager.infoMessage("Исполнение документа 'Розничная продажа' №"+document.getId()+" [OK]");
+    }
+    
     public void completion(Invoice document) {
         MainFrame.ifManager.infoMessage("Исполнение документа 'Заказ покупателя' №"+document.getId()+" [OK]");        
     }
     
     public void completion(Transfer transfer, ArrayList<TransferProduct> products) {
         List<DocumentProduct> dp = (List<DocumentProduct>)products.clone();
-        System.out.println("SIZE of products = " + products.size());
         docUtil.stockMinus(dp, transfer.getStorage_from());
         docUtil.stockPlus(dp, transfer.getStorage_to());
     }
@@ -70,7 +108,7 @@ public class DocumentCompletionDAO extends DAO {
             try {
                 pDAO.create(price);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Не удалось выполнить документ \n" + ex, "Ошибка",
+                JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}             
         }
         MainFrame.ifManager.infoMessage("Исполнение документа 'Установка цен номенклатуры' №"+document.getId()+" [OK]");
@@ -108,7 +146,7 @@ public class DocumentCompletionDAO extends DAO {
                 skDAO.updateSklad(sklad);
                 if (stock != null)
                     stDAO.updateStock(stock);
-            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "Не удалось выполнить документ \n" + ex, "Ошибка",
+            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}
         }        
         MainFrame.ifManager.infoMessage("Исполнение документа 'Списание товаров' №"+document.getId()+" [OK]");
@@ -145,7 +183,7 @@ public class DocumentCompletionDAO extends DAO {
                 skDAO.updateSklad(sklad);
                 if (stock != null)
                     stDAO.updateStock(stock);
-            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "Не удалось выполнить документ \n" + ex, "Ошибка",
+            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}
         }        
         MainFrame.ifManager.infoMessage("Исполнение документа 'Оприходование товаров' №"+document.getId()+" [OK]");
@@ -183,7 +221,7 @@ public class DocumentCompletionDAO extends DAO {
                 skDAO.updateSklad(sklad);
                 if (stock != null)
                     stDAO.updateStock(stock);
-            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "Не удалось выполнить документ \n" + ex, "Ошибка",
+            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}
         }
         updateKassa(document, true);
@@ -222,7 +260,7 @@ public class DocumentCompletionDAO extends DAO {
                 skDAO.updateSklad(sklad);
                 if (stock != null)
                     stDAO.updateStock(stock);
-            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "Не удалось выполнить документ \n" + ex, "Ошибка",
+            } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}
         }
         updateKassa(document, false);

@@ -5,12 +5,16 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import java.awt.event.ActionEvent;
+import java.beans.PropertyVetoException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
 import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiСalculator.DAO.DocumentCompletionDAO;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
@@ -26,21 +30,22 @@ import ru.jmirazors.jmiСalculator.entity.PayType;
  */
 public class PayIf extends javax.swing.JInternalFrame implements DocumentImpl{
 
-    /**
-     * Creates new form PayIf
-     */
+    JToolBar tb;
+    JButton dockButton = new JButton("Док. Оплата |"); 
+    
     PayDAO payDAO;
-    Pay pay;
+    Pay docPay;
     DocumentDAO documentDAO;
     SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
     static Document parentDocument = null;
      
     public PayIf() {
-        pay = new Pay();        
+        docPay = new Pay();        
         payDAO = new PayDAO();
         documentDAO = new DocumentDAO();
         initComponents();
-                
+        initVisualComponents();  
+        
         getPayTypes();
         getDocTypes();
         docInit();
@@ -50,13 +55,15 @@ public class PayIf extends javax.swing.JInternalFrame implements DocumentImpl{
         payDAO = new PayDAO();
         documentDAO = new DocumentDAO();
         try {
-            pay = (Pay) new DocumentDAO().getDocument(id, Pay.class);
+            docPay = (Pay) new DocumentDAO().getDocument(id, Pay.class);
         } catch (Exception ex) {
             Logger.getLogger(PayIf.class.getName()).log(Level.SEVERE, null, ex);
         }
-        parentDocument = new DocumentUtil().getMainDocument(pay);
+        parentDocument = new DocumentUtil().getMainDocument(docPay);
            
         initComponents();
+        initVisualComponents();
+        
         getPayTypes();
         getDocTypes();
         repaintDocument();       
@@ -64,32 +71,53 @@ public class PayIf extends javax.swing.JInternalFrame implements DocumentImpl{
     }
     
     public PayIf(Document document, boolean deb) {
-        pay = new Pay();
+        docPay = new Pay();
         payDAO = new PayDAO();
         documentDAO = new DocumentDAO();
         initComponents();
+        initVisualComponents();
         
         docInit();
         parentDocument = document;
                 
-        pay.setContragent(document.getContragent());
-        pay.setTotal(parentDocument.getTotal());
-        if (deb) pay.setDebcr((byte)1);
-            else pay.setDebcr((byte)0);        
+        docPay.setContragent(document.getContragent());
+        docPay.setTotal(parentDocument.getTotal());
+        if (deb) docPay.setDebcr((byte)1);
+            else docPay.setDebcr((byte)0);        
         
         
         getPayTypes();
         getDocTypes();
                 
-        jComboBox1.setSelectedIndex(pay.getDebcr());
+        jComboBox1.setSelectedIndex(docPay.getDebcr());
         jTextField1.setText(document.getContragent().getName());            
         jFormattedTextField1.setText(String.valueOf(document.getTotal()).replace(".", ","));
         jLabel4.setText(parentDocument.getDocuments().getName()
                 +" №"+parentDocument.getId()+" от "+format.format(parentDocument.getIndate()));            
     }
     
+    // ************ имплементированные методы документа ********************
+    // закрытие документа
+     @Override
+     public void dispose() {
+          super.dispose();
+          documentDAO.ev(docPay);
+          tb.remove(dockButton);
+          tb.repaint();
+          MainFrame.ifManager.setDocSaleFrameOpen(false);
+     }    
+    // переключение состояния тулбара
     @Override
-    public void toggleState() {       
+    public void toggleState() {
+          try {
+               if(this.isVisible())
+                    this.hide();
+               else {
+                    this.setIcon(false);
+                    this.show(); 
+               }
+          } catch (PropertyVetoException ex) {
+          }
     }
 
     @Override
@@ -108,25 +136,30 @@ public class PayIf extends javax.swing.JInternalFrame implements DocumentImpl{
 
     @Override
     public void initVisualComponents() {
-        
+        this.tb = MainFrame.jToolBar2;
+          dockButton.setFocusPainted(false);          
+          dockButton.addActionListener((ActionEvent evt) -> {
+              toggleState();
+        }); 
+        tb.add(dockButton);          
     }
 
     @Override
     public void docInit() {
-        pay.setOrganization(MainFrame.sessionParams.getOrganization());
-        pay.setUsr(MainFrame.sessionParams.getUser());
+        docPay.setOrganization(MainFrame.sessionParams.getOrganization());
+        docPay.setUsr(MainFrame.sessionParams.getUser());
     }
 
     @Override
     public void repaintDocument() {
-        if (pay.getContragent() != null)
-            jTextField1.setText(pay.getContragent().getName());
-        jFormattedTextField1.setText(String.format("%.2f", pay.getTotal()).replace(".", ","));
-        jTextField2.setText(pay.getDescr());
-        jLabel11.setText(String.valueOf(pay.getId()));
-        jLabel13.setText(format.format(pay.getIndate()));       
-        jComboBox2.setSelectedItem(pay.getPaytype().getName());        
-        jComboBox1.setSelectedIndex(pay.getDebcr());
+        if (docPay.getContragent() != null)
+            jTextField1.setText(docPay.getContragent().getName());
+        jFormattedTextField1.setText(String.format("%.2f", docPay.getTotal()).replace(".", ","));
+        jTextField2.setText(docPay.getDescr());
+        jLabel11.setText(String.valueOf(docPay.getId()));
+        jLabel13.setText(format.format(docPay.getIndate()));       
+        jComboBox2.setSelectedItem(docPay.getPaytype().getName());        
+        jComboBox1.setSelectedIndex(docPay.getDebcr());
         if (parentDocument != null) {
             jLabel4.setText(parentDocument.getDocuments().getName()
                 +" №"+parentDocument.getId()+" от "+format.format(parentDocument.getIndate()));            
@@ -142,17 +175,17 @@ public class PayIf extends javax.swing.JInternalFrame implements DocumentImpl{
     @Override
     public void executeDocument() {
  
-        pay.setDebcr(getDebCr());
-        pay.setPaytype(getPayType());
-        pay.setDescr(jTextField2.getText());
-        pay.setTotal(Float.valueOf(jFormattedTextField1.getText().replace(",", ".")));
-        pay.setIndate(new Date());
-        pay.setUsr(MainFrame.sessionParams.getUser());
-        pay.setOrganization(MainFrame.sessionParams.getOrganization());
-        pay.setDocuments(new DocumentDAO().getDocumentType(8l));
-        pay.setStatus(new DocumentDAO().getStatus(2l));
+        docPay.setDebcr(getDebCr());
+        docPay.setPaytype(getPayType());
+        docPay.setDescr(jTextField2.getText());
+        docPay.setTotal(Float.valueOf(jFormattedTextField1.getText().replace(",", ".")));
+        docPay.setIndate(new Date());
+        docPay.setUsr(MainFrame.sessionParams.getUser());
+        docPay.setOrganization(MainFrame.sessionParams.getOrganization());
+        docPay.setDocuments(new DocumentDAO().getDocumentType(8l));
+        docPay.setStatus(new DocumentDAO().getStatus(2l));
         
-        new DocumentCompletionDAO().completion(pay, parentDocument);
+        new DocumentCompletionDAO().completion(docPay, parentDocument);
         
         repaintDocument();      
     }    
@@ -464,18 +497,18 @@ public class PayIf extends javax.swing.JInternalFrame implements DocumentImpl{
             jLabel4.setText(parentDocument.getDocuments().getName()
                 +" №"+parentDocument.getId()+" от "+format.format(parentDocument.getIndate()));
             jFormattedTextField1.setText(String.valueOf(parentDocument.getTotal()).replace(".", ","));
-            pay.setContragent(parentDocument.getContragent());
-            jTextField1.setText(pay.getContragent().getName());
+            docPay.setContragent(parentDocument.getContragent());
+            jTextField1.setText(docPay.getContragent().getName());
         }
     }//GEN-LAST:event_jLabel4MouseClicked
     
     // Выбрать контрагента
     private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
-        ContragentSelectDialog csd = new ContragentSelectDialog(null, true, pay);
+        ContragentSelectDialog csd = new ContragentSelectDialog(null, true, docPay);
         csd.setLocationRelativeTo(this);
         csd.setVisible(true);
         
-        jTextField1.setText(pay.getContragent().getName());         
+        jTextField1.setText(docPay.getContragent().getName());         
     }//GEN-LAST:event_jTextField1MouseClicked
 
     // печать чека

@@ -13,6 +13,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import ru.jmirazors.jmiСalculator.entity.Okv;
 import ru.jmirazors.jmiСalculator.entity.Organization;
 import ru.jmirazors.jmiСalculator.entity.Parameters;
 
@@ -94,6 +95,19 @@ public class OrganizationDAO extends DAO {
             JOptionPane.showMessageDialog(null, 
                     "[OrganizationDAO]\nОшибка параметров организации\n" + ex, "Ошибка", JOptionPane.ERROR_MESSAGE);}
         return param;
+    }
+    public List<Okv> getOkvList() {
+        List<Okv> okv = new ArrayList<>();
+        try {
+            begin();            
+            okv = getSession().createQuery("FROM Okv", Okv.class).getResultList();
+            commit();            
+        } catch (HibernateException ex) {
+            rollback();
+            JOptionPane.showMessageDialog(null, 
+                    "[OrganizationDAO]\nОшибка чтения списка организаций", "Ошибка", JOptionPane.ERROR_MESSAGE);                        
+        } 
+        return okv;        
     }
     
 }

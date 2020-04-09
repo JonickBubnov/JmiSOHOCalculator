@@ -611,6 +611,11 @@ public class MainFrame extends javax.swing.JFrame {
             jMenu6.add(jMenuItem20);
 
             jMenuItem28.setText("Настройки организации");
+            jMenuItem28.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jMenuItem28ActionPerformed(evt);
+                }
+            });
             jMenu6.add(jMenuItem28);
 
             jMenuItem9.setText("Интерфейс");
@@ -1027,6 +1032,16 @@ public class MainFrame extends javax.swing.JFrame {
             ifManager.setInventoryListFrameOpen(true);
             }          
     }//GEN-LAST:event_jButton17ActionPerformed
+
+    private void jMenuItem28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem28ActionPerformed
+       // НАСТРОЙКИ ОРГАНИЗАЦИИ
+        if (!ifManager.isParametersOpen()) {
+            ParametersInternalFrame params = new ParametersInternalFrame();
+            jDesktopPane1.add(params);
+            params.setVisible(true);
+            ifManager.setParametersFrameOpen(true);
+        }  
+    }//GEN-LAST:event_jMenuItem28ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

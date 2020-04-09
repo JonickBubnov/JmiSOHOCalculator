@@ -20,6 +20,7 @@ import javax.swing.JToolBar;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import ru.jmirazors.jmiСalculator.DAO.DocumentCompletionDAO;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.DAO.GroupDAO;
 import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
@@ -400,8 +401,12 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
             
                 documentDAO.updateDocument(docSale);
                 
-                if (status == 2)
+                if (status == 2) {
                     executeDocument();
+                    if (!MainFrame.ifManager.isDocPayFrameOpen()) {
+                        MainFrame.ifManager.showFrame(new PayIf(docSale, true), false);
+                    }
+                }
             
                 repaintDocument();
             
@@ -411,6 +416,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
 
     @Override
     public void executeDocument() {
+       new DocumentCompletionDAO().completion(docSale, products);        
     }    
     /**
      * This method is called from within the constructor to initialize the form.
@@ -588,6 +594,11 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         jLabel11.setText("____");
 
         jButton1.setText("Закрыть");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Сохранить");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -610,6 +621,11 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         jLabel13.setText("Скидка");
 
         jButton3.setText("Выполнить");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jLabel18.setText("Вес");
 
@@ -826,6 +842,14 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         saveDocument(1L);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        saveDocument(2L);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

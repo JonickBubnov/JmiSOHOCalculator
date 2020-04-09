@@ -42,6 +42,7 @@ public class IFBean {
     private boolean billList = false;
     
     private boolean payList = false;
+    private boolean docPay = false;
     
     private boolean deductList = false;
     private boolean docDeduct = false;
@@ -58,6 +59,8 @@ public class IFBean {
     private boolean inventoryList = false;
     private boolean docInventory = false;
     
+    private boolean parameters = false;
+    
     JDesktopPane jDesktopPane;
     
     public IFBean(JDesktopPane jDesktopPane) {
@@ -71,7 +74,13 @@ public class IFBean {
     public void infoMessage(String text) {
         infoPanel.append(text+"\n");
     }
-
+    // --------------  фрейм настройки -------------------
+    public boolean isParametersOpen() {
+        return parameters;
+    }    
+    public void setParametersFrameOpen(boolean val) {
+        parameters = val;
+    }
     // --------------  фрейм организации -------------------
     public boolean isOrganizationOpen() {
         return organization;
@@ -268,6 +277,13 @@ public class IFBean {
     public boolean isDocSaleFrameOpen() {
         return docSale;
     }     
+    // --------------- документ оплата ---------------
+    public void setDocPayFrameOpen(boolean val) {
+        docPay = val;
+    }
+    public boolean isDocPayFrameOpen() {
+        return docPay;
+    } 
     
     public void showFrame(JInternalFrame frame, boolean maximize) {
             jDesktopPane.add(frame);
