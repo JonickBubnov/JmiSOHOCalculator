@@ -76,6 +76,7 @@ public class DAO {
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.InventoryProduct.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Parameters.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Okv.class);
+            configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Cash.class);
             
             
         try {

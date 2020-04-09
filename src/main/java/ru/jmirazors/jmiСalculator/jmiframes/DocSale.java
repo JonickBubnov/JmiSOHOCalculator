@@ -268,8 +268,10 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         
         if (docSale.getStatus().getId() == 2 || docSale.getStatus().getId() == 3) {
             closeButtons();
-        }         
+        }
+        
         jLabel23.setText("НЕ ОПЛАЧЕН");
+        
     }
     // расчитать вес
     Float getWeight() {
@@ -404,7 +406,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
                 if (status == 2) {
                     executeDocument();
                     if (!MainFrame.ifManager.isDocPayFrameOpen()) {
-                        MainFrame.ifManager.showFrame(new PayIf(docSale, true), false);
+                        MainFrame.ifManager.showFrame(new PayIf(docSale, false), false);
                     }
                 }
             

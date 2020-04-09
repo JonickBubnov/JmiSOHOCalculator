@@ -25,7 +25,6 @@ import ru.jmirazors.jmiСalculator.entity.Inventory;
 import ru.jmirazors.jmiСalculator.entity.Invoice;
 import ru.jmirazors.jmiСalculator.entity.Offer;
 import ru.jmirazors.jmiСalculator.entity.Pay;
-import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Receipt;
 import ru.jmirazors.jmiСalculator.entity.Sale;
 import ru.jmirazors.jmiСalculator.entity.SetPrice;
