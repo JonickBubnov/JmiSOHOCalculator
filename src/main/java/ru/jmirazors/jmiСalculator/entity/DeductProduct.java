@@ -19,7 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
- * @author User
+ * @author Jonick
  */
 @Entity
 @Table(name="deduct_product")
@@ -39,7 +39,8 @@ private float cost;
 @OneToOne(cascade=CascadeType.DETACH)
 private Product product;
 @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-private Deduct deduct;    
+private Deduct deduct;
+private float discount;
     
 public DeductProduct(){}    
 
@@ -89,6 +90,16 @@ public DeductProduct(){}
 
     public void setDeduct(Deduct deduct) {
         this.deduct = deduct;
+    }
+
+@Override
+    public float getDiscount() {
+        return discount;
+    }
+
+@Override
+    public void setDiscount(float discount) {
+        this.discount = discount;
     }
  
 

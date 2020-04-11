@@ -33,7 +33,7 @@ public class Kassa implements Serializable {
         name = "native", 
         strategy = "native")
     private long id;
-    private long doc_id;
+    private long docNumber;
     @Basic
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Date indate;    
@@ -56,12 +56,12 @@ public class Kassa implements Serializable {
         this.id = id;
     }
 
-    public long getDoc_id() {
-        return doc_id;
+    public long getDocNumber() {
+        return docNumber;
     }
 
-    public void setDoc_id(long doc_id) {
-        this.doc_id = doc_id;
+    public void setDocNumber(long docNumber) {
+        this.docNumber = docNumber;
     }
 
     public DocumentType getDocumenttype() {

@@ -19,7 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
- * @author User
+ * @author Jonick
  */
 @Entity
 @Table(name="receipt_product")
@@ -38,7 +38,8 @@ private float cost;
 @OneToOne(cascade=CascadeType.DETACH)
 private Product product;
 @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-private Receipt receipt;  
+private Receipt receipt; 
+private float discount;
 
 public ReceiptProduct() {}
 
@@ -88,6 +89,16 @@ public ReceiptProduct() {}
 
     public void setReceipt(Receipt receipt) {
         this.receipt = receipt;
+    }
+
+@Override
+    public float getDiscount() {
+        return discount;
+    }
+
+@Override
+    public void setDiscount(float discount) {
+        this.discount = discount;
     }
 
 }

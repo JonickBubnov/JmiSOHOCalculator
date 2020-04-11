@@ -27,12 +27,14 @@ import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
 import ru.jmirazors.jmiСalculator.DAO.ProductDAO;
 import ru.jmirazors.jmiСalculator.DAO.StockDAO;
 import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
+import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
 import ru.jmirazors.jmiСalculator.entity.Group;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Sale;
 import ru.jmirazors.jmiСalculator.entity.SaleProduct;
 import ru.jmirazors.jmiСalculator.entity.Storage;
+import ru.jmirazors.jmiСalculator.entity.Subordin;
 
 /**
  *
@@ -269,7 +271,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         if (docSale.getStatus().getId() == 2 || docSale.getStatus().getId() == 3) {
             closeButtons();
         }
-        
+
         jLabel23.setText("НЕ ОПЛАЧЕН");
         
     }

@@ -43,7 +43,9 @@ public class DocumentUtil {
     DocumentDAO documentDAO = new DocumentDAO();
     //IFBean ifBean = new IFBean();
     
+     // ************************************************************************
     // Получить класс документа
+    // *************************************************************************
     public Class getDocumentClass(long id) {
         
         switch ((int)id) {
@@ -152,6 +154,14 @@ public class DocumentUtil {
                 "Не удалось создать счет на оплату. \n" + ex, "Ошибка", JOptionPane.ERROR_MESSAGE);
         }             
             JOptionPane.showMessageDialog(null, "Счет успешно создан: \nСчет на оплату №"+bill.getId(), "Сообщение", JOptionPane.INFORMATION_MESSAGE);
+    }
+    // *************************************************************************
+    // получить цену товара со скидкой
+    // *************************************************************************
+    public float getCostWhithDiscount(DocumentProduct product) {
+        float cost = product.getCost();
+        cost = product.getCost() - product.getCost()*product.getDiscount()/100;
+        return cost;
     }
     
     //

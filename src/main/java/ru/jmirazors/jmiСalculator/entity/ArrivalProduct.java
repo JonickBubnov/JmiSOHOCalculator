@@ -44,6 +44,7 @@ private float cost;
 private Product product;
 @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 private Arrival arrival;
+private float discount;
     
 
 @Override
@@ -93,6 +94,15 @@ private Arrival arrival;
 
     public void setArrival(Arrival arrival) {
         this.arrival = arrival;
+    }
+
+@Override
+    public float getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(long discount) {
+        this.discount = discount;
     }
 
     

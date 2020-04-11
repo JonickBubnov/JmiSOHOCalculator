@@ -185,7 +185,7 @@ public class ReportsIf extends javax.swing.JInternalFrame {
                         build.append(html.TROpen());
                         Kassa k = (Kassa)rep.get(i);
                         build.append(html.TD(k.getDocumenttype().getName(), "left"))
-                            .append(html.TD(k.getDoc_id(), "left"))
+                            .append(html.TD(k.getDocNumber(), "left"))
                             .append(html.TD(format.format(k.getIndate()), "left"))
                             .append(html.TD(k.getDebt(), "right"))
                             .append(html.TD(k.getCredit(), "right"));

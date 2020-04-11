@@ -186,7 +186,7 @@ public class UtilDAO extends DAO {
     // запись в кассу
     public void updateKassa(Document doc, boolean isDebt) {
           Kassa kassa = new Kassa();
-          kassa.setDoc_id(doc.getId());
+          kassa.setDocNumber(doc.getId());
           kassa.setDocumenttype(doc.getDocuments());
           kassa.setIndate(doc.getIndate());
           if (isDebt) {

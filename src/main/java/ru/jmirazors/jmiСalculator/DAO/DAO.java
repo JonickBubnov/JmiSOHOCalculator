@@ -77,6 +77,8 @@ public class DAO {
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Parameters.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Okv.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Cash.class);
+            configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Loyalty.class);
+            configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.LoyaltyLog.class);
             
             
         try {
