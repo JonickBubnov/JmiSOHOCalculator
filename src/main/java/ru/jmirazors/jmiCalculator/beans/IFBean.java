@@ -25,6 +25,8 @@ public class IFBean {
     private boolean priceName = false;
     private boolean loyalty = false;
     
+    private boolean priceListReport = false;
+    
     private boolean invoiceList = false;
     private boolean docInvoice = false;
     
@@ -74,6 +76,13 @@ public class IFBean {
     
     public void infoMessage(String text) {
         infoPanel.append(text+"\n");
+    }
+    // -------------- отчет прайслист -------------------
+    public boolean isReportPriceListOpen() {
+        return priceListReport;
+    }
+    public void setReportPriceListOpen(boolean val) {
+        priceListReport = val;
     }
     
     // -------------- дисконтные карты -------------------

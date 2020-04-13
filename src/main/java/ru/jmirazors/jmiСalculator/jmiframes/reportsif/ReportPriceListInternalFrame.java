@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes.reportsif;
 
+import java.awt.Cursor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,22 +35,34 @@ import ru.jmirazors.jmiСalculator.entity.Product;
  *
  * @author User
  */
-public class PriceListReportInternalFrame extends javax.swing.JInternalFrame {
+public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form Report1Test
      */
     List<PriceName> priceNames = null;
     List<Group> groups = null;
+    
+    static Map<String, Group> selGroups;
+    static Map<String, PriceName> selPriceNames;
     long groupId = 1;
     
-    public PriceListReportInternalFrame() {
+    public ReportPriceListInternalFrame() {                   
 
             initComponents();
             priceNames = new ArrayList<>();
                 priceNames = new PriceNameDAO().list("");
             groups = new ArrayList<>();
                 groups = new GroupDAO().list();
+                
+            this.selGroups = new HashMap<>();
+                for (Group gr : groups) {
+                    selGroups.put("1", gr);
+                }
+            this.selPriceNames = new HashMap<>();
+                for (PriceName pn : priceNames) {
+                    selPriceNames.put("1", pn);
+                }                
     }
     
 
@@ -127,6 +140,7 @@ public class PriceListReportInternalFrame extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        super.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         try {
             JasperReport jr;
             jr = JasperCompileManager.compileReport( getClass().getClassLoader().getResource("reports/repTemplate/pricelist.jrxml").getFile() );
@@ -149,13 +163,14 @@ public class PriceListReportInternalFrame extends javax.swing.JInternalFrame {
             this.getContentPane().add(new JRViewer(fr));
             this.validate();
         } catch (JRException ex) {
-            Logger.getLogger(PriceListReportInternalFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReportPriceListInternalFrame.class.getName()).log(Level.SEVERE, null, ex);
         }        
+        super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // группы
-        SelectGroupsDialog sgd = new SelectGroupsDialog(null, true, groups);
+        SelectGroupsDialog sgd = new SelectGroupsDialog(null, true, selGroups);
         sgd.setLocationRelativeTo(this);
         sgd.setVisible(true);        
     }//GEN-LAST:event_jButton1ActionPerformed

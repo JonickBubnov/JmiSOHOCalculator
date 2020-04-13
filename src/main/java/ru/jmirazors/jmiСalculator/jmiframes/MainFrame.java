@@ -5,7 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
-import ru.jmirazors.jmiСalculator.jmiframes.reportsif.PriceListReportInternalFrame;
+import ru.jmirazors.jmiСalculator.jmiframes.reportsif.ReportPriceListInternalFrame;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -1072,9 +1072,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jMenuItem30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem30ActionPerformed
         // Отчет тест
-        PriceListReportInternalFrame rt = new PriceListReportInternalFrame();        
-        jDesktopPane1.add(rt);
-        rt.setVisible(true);
+        if (!ifManager.isReportPriceListOpen()) {
+            ifManager.showFrame(new ReportPriceListInternalFrame(), true);
+            ifManager.setReportPriceListOpen(true);
+            }         
     }//GEN-LAST:event_jMenuItem30ActionPerformed
 
 
