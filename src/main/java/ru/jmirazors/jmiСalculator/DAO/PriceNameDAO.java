@@ -22,7 +22,8 @@ public class PriceNameDAO extends DAO {
         List<PriceName> priceNames = new ArrayList<>();
         try {
             begin();
-            priceNames = getSession().createQuery(options, PriceName.class).getResultList();
+            Query query = getSession().createQuery("FROM PriceName WHERE del=1", PriceName.class);
+            priceNames = query.getResultList();
             commit();
             return priceNames;
         } catch (HibernateException ex) {

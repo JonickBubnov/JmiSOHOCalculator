@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.reportsif.PriceListReportInternalFrame;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -126,6 +127,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem13 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
+        jMenuItem29 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem14 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
@@ -134,6 +136,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem22 = new javax.swing.JMenuItem();
         jMenu8 = new javax.swing.JMenu();
         jMenuItem25 = new javax.swing.JMenuItem();
+        jMenuItem30 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem26 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
@@ -529,11 +532,19 @@ public class MainFrame extends javax.swing.JFrame {
             });
             jMenu3.add(jMenuItem11);
 
+            jMenuItem29.setText("Дисконтные карты");
+            jMenuItem29.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jMenuItem29ActionPerformed(evt);
+                }
+            });
+            jMenu3.add(jMenuItem29);
+
             jMenuBar1.add(jMenu3);
 
             jMenu4.setText("Отчеты");
 
-            jMenuItem14.setText("Прайс лист");
+            jMenuItem14.setText("1");
             jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     jMenuItem14ActionPerformed(evt);
@@ -580,6 +591,14 @@ public class MainFrame extends javax.swing.JFrame {
             jMenu8.add(jMenuItem25);
 
             jMenu4.add(jMenu8);
+
+            jMenuItem30.setText("Прайс-Лист");
+            jMenuItem30.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jMenuItem30ActionPerformed(evt);
+                }
+            });
+            jMenu4.add(jMenuItem30);
             jMenu4.add(jSeparator2);
 
             jMenuItem26.setText("Журнал событий");
@@ -1043,6 +1062,21 @@ public class MainFrame extends javax.swing.JFrame {
         }  
     }//GEN-LAST:event_jMenuItem28ActionPerformed
 
+    private void jMenuItem29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem29ActionPerformed
+        // ДИСКОНТНЫЕ КАРТЫ
+        if (!ifManager.isLoyaltyOpen()) {
+            ifManager.showFrame(new ListLoyaltyInternalFrame(jToolBar2), false);
+            ifManager.setLoyaltyOpen(true);
+            }          
+    }//GEN-LAST:event_jMenuItem29ActionPerformed
+
+    private void jMenuItem30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem30ActionPerformed
+        // Отчет тест
+        PriceListReportInternalFrame rt = new PriceListReportInternalFrame();        
+        jDesktopPane1.add(rt);
+        rt.setVisible(true);
+    }//GEN-LAST:event_jMenuItem30ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JTextArea infoPanel;
@@ -1095,7 +1129,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem27;
     private javax.swing.JMenuItem jMenuItem28;
+    private javax.swing.JMenuItem jMenuItem29;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem30;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;

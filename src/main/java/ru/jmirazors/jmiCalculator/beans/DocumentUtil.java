@@ -77,7 +77,7 @@ public class DocumentUtil {
         return null;        
     }    
     // ***********   подчиненные документы **********************************
-//    // Получить и сохранить объект подчиненный документ
+    // Получить и сохранить объект подчиненный документ
     public void saveParent (Document parent, Document document) {
         Subordin subDoc = null;
         subDoc = new SubordinDAO().getSubDocument(document);

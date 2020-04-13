@@ -33,10 +33,8 @@ import ru.jmirazors.jmiСalculator.entity.Group;
 import ru.jmirazors.jmiСalculator.entity.InventoryProduct;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
-import ru.jmirazors.jmiСalculator.entity.SetPriceProduct;
 import ru.jmirazors.jmiСalculator.entity.Stock;
 import ru.jmirazors.jmiСalculator.entity.Storage;
-import static ru.jmirazors.jmiСalculator.jmiframes.ProductToSetPriceDialog.cartProducts;
 
 /**
  *

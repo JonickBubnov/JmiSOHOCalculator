@@ -57,7 +57,7 @@ public class DocumentCompletionDAO extends DAO {
                 
                 updateSklad(document, pr, false);
                 updateStock(document.getStorage(), pr, false);
-                updateKassa(document, true);
+                updateKassa(document, false);
                 
             } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}            
@@ -140,7 +140,7 @@ public class DocumentCompletionDAO extends DAO {
                 
                 updateSklad(document, pr, false);
                 updateStock(document.getStorage(), pr, false);
-                updateKassa(document, true);  
+                updateKassa(document, false);  
             } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}
         
@@ -156,7 +156,7 @@ public class DocumentCompletionDAO extends DAO {
                 
                 updateSklad(document, pr, true);
                 updateStock(document.getStorage(), pr, true);
-                updateKassa(document, false);  
+                updateKassa(document, true);  
             } catch (Exception ex) {JOptionPane.showMessageDialog(null, "[DocumentCompletionDAO]\nНе удалось выполнить документ \n" + ex, "Ошибка",
                     JOptionPane.ERROR_MESSAGE);}
         MainFrame.ifManager.infoMessage("Исполнение документа 'Поступление товаров' №"+document.getId()+" [OK]");            

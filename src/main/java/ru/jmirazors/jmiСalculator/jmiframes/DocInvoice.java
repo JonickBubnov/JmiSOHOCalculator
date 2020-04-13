@@ -226,7 +226,7 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
         docInvoice.setDiscount(0);
         docInvoice.setIndate(new Date());
         docInvoice.setTotal(0);
-        docInvoice.setStatus(documentDAO.getStatus(1l));
+        docInvoice.setStatus(documentDAO.getStatus(1L));
         docInvoice.setPriceName(getSelectedPriceName());
         docInvoice.setStorage(getSelectedStorage());
         docInvoice.setDescr("");
@@ -246,6 +246,10 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
         jTextField2.setText(docInvoice.getDescr());
         jComboBox1.setSelectedItem(docInvoice.getStorage().getName());
         jComboBox2.setSelectedItem(docInvoice.getPriceName().getName());
+        jLabel6.setText(MainFrame.sessionParams.getParam().getOkv().getName());
+        jLabel25.setText(MainFrame.sessionParams.getParam().getOkv().getName());
+        jLabel16.setText(MainFrame.sessionParams.getParam().getOkv().getName());
+        
         if (docInvoice.getContragent() != null)
             jTextField3.setText(docInvoice.getContragent().getName());
         //recalculateDocument();
@@ -333,7 +337,7 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
         jComboBox2.removeAllItems();
         
         try {
-            List priceNames = new PriceNameDAO().list("FROM PriceName WHERE del=1");
+            List priceNames = new PriceNameDAO().list("");
             Iterator it = priceNames.iterator();
             while (it.hasNext()) {
                 PriceName priceName = (PriceName)it.next();

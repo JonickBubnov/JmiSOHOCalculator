@@ -23,6 +23,7 @@ public class IFBean {
     private boolean contragents = false;
     private boolean products = false;
     private boolean priceName = false;
+    private boolean loyalty = false;
     
     private boolean invoiceList = false;
     private boolean docInvoice = false;
@@ -73,6 +74,14 @@ public class IFBean {
     
     public void infoMessage(String text) {
         infoPanel.append(text+"\n");
+    }
+    
+    // -------------- дисконтные карты -------------------
+    public boolean isLoyaltyOpen() {
+        return loyalty;
+    }
+    public void setLoyaltyOpen(boolean val) {
+        loyalty = val;
     }
     // --------------  фрейм настройки -------------------
     public boolean isParametersOpen() {

@@ -6,12 +6,16 @@
 package ru.jmirazors.jmiСalculator.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -31,6 +35,9 @@ public class Loyalty implements Serializable {
     strategy = "native"
 )
 private long id;
+@Basic
+@Temporal(TemporalType.TIMESTAMP)
+private java.util.Date indate;
 private String name;
 private Float total;
 private long percent;
@@ -38,6 +45,7 @@ private String code;
 @OneToOne
 private Contragent contragent;
 private String phone;
+private byte del;
 
     public long getId() {
         return id;
@@ -95,6 +103,20 @@ private String phone;
         this.phone = phone;
     }
 
+    public byte getDel() {
+        return del;
+    }
 
+    public void setDel(byte del) {
+        this.del = del;
+    }
 
+    public Date getIndate() {
+        return indate;
+    }
+
+    public void setIndate(Date indate) {
+        this.indate = indate;
+    }
+    
 }
