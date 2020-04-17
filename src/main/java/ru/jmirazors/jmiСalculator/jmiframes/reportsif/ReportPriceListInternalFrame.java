@@ -20,7 +20,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.swing.JRViewer;
-import reports.PriceList;
+import ru.jmirazors.jmiCalculator.beans.reports.PriceList;
 import ru.jmirazors.jmiСalculator.DAO.GroupDAO;
 import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
 import ru.jmirazors.jmiСalculator.DAO.ReportsDAO;
@@ -43,8 +43,9 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
     List<PriceName> priceNames = null;
     List<Group> groups = null;
     
-    static Map<String, Group> selGroups;
-    static Map<String, PriceName> selPriceNames;
+    static HashMap<String, String> selGroups;
+    static HashMap<String, String> selPriceNames;
+    
     long groupId = 1;
     
     public ReportPriceListInternalFrame() {                   
@@ -57,13 +58,15 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
                 
             this.selGroups = new HashMap<>();
                 for (Group gr : groups) {
-                    selGroups.put("1", gr);
+                    selGroups.put(gr.getName(), "1");
                 }
             this.selPriceNames = new HashMap<>();
                 for (PriceName pn : priceNames) {
-                    selPriceNames.put("1", pn);
+                    selPriceNames.put(pn.getName(), "1");
                 }                
     }
+    
+
     
 
     /**
@@ -127,9 +130,9 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton3)
-                    .addComponent(jButton1)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jButton4))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -147,6 +150,34 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
             Map<String, Object> parameters = new HashMap<>();
                 parameters.put("date", new Date().toString());
                 parameters.put("group", "---");
+                
+                for (String pn : selPriceNames.keySet()) {
+                    if (pn.equals("Закупочная")) {
+                                if (selPriceNames.get(pn).equals("1"))
+                                    parameters.put("prName1", true);
+                                else
+                                    parameters.put("prName1", false);
+                                }
+                    if (pn.equals("Учетная")) {
+                                if (selPriceNames.get(pn).equals("1"))
+                                    parameters.put("prName2", true);
+                                else
+                                    parameters.put("prName2", false);
+                                }                    
+                    if (pn.equals("Розничная")) {
+                                if (selPriceNames.get(pn).equals("1"))
+                                    parameters.put("prName4", true);
+                                else
+                                    parameters.put("prName4", false);
+                                }   
+                    if (pn.equals("Оптовая")) {
+                                if (selPriceNames.get(pn).equals("1"))
+                                    parameters.put("prName3", true);
+                                else
+                                    parameters.put("prName3", false);
+                                }                     
+                }
+                
             List<Product> prod = new ReportsDAO().getPriceList();
             List<PriceList> data = new ArrayList();
             data.add(null);            
@@ -177,7 +208,7 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // типы цены
-        SelectPriceNameDialog spnd = new SelectPriceNameDialog(null, true, priceNames);
+        SelectPriceNameDialog spnd = new SelectPriceNameDialog(null, true, selPriceNames);
         spnd.setLocationRelativeTo(this);
         spnd.setVisible(true);        
     }//GEN-LAST:event_jButton4ActionPerformed

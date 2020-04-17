@@ -38,14 +38,20 @@
 		<field name="price2" class="java.lang.Float"/>
 		<field name="price3" class="java.lang.Float"/>
 		<field name="price4" class="java.lang.Float"/>
+		<variable name="var1" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="date" class="java.lang.String"/>
 	<parameter name="group" class="java.lang.String"/>
+	<parameter name="prName1" class="java.lang.Boolean"/>
+	<parameter name="prName2" class="java.lang.Boolean"/>
+	<parameter name="prName3" class="java.lang.Boolean"/>
+	<parameter name="prName4" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<variable name="col1" class="java.lang.String"/>
 	<variable name="col2" class="java.lang.String"/>
+	<variable name="Var1" class="java.lang.Boolean"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -134,6 +140,7 @@
 					</jr:column>
 					<jr:column width="60" uuid="4cfa6db1-f9fb-4973-80d6-abf895158b73">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<printWhenExpression><![CDATA[$P{prName1}]]></printWhenExpression>
 						<jr:columnHeader style="Table_CH" height="14" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="60" height="14" backcolor="#CECECE" uuid="323b3c35-fc99-4e7a-a01d-405b9b7044d5"/>
@@ -153,6 +160,7 @@
 					</jr:column>
 					<jr:column width="60" uuid="2031f479-b40e-4c78-879d-8eec09224332">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<printWhenExpression><![CDATA[$P{prName2}]]></printWhenExpression>
 						<jr:columnHeader style="Table_CH" height="14" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="60" height="14" backcolor="#CECECE" uuid="6ea0248d-9e7f-47bb-a249-c1f743f43c19"/>
@@ -172,6 +180,7 @@
 					</jr:column>
 					<jr:column width="60" uuid="a5a2d683-0fdf-4e26-84cd-67ac9199cbcc">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<printWhenExpression><![CDATA[$P{prName3}]]></printWhenExpression>
 						<jr:columnHeader style="Table_CH" height="14" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="60" height="14" backcolor="#CECECE" uuid="8b63054b-10b6-40bd-9b10-ff5a728f114e"/>
@@ -191,6 +200,7 @@
 					</jr:column>
 					<jr:column width="60" uuid="f60551fc-e155-4a99-86ef-23d2f806bd19">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<printWhenExpression><![CDATA[$P{prName4}]]></printWhenExpression>
 						<jr:columnHeader style="Table_CH" height="14" rowSpan="1">
 							<staticText>
 								<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="60" height="14" backcolor="#CECECE" uuid="2c6d2446-e9eb-4244-8f48-c0a6cbbb9987"/>

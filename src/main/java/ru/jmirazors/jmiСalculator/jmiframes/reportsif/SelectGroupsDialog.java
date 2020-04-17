@@ -6,7 +6,9 @@
 package ru.jmirazors.jmiСalculator.jmiframes.reportsif;
 
 import java.awt.Component;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -47,18 +49,21 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
     };
 
     List<Group> groups;
-    public SelectGroupsDialog(java.awt.Frame parent, boolean modal, List<Group> groups) {
+    HashMap<String, String> selGroup;
+    
+    
+    public SelectGroupsDialog(java.awt.Frame parent, boolean modal, HashMap<String, String> groups) {
         super(parent, modal);
         
-        tableModel.addColumn("+");
+        selGroup = groups;
+        
+        tableModel.addColumn("");
         tableModel.addColumn("Наименование");               
-        this.groups = groups;
+        
         
         initComponents();
         jTable1.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
         jTable1.getColumnModel().getColumn(0).setMaxWidth(20);
-        jCheckBox1.setSelected(true);
-        jTable1.setEnabled(false);
         
         getGroups();
     }
@@ -71,26 +76,39 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
         
         List<Group> groups = new GroupDAO().list("FROM Group WHERE del=1");
         for (Group group : groups) {                        
-            tableModel.addRow(new Object[] {isEntry(group)?"1":"0", group.getName()});
+            tableModel.addRow(new Object[] {isSelected(group)?"1":"0", group.getName()});
         }
     }
-    boolean isEntry(Group group) {        
-        for (Group gr : groups) {
-            if (group.getId() == gr.getId())
-                return true;
-        }
+    boolean isSelected(Group group) {
+        if (selGroup.get(group.getName()) == "1")
+            return true;
         return false;
     }
+    
+//    boolean isEntry(Group group) {        
+//        for (Group gr : groups) {
+//            if (group.getId() == gr.getId())
+//                return true;
+//        }
+//        return false;
+//    }
     void selectAll() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             tableModel.setValueAt("1", i, 0);
+        for (String key : selGroup.keySet()) {
+            selGroup.put(key, "1");
+        }
         }
     }
-    String togleValue() {        
-        if (tableModel.getValueAt(jTable1.getSelectedRow(), 0).toString().equals("1"))
+    String togleValue() {
+        String key = tableModel.getValueAt(jTable1.getSelectedRow(), 1).toString();
+        if (tableModel.getValueAt(jTable1.getSelectedRow(), 0).toString().equals("1")) {
+            selGroup.put(key, "0");
             return "0";
-        else
-            return "1";
+        }
+        else {
+            selGroup.put(key, "1");
+            return "1";}
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -110,6 +128,7 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Группы товаров");
+        setPreferredSize(new java.awt.Dimension(400, 240));
         setResizable(false);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 30));
@@ -150,7 +169,7 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel2.setPreferredSize(new java.awt.Dimension(400, 40));
+        jPanel2.setPreferredSize(new java.awt.Dimension(400, 50));
 
         jButton1.setText("Сохранить");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -171,8 +190,9 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 8, Short.MAX_VALUE)
-                .addComponent(jButton1))
+                .addContainerGap(12, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
@@ -198,6 +218,7 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        ReportPriceListInternalFrame.selGroups = selGroup;
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -50,6 +50,7 @@ public class ReportsDAO extends DAO {
         
     }
     
+    // остатки на складах
     public List<Stock> getStockReport() {
         List<Stock> obj = new ArrayList();
         begin();

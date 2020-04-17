@@ -6,6 +6,7 @@
 package ru.jmirazors.jmiСalculator.jmiframes.reportsif;
 
 import java.awt.Component;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -46,19 +47,21 @@ public class SelectPriceNameDialog extends javax.swing.JDialog {
             { return false; }
     };
 
-    List<PriceName> priceNames;    
+    List<PriceName> priceNames;
+    HashMap<String, String> selPriceNames;  
     
-    public SelectPriceNameDialog(java.awt.Frame parent, boolean modal, List<PriceName> priceNames) {
-        super(parent, modal);
-        tableModel.addColumn("+");
+    public SelectPriceNameDialog(java.awt.Frame parent, boolean modal, HashMap<String, String> priceNames) {
+        super(parent, modal);        
+        
+        tableModel.addColumn("");
         tableModel.addColumn("Наименование");               
-        this.priceNames = priceNames;        
+        selPriceNames = priceNames;        
         
         initComponents();
                 
         jTable1.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
         jTable1.getColumnModel().getColumn(0).setMaxWidth(20);        
-        jTable1.setEnabled(false);   
+
         
         getPriceName();
     }
@@ -70,26 +73,39 @@ public class SelectPriceNameDialog extends javax.swing.JDialog {
 
         List<PriceName> priceNames = new PriceNameDAO().list("");
         for (PriceName priceName : priceNames) {                        
-            tableModel.addRow(new Object[] {isEntry(priceName)?"1":"0", priceName.getName()});
+            tableModel.addRow(new Object[] {isSelected(priceName)?"1":"0", priceName.getName()});
         }        
     }
-    boolean isEntry(PriceName priceName) {        
-        for (PriceName pn : priceNames) {
-            if (priceName.getId() == pn.getId())
-                return true;
-        }
+    boolean isSelected(PriceName priceName) {
+        if (selPriceNames.get(priceName.getName()) == "1")
+            return true;
         return false;
-    }  
+    }    
+    
+//    boolean isEntry(PriceName priceName) {        
+//        for (PriceName pn : priceNames) {
+//            if (priceName.getId() == pn.getId())
+//                return true;
+//        }
+//        return false;
+//    }  
     void selectAll() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             tableModel.setValueAt("1", i, 0);
+        for (String key : selPriceNames.keySet()) {
+            selPriceNames.put(key, "1");
+        }
         }
     }    
     String togleValue() {        
-        if (tableModel.getValueAt(jTable1.getSelectedRow(), 0).toString().equals("1"))
+        String key = tableModel.getValueAt(jTable1.getSelectedRow(), 1).toString();
+        if (tableModel.getValueAt(jTable1.getSelectedRow(), 0).toString().equals("1")) {
+            selPriceNames.put(key, "0");
             return "0";
-        else
-            return "1";
+        }
+        else {
+            selPriceNames.put(key, "1");
+            return "1";}
     }    
     /**
      * This method is called from within the constructor to initialize the form.
@@ -113,7 +129,6 @@ public class SelectPriceNameDialog extends javax.swing.JDialog {
 
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 40));
 
-        jCheckBox1.setSelected(true);
         jCheckBox1.setText("Выбрать все");
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -199,6 +214,7 @@ public class SelectPriceNameDialog extends javax.swing.JDialog {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        ReportPriceListInternalFrame.selPriceNames = selPriceNames;
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
