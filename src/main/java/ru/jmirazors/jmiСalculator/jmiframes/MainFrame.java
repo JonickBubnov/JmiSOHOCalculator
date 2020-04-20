@@ -131,16 +131,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem11 = new javax.swing.JMenuItem();
         jMenuItem29 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
-        jMenuItem14 = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
-        jMenuItem19 = new javax.swing.JMenuItem();
-        jMenuItem21 = new javax.swing.JMenuItem();
-        jMenuItem22 = new javax.swing.JMenuItem();
-        jMenu8 = new javax.swing.JMenu();
-        jMenuItem25 = new javax.swing.JMenuItem();
-        jMenuItem30 = new javax.swing.JMenuItem();
         jMenuItem32 = new javax.swing.JMenuItem();
+        jMenu8 = new javax.swing.JMenu();
         jMenuItem31 = new javax.swing.JMenuItem();
+        jMenuItem30 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem26 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
@@ -548,61 +543,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             jMenu4.setText("Отчеты");
 
-            jMenuItem14.setText("1");
-            jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jMenuItem14ActionPerformed(evt);
-                }
-            });
-            jMenu4.add(jMenuItem14);
-
             jMenu5.setText("Продажи");
-
-            jMenuItem19.setText("Продажи по документам");
-            jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jMenuItem19ActionPerformed(evt);
-                }
-            });
-            jMenu5.add(jMenuItem19);
-
-            jMenuItem21.setText("Продажи по контрагентам");
-            jMenuItem21.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jMenuItem21ActionPerformed(evt);
-                }
-            });
-            jMenu5.add(jMenuItem21);
-
-            jMenuItem22.setText("Продажи по номенклатуре");
-            jMenuItem22.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jMenuItem22ActionPerformed(evt);
-                }
-            });
-            jMenu5.add(jMenuItem22);
-
-            jMenu4.add(jMenu5);
-
-            jMenu8.setText("Товары");
-
-            jMenuItem25.setText("Остатки по складам");
-            jMenuItem25.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jMenuItem25ActionPerformed(evt);
-                }
-            });
-            jMenu8.add(jMenuItem25);
-
-            jMenu4.add(jMenu8);
-
-            jMenuItem30.setText("Прайс-Лист");
-            jMenuItem30.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jMenuItem30ActionPerformed(evt);
-                }
-            });
-            jMenu4.add(jMenuItem30);
 
             jMenuItem32.setText("Продажи по документам");
             jMenuItem32.addActionListener(new java.awt.event.ActionListener() {
@@ -610,7 +551,11 @@ public class MainFrame extends javax.swing.JFrame {
                     jMenuItem32ActionPerformed(evt);
                 }
             });
-            jMenu4.add(jMenuItem32);
+            jMenu5.add(jMenuItem32);
+
+            jMenu4.add(jMenu5);
+
+            jMenu8.setText("Товары");
 
             jMenuItem31.setText("Товары на складах");
             jMenuItem31.addActionListener(new java.awt.event.ActionListener() {
@@ -618,7 +563,17 @@ public class MainFrame extends javax.swing.JFrame {
                     jMenuItem31ActionPerformed(evt);
                 }
             });
-            jMenu4.add(jMenuItem31);
+            jMenu8.add(jMenuItem31);
+
+            jMenuItem30.setText("Прайс-Лист");
+            jMenuItem30.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jMenuItem30ActionPerformed(evt);
+                }
+            });
+            jMenu8.add(jMenuItem30);
+
+            jMenu4.add(jMenu8);
             jMenu4.add(jSeparator2);
 
             jMenuItem26.setText("Журнал событий");
@@ -802,26 +757,6 @@ public class MainFrame extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void jMenuItem19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem19ActionPerformed
-        //отчет продажи по документам
-        report = new ReportsIf(1);
-        if (!report.isVisible()) {
-            jDesktopPane1.add(report);
-            jDesktopPane1.getDesktopManager().maximizeFrame(report);            
-            report.show();
-        }        
-    }//GEN-LAST:event_jMenuItem19ActionPerformed
-
-    private void jMenuItem21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem21ActionPerformed
-        // Отчет продажи по контрагентам
-        report = new ReportsIf(1);
-        if (!report.isVisible()) {
-            jDesktopPane1.add(report);
-            jDesktopPane1.getDesktopManager().maximizeFrame(report);            
-            report.show();
-        }        
-    }//GEN-LAST:event_jMenuItem21ActionPerformed
-
     private void jMenuItem18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem18ActionPerformed
         // СПРАВОЧНИК ОПЛАТЫ
          if (!ifManager.isPayListOpen()) {  
@@ -979,26 +914,6 @@ public class MainFrame extends javax.swing.JFrame {
         } 
     }//GEN-LAST:event_jMenuItem17ActionPerformed
 
-    private void jMenuItem25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem25ActionPerformed
-        // Отчет остатки по складам
-        report = new ReportsIf(2);
-        if (!report.isVisible()) {
-            jDesktopPane1.add(report);
-            jDesktopPane1.getDesktopManager().maximizeFrame(report);            
-            report.show();
-        }  
-    }//GEN-LAST:event_jMenuItem25ActionPerformed
-
-    private void jMenuItem22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem22ActionPerformed
-        // Продажи по номенклатуре
-        report = new ReportsIf(3);
-        if (!report.isVisible()) {
-            jDesktopPane1.add(report);
-            jDesktopPane1.getDesktopManager().maximizeFrame(report);            
-            report.show();
-        }           
-    }//GEN-LAST:event_jMenuItem22ActionPerformed
-
     private void jMenuItem26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem26ActionPerformed
         // Журнал событий
         JournalDialog journald = new JournalDialog(this, true);
@@ -1035,16 +950,8 @@ public class MainFrame extends javax.swing.JFrame {
         // Менеджер баз данных
         new DBManagerDialog(this, true).setVisible(true);
     }//GEN-LAST:event_jMenuItem27ActionPerformed
-    // отчет прайс-лист
-    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
-        report = new ReportsIf(4);
-        if (!report.isVisible()) {
-            jDesktopPane1.add(report);
-            jDesktopPane1.getDesktopManager().maximizeFrame(report);            
-            report.show();
-        }   
-    }//GEN-LAST:event_jMenuItem14ActionPerformed
-    
+
+   
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
         // АКТЫ ВЫПОЛНЕННЫХ РАБОТ
          if (!ifManager.isActListOpen()) {  
@@ -1093,7 +1000,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem30ActionPerformed
         // Отчет прайслист
         if (!ifManager.isReportPriceListOpen()) {
-            ifManager.showFrame(new ReportPriceListInternalFrame(), true);
+            ifManager.showFrame(new ReportPriceListInternalFrame(jToolBar2), true);
             ifManager.setReportPriceListOpen(true);
             }         
     }//GEN-LAST:event_jMenuItem30ActionPerformed
@@ -1101,7 +1008,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem31ActionPerformed
         // отчет товары на складах
         if (!ifManager.isReportStockProductOpen()) {
-            ifManager.showFrame(new ReportProductsOnStockInternalFrame(), true);
+            ifManager.showFrame(new ReportProductsOnStockInternalFrame(jToolBar2), true);
             ifManager.setStockProductOpen(true);
             }         
     }//GEN-LAST:event_jMenuItem31ActionPerformed
@@ -1150,19 +1057,14 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;
-    private javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem15;
     private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem17;
     private javax.swing.JMenuItem jMenuItem18;
-    private javax.swing.JMenuItem jMenuItem19;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem20;
-    private javax.swing.JMenuItem jMenuItem21;
-    private javax.swing.JMenuItem jMenuItem22;
     private javax.swing.JMenuItem jMenuItem23;
     private javax.swing.JMenuItem jMenuItem24;
-    private javax.swing.JMenuItem jMenuItem25;
     private javax.swing.JMenuItem jMenuItem26;
     private javax.swing.JMenuItem jMenuItem27;
     private javax.swing.JMenuItem jMenuItem28;

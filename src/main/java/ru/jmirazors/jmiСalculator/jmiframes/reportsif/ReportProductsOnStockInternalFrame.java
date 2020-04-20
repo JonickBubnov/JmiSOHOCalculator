@@ -5,21 +5,31 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes.reportsif;
 
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.Exporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.swing.JRViewer;
 import ru.jmirazors.jmiCalculator.beans.reports.StockProduct;
 import ru.jmirazors.jmiСalculator.DAO.ReportsDAO;
 import ru.jmirazors.jmiСalculator.entity.Stock;
+import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
 
 /**
  *
@@ -30,9 +40,43 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
     /**
      * Creates new form ReportProductsOnStockInternalFrame
      */
-    public ReportProductsOnStockInternalFrame() {
+    JToolBar tb;
+    JButton dockButton = new JButton("Ост. на скл. |"); 
+    
+    SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");    
+    
+    public ReportProductsOnStockInternalFrame(JToolBar toolBar) {
+        this.tb = toolBar;
+          dockButton.setFocusPainted(false);
+          dockButton.addActionListener((ActionEvent evt) -> {
+              toggleState();
+        }); 
+        tb.add(dockButton);          
         initComponents();
     }
+    
+    // ***********************************************************
+     @Override
+     public void dispose() {          
+          super.dispose();
+          tb.remove(dockButton);
+          tb.repaint();
+          MainFrame.ifManager.setReportPriceListOpen(false);
+     }
+     private void toggleState() {
+          try {
+               if(this.isVisible())
+                    this.hide();
+               else {
+                    this.setIcon(false);
+                    this.show(); 
+               }
+          } catch (Exception ex) {
+               ex.printStackTrace();
+          }
+     } 
+     
+     // **************************************************************     
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -52,6 +96,23 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
         setResizable(true);
         setTitle("Остатки на складах");
         setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line-chart.png"))); // NOI18N
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameIconified(evt);
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         jPanel1.setPreferredSize(new java.awt.Dimension(823, 40));
 
@@ -84,11 +145,13 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        // Отчет
+        super.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         try {        
         JasperReport jr;
-        jr = JasperCompileManager.compileReport( getClass().getClassLoader().getResource("reports/repTemplate/stockproduct.jrxml").getFile() );
-            Map<String, Object> parameters = new HashMap<>();      
+            jr = JasperCompileManager.compileReport( getClass().getClassLoader().getResource("reports/repTemplate/stockproduct.jrxml").getFile() );
+        Map<String, Object> parameters = new HashMap<>();  
+            
         List<Stock> rep = new ReportsDAO().getStockReport();            
         List<StockProduct> data = new ArrayList<>();
         data.add(null);
@@ -99,11 +162,24 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
                 sp.setCount(st.getCount());                
             data.add(sp);
         }
-            JasperPrint fr = JasperFillManager.fillReport(jr, parameters, new JRBeanCollectionDataSource(data));
-            this.getContentPane().add(new JRViewer(fr));
-            this.validate();        
-        } catch (JRException ex) {}
+        JasperPrint fr = JasperFillManager.fillReport(jr, parameters, new JRBeanCollectionDataSource(data));
+        
+        
+        
+        JRViewer viewer = new JRViewer(fr);            
+        this.getContentPane().add(viewer);
+        this.validate();   
+        super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        } catch (JRException ex) {
+            super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            JOptionPane.showMessageDialog(null, 
+                    "Не удалось сформировать отчет \n"+ex, "Ошибка", JOptionPane.ERROR_MESSAGE);}
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formInternalFrameIconified(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameIconified
+        // TODO add your handling code here:
+        hide();
+    }//GEN-LAST:event_formInternalFrameIconified
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

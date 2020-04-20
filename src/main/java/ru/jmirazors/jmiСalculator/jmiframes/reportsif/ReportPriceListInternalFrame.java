@@ -6,13 +6,16 @@
 package ru.jmirazors.jmiСalculator.jmiframes.reportsif;
 
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -28,17 +31,19 @@ import ru.jmirazors.jmiСalculator.entity.Group;
 import ru.jmirazors.jmiСalculator.entity.Price;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
+import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
+import org.apache.poi.hssf.util.HSSFColor.*;
 
 
 
 /**
  *
- * @author User
+ * @author Jonick
  */
 public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
 
     /**
-     * Creates new form Report1Test
+     * Creates new form Report1Tes
      */
     List<PriceName> priceNames = null;
     List<Group> groups = null;
@@ -46,27 +51,57 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
     static HashMap<String, String> selGroups;
     static HashMap<String, String> selPriceNames;
     
-    long groupId = 1;
+    JToolBar tb;
+    JButton dockButton = new JButton("Прайс-Лист |"); 
     
-    public ReportPriceListInternalFrame() {                   
+    SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    
+    public ReportPriceListInternalFrame(JToolBar toolBar) { 
+        
+        this.tb = toolBar;
+          dockButton.setFocusPainted(false);
+          dockButton.addActionListener((ActionEvent evt) -> {
+              toggleState();
+        }); 
+        tb.add(dockButton);         
 
-            initComponents();
-            priceNames = new ArrayList<>();
-                priceNames = new PriceNameDAO().list("");
-            groups = new ArrayList<>();
-                groups = new GroupDAO().list();
+        initComponents();
+            
+        priceNames = new PriceNameDAO().list("");            
+        groups = new GroupDAO().list();
                 
-            this.selGroups = new HashMap<>();
-                for (Group gr : groups) {
-                    selGroups.put(gr.getName(), "1");
-                }
-            this.selPriceNames = new HashMap<>();
-                for (PriceName pn : priceNames) {
-                    selPriceNames.put(pn.getName(), "1");
-                }                
+        this.selGroups = new HashMap<>();                
+        for (Group gr : groups) {
+            selGroups.put(gr.getName(), "1");
+            }
+        this.selPriceNames = new HashMap<>();
+            for (PriceName pn : priceNames) {
+                selPriceNames.put(pn.getName(), "1");
+            }                
     }
     
-
+    // ***********************************************************
+     @Override
+     public void dispose() {          
+          super.dispose();
+          tb.remove(dockButton);
+          tb.repaint();
+          MainFrame.ifManager.setReportPriceListOpen(false);
+     }
+     private void toggleState() {
+          try {
+               if(this.isVisible())
+                    this.hide();
+               else {
+                    this.setIcon(false);
+                    this.show(); 
+               }
+          } catch (Exception ex) {
+               ex.printStackTrace();
+          }
+     } 
+     
+     // ************************************************************** 
     
 
     /**
@@ -89,6 +124,23 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
         setResizable(true);
         setTitle("Прайс-Лист");
         setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/line-chart.png"))); // NOI18N
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameIconified(evt);
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
 
         jPanel1.setPreferredSize(new java.awt.Dimension(736, 40));
 
@@ -148,8 +200,8 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
             JasperReport jr;
             jr = JasperCompileManager.compileReport( getClass().getClassLoader().getResource("reports/repTemplate/pricelist.jrxml").getFile() );
             Map<String, Object> parameters = new HashMap<>();
-                parameters.put("date", new Date().toString());
-                parameters.put("group", "---");
+                parameters.put("date", format.format(new Date()));
+                parameters.put("org", MainFrame.sessionParams.getOrganization().getName());
                 
                 for (String pn : selPriceNames.keySet()) {
                     if (pn.equals("Закупочная")) {
@@ -192,11 +244,14 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
                         
             JasperPrint fr = JasperFillManager.fillReport(jr, parameters, new JRBeanCollectionDataSource(data));
             this.getContentPane().add(new JRViewer(fr));
-            this.validate();
+            this.validate();            
+            super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         } catch (JRException ex) {
-            Logger.getLogger(ReportPriceListInternalFrame.class.getName()).log(Level.SEVERE, null, ex);
+            super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            JOptionPane.showMessageDialog(null, 
+                    "Не удалось сформировать отчет \n"+ex, "Ошибка", JOptionPane.ERROR_MESSAGE);
         }        
-        super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -212,6 +267,11 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
         spnd.setLocationRelativeTo(this);
         spnd.setVisible(true);        
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void formInternalFrameIconified(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameIconified
+        // TODO add your handling code here:
+        hide();
+    }//GEN-LAST:event_formInternalFrameIconified
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

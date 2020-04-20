@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<!-- Created with Jaspersoft Studio version 6.12.2.final using JasperReports Library version 6.12.2-75c5e90a222ab406e416cbf590a5397028a52de3  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4_2" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="070c1058-2a9f-4f5d-b044-c07788a28bb5">
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
@@ -41,7 +41,7 @@
 		<variable name="var1" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="date" class="java.lang.String"/>
-	<parameter name="group" class="java.lang.String"/>
+	<parameter name="org" class="java.lang.String"/>
 	<parameter name="prName1" class="java.lang.Boolean"/>
 	<parameter name="prName2" class="java.lang.Boolean"/>
 	<parameter name="prName3" class="java.lang.Boolean"/>
@@ -81,11 +81,11 @@
 			</line>
 			<staticText>
 				<reportElement x="0" y="24" width="110" height="14" uuid="46102295-f835-47d1-be60-7d8b828471ed"/>
-				<text><![CDATA[Группа]]></text>
+				<text><![CDATA[Организация]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="110" y="24" width="170" height="14" uuid="8ca1f6b1-d2f3-46ad-97d1-4797315993ab"/>
-				<textFieldExpression><![CDATA[$P{group}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{org}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
