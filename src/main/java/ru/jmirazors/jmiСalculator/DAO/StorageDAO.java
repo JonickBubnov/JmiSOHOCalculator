@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.DAO;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.hibernate.HibernateException;
@@ -79,17 +80,20 @@ public class StorageDAO extends DAO{
         return storage;
     }
     
-    public List<Storage> list() throws Exception {
+    public List<Storage> list() {
+        List<Storage> storages = new ArrayList<>();
         try {
             begin();
-            List<Storage> storages = getSession().createQuery("FROM Storage", Storage.class).getResultList();
-            commit();
-            return storages;
+            storages = getSession().createQuery("FROM Storage", Storage.class).getResultList();
+            commit();            
         } catch (HibernateException ex) {
             rollback();
-            throw new Exception("Could't get storages", ex); 
+            JOptionPane.showMessageDialog(null, 
+                    "[StorageDAO] \nОшибка чтения списка Складов", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
+        return storages;
     }
+    
     public List<Storage> list(char option) throws Exception {
         List<Storage> storages =  null;
         try {

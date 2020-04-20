@@ -1016,7 +1016,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem32ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem32ActionPerformed
         // отчет продажи по документам
         if (!ifManager.isReportSaleDocOpen()) {
-            ifManager.showFrame(new ReportSaleDocInternalFrame(), true);
+            ifManager.showFrame(new ReportSaleDocInternalFrame(jToolBar2), true);
             ifManager.setReportSaleDocOpen(true);
             }                 
     }//GEN-LAST:event_jMenuItem32ActionPerformed

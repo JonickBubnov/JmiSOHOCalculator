@@ -9,6 +9,7 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +22,14 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
-import net.sf.jasperreports.export.Exporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.swing.JRViewer;
 import ru.jmirazors.jmiCalculator.beans.reports.StockProduct;
+import ru.jmirazors.jmiСalculator.DAO.GroupDAO;
 import ru.jmirazors.jmiСalculator.DAO.ReportsDAO;
+import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
+import ru.jmirazors.jmiСalculator.entity.Group;
 import ru.jmirazors.jmiСalculator.entity.Stock;
+import ru.jmirazors.jmiСalculator.entity.Storage;
 import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
 
 /**
@@ -40,6 +41,12 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
     /**
      * Creates new form ReportProductsOnStockInternalFrame
      */
+    List<Storage> storages = null;
+    List<Group> groups = null;
+    
+    static HashMap<String, String> selGroups;
+    static HashMap<String, String> selStorages;    
+    
     JToolBar tb;
     JButton dockButton = new JButton("Ост. на скл. |"); 
     
@@ -53,6 +60,18 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
         }); 
         tb.add(dockButton);          
         initComponents();
+        
+        groups = new GroupDAO().list();
+        storages = new StorageDAO().list();
+        
+        this.selGroups = new HashMap<>();                
+        for (Group gr : groups) {
+            selGroups.put(gr.getName(), "1");
+            }
+        this.selStorages = new HashMap<>();                
+        for (Storage st : storages) {
+            selStorages.put(st.getName(), "1");
+            }            
     }
     
     // ***********************************************************
@@ -61,7 +80,7 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
           super.dispose();
           tb.remove(dockButton);
           tb.repaint();
-          MainFrame.ifManager.setReportPriceListOpen(false);
+          MainFrame.ifManager.setStockProductOpen(false);
      }
      private void toggleState() {
           try {
@@ -76,7 +95,23 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
           }
      } 
      
-     // **************************************************************     
+     // **************************************************************    
+     List<Group> getSelectedGroupList() {
+         List<Group> selectedGroups = new ArrayList<>();
+         for (Group gr : groups) {
+             if (selGroups.get(gr.getName()) == "1")
+                 selectedGroups.add(gr);
+         }
+         return selectedGroups;         
+     }
+    List<Storage> getSelectedStorageList() {
+         List<Storage> selectedStorages = new ArrayList<>();
+         for (Storage st : storages) {
+             if (selStorages.get(st.getName()) == "1")
+                 selectedStorages.add(st);
+         }
+         return selectedStorages;         
+     }     
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -89,6 +124,8 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
 
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -123,6 +160,20 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
             }
         });
 
+        jButton2.setText("Группы");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Склады");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -130,12 +181,20 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1)
-                .addContainerGap(771, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton3)
+                .addContainerGap(177, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jButton1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton2)
+                        .addComponent(jButton3)))
                 .addGap(0, 8, Short.MAX_VALUE))
         );
 
@@ -150,9 +209,12 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
         try {        
         JasperReport jr;
             jr = JasperCompileManager.compileReport( getClass().getClassLoader().getResource("reports/repTemplate/stockproduct.jrxml").getFile() );
-        Map<String, Object> parameters = new HashMap<>();  
+        Map<String, Object> parameters = new HashMap<>();
+            parameters.put("data", format.format(new Date()));
+            parameters.put("org", MainFrame.sessionParams.getOrganization().getName());
             
-        List<Stock> rep = new ReportsDAO().getStockReport();            
+        List<Stock> rep = new ReportsDAO().getStockReport(getSelectedGroupList(), getSelectedStorageList()); 
+        
         List<StockProduct> data = new ArrayList<>();
         data.add(null);
         for (Stock st : rep) {
@@ -181,9 +243,25 @@ public class ReportProductsOnStockInternalFrame extends javax.swing.JInternalFra
         hide();
     }//GEN-LAST:event_formInternalFrameIconified
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        SelectGroupsDialog sgd = new SelectGroupsDialog(null, true, selGroups);
+        sgd.setLocationRelativeTo(this);
+        sgd.setVisible(true);         
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        SelectStorageDialog ssd = new SelectStorageDialog(null, true, selStorages);
+        ssd.setLocationRelativeTo(this);
+        ssd.setVisible(true);         
+    }//GEN-LAST:event_jButton3ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

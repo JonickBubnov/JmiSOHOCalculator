@@ -22,7 +22,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import ru.jmirazors.jmiСalculator.DAO.PriceDAO;
-import ru.jmirazors.jmiСalculator.DAO.StockDAO;
 
 /**
  *

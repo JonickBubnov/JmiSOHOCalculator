@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiCalculator.beans.reports;
 
+import ru.jmirazors.jmiСalculator.entity.Contragent;
 import ru.jmirazors.jmiСalculator.entity.DocumentType;
 
 /**
@@ -19,7 +20,17 @@ public class SaleDoc {
     float debt;
     float crdt;
     float sumd;
+    Contragent contr;
 
+    public String getContr() {
+        return contr.getName();
+    }
+
+    public void setContr(Contragent contr) {
+        this.contr = contr;
+    }
+    
+    
     public String getDoc() {
         return getDocType().getName();
     }
@@ -59,8 +70,11 @@ public class SaleDoc {
         this.debt = debt;
     }
 
-    public float getCrdt() {
-        return crdt;
+    public Float getCrdt() {
+        if (crdt != 0)
+            return crdt;
+        else
+            return null;
     }
 
     public void setCrdt(float crdt) {

@@ -32,7 +32,6 @@ import ru.jmirazors.jmiСalculator.entity.Price;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
-import org.apache.poi.hssf.util.HSSFColor.*;
 
 
 
@@ -103,7 +102,14 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
      
      // ************************************************************** 
     
-
+     List<Group> getSelectedGroupList() {
+         List<Group> selectedGroups = new ArrayList<>();
+         for (Group gr : groups) {
+             if (selGroups.get(gr.getName()) == "1")
+                 selectedGroups.add(gr);
+         }
+         return selectedGroups;
+     }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -172,11 +178,11 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton4)
-                .addContainerGap(522, Short.MAX_VALUE))
+                .addContainerGap(534, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,8 +190,9 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
                 .addGap(5, 5, 5)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton3)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton4))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton4)
+                        .addComponent(jButton1)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -229,8 +236,10 @@ public class ReportPriceListInternalFrame extends javax.swing.JInternalFrame {
                                     parameters.put("prName3", false);
                                 }                     
                 }
-                
-            List<Product> prod = new ReportsDAO().getPriceList();
+            
+            
+            List<Product> prod = new ReportsDAO().getPriceList(getSelectedGroupList());
+            
             List<PriceList> data = new ArrayList();
             data.add(null);            
             for (Product product : prod) {

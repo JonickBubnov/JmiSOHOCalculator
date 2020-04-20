@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.rtf.RTFEditorKit;
 import ru.jmirazors.jmiCalculator.beans.HtmlBean;
 import ru.jmirazors.jmiСalculator.DAO.ReportsDAO;
+import ru.jmirazors.jmiСalculator.entity.Group;
 import ru.jmirazors.jmiСalculator.entity.Kassa;
 import ru.jmirazors.jmiСalculator.entity.Price;
 import ru.jmirazors.jmiСalculator.entity.Product;
@@ -294,16 +296,16 @@ public class ReportsIf extends javax.swing.JInternalFrame {
                     .append(html.TH("Оптовая"))
                     .append(html.TH("Розничная"));
                 build.append(html.TRClose());        
-        List<Product> prod = new ReportsDAO().getPriceList();
-        for (Product pr1 : prod) {
-            List<Price> price = pr1.getActualPriceList();
-            build.append(html.TROpen())
-                    .append(html.TD(pr1.getArticul(), "left"))
-                    .append(html.TD(pr1.getName(), "left"));
-            for (Price pr2 : price)
-                build.append(html.TD(pr2.getPrice(), "right"));
-            build.append(html.TRClose());
-        }
+//        List<Product> prod = new ReportsDAO(new ArrayList<Group>()).getPriceList();
+//        for (Product pr1 : prod) {
+//            List<Price> price = pr1.getActualPriceList();
+//            build.append(html.TROpen())
+//                    .append(html.TD(pr1.getArticul(), "left"))
+//                    .append(html.TD(pr1.getName(), "left"));
+//            for (Price pr2 : price)
+//                build.append(html.TD(pr2.getPrice(), "right"));
+//            build.append(html.TRClose());
+//        }
         build.append(html.tableClose());
         build.append(html.htmlClose());
         return build.toString();

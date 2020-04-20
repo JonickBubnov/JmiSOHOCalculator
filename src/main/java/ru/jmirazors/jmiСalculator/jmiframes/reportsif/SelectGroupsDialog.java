@@ -8,7 +8,6 @@ package ru.jmirazors.jmiСalculator.jmiframes.reportsif;
 import java.awt.Component;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -128,7 +127,7 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Группы товаров");
-        setPreferredSize(new java.awt.Dimension(400, 240));
+        setPreferredSize(new java.awt.Dimension(450, 250));
         setResizable(false);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 30));
@@ -171,7 +170,8 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
 
         jPanel2.setPreferredSize(new java.awt.Dimension(400, 50));
 
-        jButton1.setText("Сохранить");
+        jButton1.setText("Закрыть");
+        jButton1.setActionCommand("Закрыть");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -183,7 +183,7 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(302, Short.MAX_VALUE)
+                .addContainerGap(314, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -218,7 +218,6 @@ public class SelectGroupsDialog extends javax.swing.JDialog {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        ReportPriceListInternalFrame.selGroups = selGroup;
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
