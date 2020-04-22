@@ -56,14 +56,14 @@ public class UsersIf extends javax.swing.JInternalFrame {
         
         tableModel.addColumn("№");
         tableModel.addColumn("Имя");
-        tableModel.addColumn("Логин");
+        tableModel.addColumn("Подразделение");
         tableModel.addColumn("Права");
         
         initComponents();
         
         jTable1.getColumnModel().getColumn(0).setMinWidth(24);
         jTable1.getColumnModel().getColumn(1).setMinWidth(180);
-        jTable1.getColumnModel().getColumn(2).setMinWidth(100);
+        jTable1.getColumnModel().getColumn(2).setMinWidth(150);
         jTable1.getColumnModel().getColumn(0).setMaxWidth(24);
         jTable1.getColumnModel().getColumn(1).setMaxWidth(180);
         jTable1.getColumnModel().getColumn(2).setMaxWidth(100);
@@ -105,12 +105,12 @@ public class UsersIf extends javax.swing.JInternalFrame {
         try {
             List<User> users;
             if (!jToggleButton1.isSelected())
-                users = new UserDAO().list("from User where del=1");
+                users = new UserDAO().list("FROM User WHERE del=1");
             else
-                users = new UserDAO().list("from User");
+                users = new UserDAO().list("FROM User");
             for (int i = 0; i < users.size(); i++) {
                 tableModel.addRow(new Object[]{users.get(i).getId(), users.get(i).getName(),
-                    users.get(i).getLogin(), users.get(i).getPriv().getName()});
+                    users.get(i).getDepartment().getName(), users.get(i).getPriv().getName()});
             }
         } catch (Exception ex) {
             Logger.getLogger(UsersIf.class.getName()).log(Level.SEVERE, null, ex);

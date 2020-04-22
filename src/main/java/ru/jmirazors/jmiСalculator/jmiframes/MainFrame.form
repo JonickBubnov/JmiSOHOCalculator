@@ -226,7 +226,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem20">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#x41e;&#x440;&#x433;&#x430;&#x43d;&#x438;&#x437;&#x430;&#x446;&#x438;&#x438;"/>
+                <Property name="text" type="java.lang.String" value="&#x41e;&#x440;&#x433;&#x430;&#x43d;&#x438;&#x437;&#x430;&#x446;&#x438;&#x44f;"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem20ActionPerformed"/>
@@ -238,6 +238,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem28ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem14">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="&#x41f;&#x43e;&#x434;&#x440;&#x430;&#x437;&#x434;&#x435;&#x43b;&#x435;&#x43d;&#x438;&#x44f;"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem14ActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem9">

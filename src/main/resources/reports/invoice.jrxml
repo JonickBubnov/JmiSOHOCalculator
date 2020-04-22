@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<!-- Created with Jaspersoft Studio version 6.12.2.final using JasperReports Library version 6.12.2-75c5e90a222ab406e416cbf590a5397028a52de3  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4_1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dbc12f16-7c4c-486c-a356-c32076d19b33">
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
@@ -10,7 +10,7 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+	<style name="Table_CH" mode="Opaque" backcolor="#DEDEDE">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 			<topPen lineWidth="0.5" lineColor="#000000"/>
@@ -34,7 +34,7 @@
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
-		<field name="rowId" class="java.lang.String"/>
+		<field name="rowId" class="java.lang.Integer"/>
 		<field name="articul" class="java.lang.String"/>
 		<field name="name" class="java.lang.String"/>
 		<field name="count" class="java.lang.Float"/>
@@ -69,15 +69,15 @@
 	<title>
 		<band height="94" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="FixRelativeToBottom" x="26" y="10" width="146" height="20" uuid="92d97efa-2c0e-4b2c-bfb0-22f4610a3d70"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement positionType="FixRelativeToBottom" x="3" y="10" width="169" height="20" uuid="92d97efa-2c0e-4b2c-bfb0-22f4610a3d70"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12" isBold="true" pdfFontName="" pdfEncoding=""/>
 					<paragraph lineSpacing="Proportional"/>
 				</textElement>
-				<text><![CDATA[Заказ Покупателя №]]></text>
+				<text><![CDATA[Заказ Покупателя № ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="174" y="10" width="78" height="21" uuid="3f8f8c3e-5299-430e-925d-c0aeb1742e5e"/>
+				<reportElement x="174" y="10" width="90" height="21" uuid="3f8f8c3e-5299-430e-925d-c0aeb1742e5e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -268,9 +268,6 @@
 			</componentElement>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="100" splitType="Stretch"/>
-	</columnFooter>
 	<summary>
 		<band height="210" splitType="Stretch">
 			<staticText>

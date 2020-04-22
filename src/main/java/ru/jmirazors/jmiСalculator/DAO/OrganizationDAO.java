@@ -13,6 +13,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import ru.jmirazors.jmiСalculator.entity.Department;
 import ru.jmirazors.jmiСalculator.entity.Okv;
 import ru.jmirazors.jmiСalculator.entity.Organization;
 import ru.jmirazors.jmiСalculator.entity.Parameters;
@@ -39,6 +40,8 @@ public class OrganizationDAO extends DAO {
         } 
         return organizations;
     }  
+    
+    // *******************************    **************************************
     public Organization findOrganization(String name) throws SQLException {
         Organization organization = null;
         try{
@@ -55,12 +58,12 @@ public class OrganizationDAO extends DAO {
         } 
         return organization;
     }    
-    public Organization getOrganization(String id) throws SQLException {
+    public Organization getOrganization(Long id) throws SQLException {
         Organization organization = null;
         try{
             begin();            
-            long i = Long.valueOf(id);
-            organization = getSession().get(Organization.class, i);
+            //long i = Long.valueOf(id);
+            organization = getSession().get(Organization.class, id);
             commit();            
         } catch (HibernateException ex) {
             rollback();            
@@ -69,7 +72,8 @@ public class OrganizationDAO extends DAO {
                     "[OrganizationDAO]\nОшибка поиска организации <"+id+">", "Ошибка", JOptionPane.ERROR_MESSAGE);            
         } 
         return organization;
-    }    
+    }
+    
     public Organization updateOrganization(Organization org) {
         try {
             begin();
@@ -82,7 +86,8 @@ public class OrganizationDAO extends DAO {
                     "[OrganizationDAO]\nОшибка создания организации\n" + ex, "Ошибка", JOptionPane.ERROR_MESSAGE);          
         } 
         return org;
-    } 
+    }
+    
     public Parameters getParam(Organization org) {
         Parameters param = null;
         try {
@@ -96,6 +101,7 @@ public class OrganizationDAO extends DAO {
                     "[OrganizationDAO]\nОшибка параметров организации\n" + ex, "Ошибка", JOptionPane.ERROR_MESSAGE);}
         return param;
     }
+    
     public List<Okv> getOkvList() {
         List<Okv> okv = new ArrayList<>();
         try {
@@ -109,5 +115,42 @@ public class OrganizationDAO extends DAO {
         } 
         return okv;        
     }
+    public List<Department> getDepartments() {
+        List<Department> department = new ArrayList();
+        try {
+            begin();
+            department = getSession().createQuery("FROM Department WHERE del=1", Department.class).getResultList();
+            commit();
+        } catch (HibernateException ex) {
+            rollback();
+            JOptionPane.showMessageDialog(null, 
+                    "[OrganizationDAO]\nОшибка чтения списка подразделений", "Ошибка", JOptionPane.ERROR_MESSAGE);                        
+        }
+        return department;
+    }
+    public void updateDepartment(Department dep) {
+        try {
+            begin();
+            getSession().saveOrUpdate(dep);
+            commit();
+        } catch (HibernateException ex) {
+            rollback();
+            JOptionPane.showMessageDialog(null, 
+                    "[OrganizationDAO]\nОшибка создания подразделения\n" + ex, "Ошибка", JOptionPane.ERROR_MESSAGE);          
+        } 
+    }  
+    public Department getDepartment(Long id) {
+        Department dep = null;
+        try{
+            begin();                        
+            dep = getSession().get(Department.class, id);
+            commit();            
+        } catch (HibernateException ex) {
+            rollback();            
+            JOptionPane.showMessageDialog(null, 
+                    "[OrganizationDAO]\nОшибка поиска подразделения <"+id+">", "Ошибка", JOptionPane.ERROR_MESSAGE);            
+        } 
+        return dep;
+    }    
     
 }

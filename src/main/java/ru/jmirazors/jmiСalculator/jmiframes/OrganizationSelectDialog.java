@@ -190,7 +190,7 @@ public class OrganizationSelectDialog extends javax.swing.JDialog {
         if (evt.getClickCount() == 2) {
             String id = tableModel.getValueAt(jTable1.getRowSorter().convertRowIndexToModel(jTable1.getSelectedRow()), 0).toString();
             try {
-                organization = new OrganizationDAO().getOrganization(id);
+                organization = new OrganizationDAO().getOrganization(Long.valueOf(id));
                 doc.setOrganization(organization);
                 dispose();
             } catch (Exception ex) {

@@ -969,18 +969,18 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
 
     // Сохранить шаблон    
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        UIManager.put("FileChooser.saveButtonText", "Сохранить");
-        UIManager.put("FileChooser.cancelButtonText", "Отмена");
-        JFileChooser fileChooser = new JFileChooser();
-        
-        fileChooser.setDialogTitle("Сохранить файл");   
- 
-        int userSelection = fileChooser.showSaveDialog(this);
-        
-        if (userSelection == JFileChooser.APPROVE_OPTION) {            
-            File fileToSave = fileChooser.getSelectedFile();
-            if (!fileToSave.getName().endsWith(".pdf"))
-                fileToSave = new File(fileToSave.getAbsolutePath()+".pdf");
+//        UIManager.put("FileChooser.saveButtonText", "Сохранить");
+//        UIManager.put("FileChooser.cancelButtonText", "Отмена");
+//        JFileChooser fileChooser = new JFileChooser();
+//        
+//        fileChooser.setDialogTitle("Сохранить файл");   
+// 
+//        int userSelection = fileChooser.showSaveDialog(this);
+//        
+//        if (userSelection == JFileChooser.APPROVE_OPTION) {            
+//            File fileToSave = fileChooser.getSelectedFile();
+//            if (!fileToSave.getName().endsWith(".pdf"))
+//                fileToSave = new File(fileToSave.getAbsolutePath()+".pdf");
         
         try {
             super.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -996,7 +996,7 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
                 parameters.put("total", jLabel11.getText());
                 parameters.put("weight", jLabel19.getText());
                 parameters.put("count", tableModel.getRowCount());
-                parameters.put("strsum", new NumberToTextBean().numberToText(Double.valueOf(jLabel11.getText())));
+                parameters.put("strsum", new NumberToTextBean().numberToText(Double.valueOf(jLabel11.getText().replace(",", "."))));
                 
             List<ProductBean> ib = new ArrayList<>();
             ib.add(null);           
@@ -1010,17 +1010,19 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jr,
                parameters,  new JRBeanCollectionDataSource(ib));
+            
+            MainFrame.ifManager.showPreviw(jasperPrint);
 
-            JasperExportManager.exportReportToPdfFile(jasperPrint,
-               fileToSave.getCanonicalPath());  
-            super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            MainFrame.infoPanel.append("\nФайл " + fileToSave.getCanonicalPath() + " сохранен.");
+//            JasperExportManager.exportReportToPdfFile(jasperPrint,
+//               fileToSave.getCanonicalPath());  
+//            super.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//            MainFrame.infoPanel.append("\nФайл " + fileToSave.getCanonicalPath() + " сохранен.");
             
         } catch (JRException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }   catch (IOException ex) { 
-                Logger.getLogger(DocInvoice.class.getName()).log(Level.SEVERE, null, ex);
-            } 
+//        }   catch (IOException ex) { 
+//                Logger.getLogger(DocInvoice.class.getName()).log(Level.SEVERE, null, ex);
+//            } 
         }   // конец файлчузера    
     }//GEN-LAST:event_jButton5ActionPerformed
 

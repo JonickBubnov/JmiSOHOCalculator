@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ru.jmirazors.jmiCalculator.beans.MD5Bean;
+import ru.jmirazors.jmiСalculator.DAO.OrganizationDAO;
 import ru.jmirazors.jmiСalculator.DAO.UserDAO;
+import ru.jmirazors.jmiСalculator.entity.Department;
 import ru.jmirazors.jmiСalculator.entity.Privileges;
 import ru.jmirazors.jmiСalculator.entity.User;
 
@@ -24,6 +26,7 @@ public class UserAddDialog extends javax.swing.JDialog {
      * Creates new form UserAddDialog
      */
     List<Privileges> priv;
+    List<Department> dep;
     User user;
     public UserAddDialog(java.awt.Frame parent, boolean modal, User user) {
         super(parent, modal);
@@ -32,16 +35,24 @@ public class UserAddDialog extends javax.swing.JDialog {
         try {
             priv = new UserDAO().listPrivileges();
             jComboBox1.removeAllItems();
-            for (int i = 0; i < priv.size(); i++)
-                jComboBox1.addItem(priv.get(i).getName());
+            for (Privileges p : priv)
+                jComboBox1.addItem(p.getName());
         } catch (SQLException ex) {
             Logger.getLogger(UserAddDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        dep = new OrganizationDAO().getDepartments();
+        jComboBox2.removeAllItems();
+        for (Department d : dep) {
+            jComboBox2.addItem(d.getName());
+        }
+        
         if (user != null) {
             jTextField1.setText(user.getName());
             jTextField2.setText(user.getLogin());
             jPasswordField1.setText(user.getPasswd());
             jComboBox1.setSelectedItem(user.getPriv().getName());
+            jComboBox2.setSelectedItem(user.getDepartment().getName());
             jCheckBox1.setSelected(!user.isDel());
             this.user = user;
         } else {
@@ -67,6 +78,8 @@ public class UserAddDialog extends javax.swing.JDialog {
         jComboBox1 = new javax.swing.JComboBox<>();
         jCheckBox1 = new javax.swing.JCheckBox();
         jButton3 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jComboBox2 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Пользователь");
@@ -122,8 +135,6 @@ public class UserAddDialog extends javax.swing.JDialog {
 
         jPasswordField1.setEditable(false);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jCheckBox1.setText("Пользователь активен");
 
         jButton3.setText("Сменить пароль");
@@ -134,6 +145,8 @@ public class UserAddDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel5.setText("Подразделение");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -142,23 +155,25 @@ public class UserAddDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jCheckBox1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
+                            .addComponent(jLabel5)
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jButton3)
-                                .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
                             .addComponent(jTextField2)
-                            .addComponent(jPasswordField1))))
+                            .addComponent(jPasswordField1)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jButton3)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jCheckBox1)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -179,13 +194,17 @@ public class UserAddDialog extends javax.swing.JDialog {
                     .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton3)
-                .addGap(9, 9, 9)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jCheckBox1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(32, 32, 32))
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
@@ -204,8 +223,11 @@ public class UserAddDialog extends javax.swing.JDialog {
             user.setName(jTextField1.getText());
             user.setLogin(jTextField2.getText());  
             if (jPasswordField1.isEditable())
-                user.setPasswd(new MD5Bean().getEncryptedPassword(String.valueOf(jPasswordField1.getPassword())));        
+                user.setPasswd(new MD5Bean().getEncryptedPassword(String.valueOf(jPasswordField1.getPassword())));
+            else
+                user.setPasswd(new MD5Bean().getEncryptedPassword(""));
             user.setPriv(priv.get(jComboBox1.getSelectedIndex()));
+            user.setDepartment(dep.get(jComboBox2.getSelectedIndex()));
             byte del = jCheckBox1.isSelected()?(byte)1:(byte)0;
             user.setDel(del);
             try {
@@ -229,10 +251,12 @@ public class UserAddDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButton3;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPasswordField jPasswordField1;

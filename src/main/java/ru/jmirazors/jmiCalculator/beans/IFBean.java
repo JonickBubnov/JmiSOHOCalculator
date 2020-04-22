@@ -8,6 +8,8 @@ package ru.jmirazors.jmiCalculator.beans;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JTextArea;
+import net.sf.jasperreports.engine.JasperPrint;
+import ru.jmirazors.jmiСalculator.jmiframes.DocumentPreview;
 import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
 
 /**
@@ -17,6 +19,7 @@ import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
 public class IFBean {              
     
     private boolean organization = false;
+    private boolean department = false;
     private boolean users = false;
     private boolean storage = false;
     private boolean units = false;
@@ -68,6 +71,8 @@ public class IFBean {
     
     JDesktopPane jDesktopPane;
     
+    static JInternalFrame docPreview = null;
+    
     public IFBean(JDesktopPane jDesktopPane) {
         this.jDesktopPane = jDesktopPane;
     }
@@ -79,6 +84,13 @@ public class IFBean {
     public void infoMessage(String text) {
         infoPanel.append(text+"\n");
     }
+    // -------------- Подразделения -------------------
+    public boolean isDepartmentOpen() {
+        return department;
+    }
+    public void setDepartmentFrameOpen(boolean val) {
+        department = val;
+    } 
     // -------------- отчет продажи по документам -------------------
     public boolean isReportSaleDocOpen() {
         return saleDocReport;
@@ -324,6 +336,13 @@ public class IFBean {
             if (maximize)
                 jDesktopPane.getDesktopManager().maximizeFrame(frame);
             frame.setVisible(true);         
+    }
+    
+    public void showPreviw(JasperPrint print) {
+        docPreview = new DocumentPreview(print);
+        jDesktopPane.add(docPreview);
+        jDesktopPane.getDesktopManager().maximizeFrame(docPreview);
+        docPreview.setVisible(true);
     }
     
 }

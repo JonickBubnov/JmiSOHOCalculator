@@ -18,20 +18,20 @@ import javax.swing.table.DefaultTableModel;
 import org.hibernate.HibernateException;
 import ru.jmirazors.jmiCalculator.beans.ColorTablesRenderer;
 import ru.jmirazors.jmiСalculator.DAO.OrganizationDAO;
-import ru.jmirazors.jmiСalculator.entity.Organization;
+import ru.jmirazors.jmiСalculator.entity.Department;
 
 /**
  *
  * @author User
  */
-public final class OrganizationIf extends javax.swing.JInternalFrame {
+public final class DepartmentIf extends javax.swing.JInternalFrame {
 
     /**
-     * Creates new form OrganizationIf
+     * Creates new form DepartmentIf
      */
     
     JToolBar tb;
-    JButton dockButton = new JButton("Организации");
+    JButton dockButton = new JButton("Подразделения");
     
     ColorTablesRenderer colorRenderer = new ColorTablesRenderer();
     DefaultTableModel tableModel = new DefaultTableModel(){
@@ -40,7 +40,7 @@ public final class OrganizationIf extends javax.swing.JInternalFrame {
             { return false; }
     };
     
-    public OrganizationIf(JToolBar toolBar) {
+    public DepartmentIf(JToolBar toolBar) {
         this.tb = toolBar;
           dockButton.addActionListener((ActionEvent evt) -> {
               toggleState();
@@ -49,19 +49,16 @@ public final class OrganizationIf extends javax.swing.JInternalFrame {
                 
         
         tableModel.addColumn("");
-        tableModel.addColumn("ИНН");
         tableModel.addColumn("Наименование"); 
         
         initComponents();
         
         jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
         jTable1.getColumnModel().getColumn(0).setMinWidth(50);
-        //date
-        jTable1.getColumnModel().getColumn(1).setMaxWidth(155);
-        jTable1.getColumnModel().getColumn(1).setMinWidth(155);
+
         jTable1.setDefaultRenderer(Object.class, colorRenderer); 
         
-        getOrganizations();
+        getDepartments();
     }
     
     // ***********************************************************
@@ -86,17 +83,17 @@ public final class OrganizationIf extends javax.swing.JInternalFrame {
      } 
      // **************************************************************    
     
-    void getOrganizations() {
+    void getDepartments() {
         for (int i=tableModel.getRowCount(); i > 0; i--) {
             tableModel.removeRow(i-1);
         }            
         tableModel.setRowCount(0); 
         try {
-            List organizations = new OrganizationDAO().list("from Organization where del=1");
-            Iterator it = organizations.iterator();
+            List departments = new OrganizationDAO().getDepartments();
+            Iterator it = departments.iterator();
             while (it.hasNext()) {
-                Organization org = (Organization)it.next(); 
-                tableModel.addRow(new Object[]{org.getId(), org.getInn(), org.getName()});                
+                Department dep = (Department)it.next(); 
+                tableModel.addRow(new Object[]{dep.getId(), dep.getName()});                
             }
         } catch (HibernateException e) {System.out.print(e);} catch (Exception ex) { 
             Logger.getLogger(ListPayInternalFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -120,7 +117,7 @@ public final class OrganizationIf extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
-        setTitle("Мои организации");
+        setTitle("Подразделения");
         setDoubleBuffered(true);
         setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/organization.png"))); // NOI18N
         setPreferredSize(new java.awt.Dimension(400, 300));
@@ -178,21 +175,27 @@ public final class OrganizationIf extends javax.swing.JInternalFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        OrganizationDialog organizationDialog = new OrganizationDialog(null, true, null);
-        organizationDialog.setVisible(true);
-        getOrganizations();
+            try {
+                DepartmentAddDialog dad = new DepartmentAddDialog(null, true);
+                dad.setLocationRelativeTo(this);
+                dad.setVisible(true);
+                getDepartments();                
+            } catch (Exception ex) {
+                Logger.getLogger(DepartmentIf.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
         if (evt.getClickCount() == 2) {
             try {
-                Organization org = new OrganizationDAO().getOrganization(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString());
-                OrganizationDialog organizationDialog = new OrganizationDialog(null, true, org);
-                organizationDialog.setVisible(true);
-                getOrganizations();                
-            } catch (SQLException ex) {
-                Logger.getLogger(OrganizationIf.class.getName()).log(Level.SEVERE, null, ex);
+                Department dep = new OrganizationDAO().getDepartment(Long.valueOf(jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString()));
+                DepartmentAddDialog dad = new DepartmentAddDialog(null, true, dep);
+                dad.setLocationRelativeTo(this);
+                dad.setVisible(true);
+                getDepartments();                
+            } catch (Exception ex) {
+                Logger.getLogger(DepartmentIf.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_jTable1MouseClicked

@@ -7,12 +7,16 @@ package ru.jmirazors.jmiСalculator.jmiframes;
 
 import ru.jmirazors.jmiСalculator.jmiframes.reportsif.ReportPriceListInternalFrame;
 import java.awt.Image;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import ru.jmirazors.jmiCalculator.beans.IFBean;
 import ru.jmirazors.jmiCalculator.beans.SessionParams;
 import ru.jmirazors.jmiСalculator.DAO.OrganizationDAO;
+import ru.jmirazors.jmiСalculator.entity.Organization;
 import ru.jmirazors.jmiСalculator.jmiframes.reportsif.ReportProductsOnStockInternalFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.reportsif.ReportSaleDocInternalFrame;
 
@@ -22,10 +26,8 @@ import ru.jmirazors.jmiСalculator.jmiframes.reportsif.ReportSaleDocInternalFram
  *
  * @author Jonick
  */
-public class MainFrame extends javax.swing.JFrame {
-
-    ReportsIf report = null;
-    
+public class MainFrame extends javax.swing.JFrame {        
+   
     public static IFBean ifManager;
     
     public static SessionParams sessionParams = new SessionParams();
@@ -142,6 +144,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem20 = new javax.swing.JMenuItem();
         jMenuItem28 = new javax.swing.JMenuItem();
+        jMenuItem14 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem27 = new javax.swing.JMenuItem();
         jMenu7 = new javax.swing.JMenu();
@@ -596,7 +599,7 @@ public class MainFrame extends javax.swing.JFrame {
             });
             jMenu6.add(jMenuItem8);
 
-            jMenuItem20.setText("Организации");
+            jMenuItem20.setText("Организация");
             jMenuItem20.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     jMenuItem20ActionPerformed(evt);
@@ -611,6 +614,14 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             });
             jMenu6.add(jMenuItem28);
+
+            jMenuItem14.setText("Подразделения");
+            jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jMenuItem14ActionPerformed(evt);
+                }
+            });
+            jMenu6.add(jMenuItem14);
 
             jMenuItem9.setText("Интерфейс");
             jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
@@ -743,13 +754,17 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void jMenuItem20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem20ActionPerformed
-        // ОРГАНИЗАЦИИ        
-        if (!ifManager.isOrganizationOpen()) {
-            OrganizationIf organizations = new OrganizationIf(jToolBar2);
-            jDesktopPane1.add(organizations);
-            organizations.show();
-            ifManager.setOrganizationFrameOpen(true);
-            }
+        // ОРГАНИЗАЦЯ      
+        Organization org;
+        try {
+            org = new OrganizationDAO().getOrganization(1L);
+            OrganizationDialog organizationDialog = new OrganizationDialog(null, true, org);
+            organizationDialog.setLocationRelativeTo(this);
+            organizationDialog.setVisible(true);        
+        } catch (SQLException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        
     }//GEN-LAST:event_jMenuItem20ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -1021,6 +1036,17 @@ public class MainFrame extends javax.swing.JFrame {
             }                 
     }//GEN-LAST:event_jMenuItem32ActionPerformed
 
+    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+        // Подразделения
+        if (!ifManager.isDepartmentOpen()) {
+            ifManager.showFrame(new DepartmentIf(jToolBar2), false);
+//            DepartmentIf organizations = new DepartmentIf(jToolBar2);
+//            jDesktopPane1.add(organizations);
+//            organizations.show();
+            ifManager.setDepartmentFrameOpen(true);
+            }        
+    }//GEN-LAST:event_jMenuItem14ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JTextArea infoPanel;
@@ -1057,6 +1083,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem13;
+    private javax.swing.JMenuItem jMenuItem14;
     private javax.swing.JMenuItem jMenuItem15;
     private javax.swing.JMenuItem jMenuItem16;
     private javax.swing.JMenuItem jMenuItem17;

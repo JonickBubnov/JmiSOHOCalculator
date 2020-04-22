@@ -40,6 +40,8 @@ public class User implements Serializable {
     @JoinColumn(name="priv")
     private Privileges priv;
     private byte del;
+    @OneToOne
+    private Department department;
 
     
 
@@ -91,4 +93,13 @@ public class User implements Serializable {
         else
             return true;
     }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+    
 }

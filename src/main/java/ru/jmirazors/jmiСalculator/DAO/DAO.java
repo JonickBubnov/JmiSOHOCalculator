@@ -7,7 +7,6 @@ package ru.jmirazors.jmiСalculator.DAO;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.swing.JOptionPane;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -79,6 +78,7 @@ public class DAO {
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Cash.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Loyalty.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.LoyaltyLog.class);
+            configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Department.class);
             
             
         try {
@@ -101,7 +101,6 @@ public class DAO {
             sessionObj = buildSessionFactory().openSession();           
         } 
         if (!sessionObj.isOpen()) {
-            System.out.println("OPEN SESSION");
             sessionObj = sessionFactoryObj.openSession(); 
         }
         return sessionObj;
