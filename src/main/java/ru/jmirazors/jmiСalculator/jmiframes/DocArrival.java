@@ -10,6 +10,8 @@ package ru.jmirazors.jmiСalculator.jmiframes;
  * @author User
  */
 
+import ru.jmirazors.jmiCalculator.MainFrame;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ContragentSelectDialog;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;

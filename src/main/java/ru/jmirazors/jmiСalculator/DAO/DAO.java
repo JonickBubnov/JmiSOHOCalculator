@@ -14,6 +14,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import ru.jmirazors.jmiCalculator.MainFrame;
 
 /**
  *
@@ -27,9 +28,15 @@ public class DAO {
     
     
         private static SessionFactory buildSessionFactory() {
+            System.out.println("BUILD");
         // Creating Configuration Instance & Passing Hibernate Configuration File.
             Configuration configObj = new Configuration();
             configObj.configure(DAO.class.getResource("/hibernate.cfg.xml"));
+            configObj.setProperty("hibernate.connection.url", MainFrame.sessionParams.getDburl());
+            configObj.setProperty("hibernate.dialect", MainFrame.sessionParams.getDbdialect());
+            configObj.setProperty("hibernate.connection.driver_class", MainFrame.sessionParams.getDbdriver());
+            configObj.setProperty("hibernate.connection.username", MainFrame.sessionParams.getDbusername());
+            configObj.setProperty("hibernate.connection.password", MainFrame.sessionParams.getDbpass());
             
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Contacts.class);
             configObj.addAnnotatedClass(ru.jmirazors.jmiСalculator.entity.Contragent.class);

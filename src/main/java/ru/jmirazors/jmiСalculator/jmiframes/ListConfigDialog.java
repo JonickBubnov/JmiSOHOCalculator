@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.UserSelectNameDialog;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

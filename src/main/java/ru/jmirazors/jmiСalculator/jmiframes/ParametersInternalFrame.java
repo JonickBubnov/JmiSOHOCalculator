@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
 import java.beans.PropertyVetoException;
 import java.util.Iterator;
 import java.util.List;

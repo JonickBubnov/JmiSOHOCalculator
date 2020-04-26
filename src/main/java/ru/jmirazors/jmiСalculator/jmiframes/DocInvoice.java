@@ -5,12 +5,12 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ContragentSelectDialog;
 import com.sun.glass.events.KeyEvent;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,17 +21,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -50,6 +47,7 @@ import ru.jmirazors.jmiСalculator.entity.InvoiceProduct;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Storage;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.DepartmentSelectDialog;
 
 /**
  *
@@ -221,6 +219,7 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
     public void docInit() {                        
         docInvoice.setDocuments(documentDAO.getDocumentType(1L));
         docInvoice.setOrganization(docInvoice.getSessionOrganization());        
+        docInvoice.setDepartment(docInvoice.getSessionUser().getDepartment());
         docInvoice.setUsr(docInvoice.getSessionUser());
         docInvoice.setWeight(0);
         docInvoice.setDiscount(0);
@@ -240,15 +239,16 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
             jLabel2.setText(""+docInvoice.getId());
         
         jDateChooser2.setDate(docInvoice.getIndate());
-        jTextField1.setText(docInvoice.getOrganization().getName());
+        jTextField1.setText(docInvoice.getDepartment().getName());
         jLabel14.setText(docInvoice.getUsr().getName());
         jFormattedTextField1.setText(String.valueOf(docInvoice.getDiscount()).replace(".", ","));
         jTextField2.setText(docInvoice.getDescr());
         jComboBox1.setSelectedItem(docInvoice.getStorage().getName());
         jComboBox2.setSelectedItem(docInvoice.getPriceName().getName());
-        jLabel6.setText(MainFrame.sessionParams.getParam().getOkv().getName());
-        jLabel25.setText(MainFrame.sessionParams.getParam().getOkv().getName());
-        jLabel16.setText(MainFrame.sessionParams.getParam().getOkv().getName());
+        jLabel6.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
+        jLabel25.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
+        jLabel16.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
+        jLabel26.setText(docInvoice.getOrganization().getName());
         
         if (docInvoice.getContragent() != null)
             jTextField3.setText(docInvoice.getContragent().getName());
@@ -453,6 +453,8 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -585,6 +587,10 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
 
         jLabel25.setText("руб.");
 
+        jLabel4.setText("Организация");
+
+        jLabel26.setText("_____");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -620,13 +626,18 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel25)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel6)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jLabel13)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(jLabel13))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel25)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel4)))
+                                .addGap(12, 12, 12)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
+                                    .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(0, 0, Short.MAX_VALUE))))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -643,7 +654,9 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel23)
                     .addComponent(jLabel24)
-                    .addComponent(jLabel25))
+                    .addComponent(jLabel25)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel26))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
@@ -779,7 +792,7 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
         });
         jToolBar1.add(jButton3);
 
-        jLabel22.setText("Организация");
+        jLabel22.setText("Подразделение");
 
         jTextField1.setEditable(false);
         jTextField1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -820,7 +833,7 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+                        .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
@@ -829,7 +842,7 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                             .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 151, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1035,7 +1048,8 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         if (docInvoice.getId() != 0) {
             DocOffer docOffer = new DocOffer(docInvoice);
-            MainFrame.jDesktopPane1.add(docOffer);
+            //MainFrame.jDesktopPane1.add(docOffer);
+            MainFrame.ifManager.showFrame(docOffer, false);
             docOffer.show();
         } else
         JOptionPane.showMessageDialog(null, 
@@ -1055,11 +1069,15 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
     // Выбрать организацию
     private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
         //OrganizationSelectDialog osd = new OrganizationSelectDialog(null, true, docInvoice);
-        OrganizationSelectDialog osd = new OrganizationSelectDialog(null, true, docInvoice);
-        osd.setLocationRelativeTo(this);
-        osd.setVisible(true);
-        jTextField1.setText(docInvoice.getOrganization().getName());
-        recalculateDocument();
+//        OrganizationSelectDialog osd = new OrganizationSelectDialog(null, true, docInvoice);
+//        osd.setLocationRelativeTo(this);
+//        osd.setVisible(true);
+//        jTextField1.setText(docInvoice.getOrganization().getName());
+//        recalculateDocument();
+          DepartmentSelectDialog sdd = new DepartmentSelectDialog(null, true, docInvoice);
+          sdd.setLocationRelativeTo(this);
+          sdd.setVisible(true);
+          jTextField1.setText(docInvoice.getDepartment().getName());          
     }//GEN-LAST:event_jTextField1MouseClicked
 
     // Добавить контрагента
@@ -1170,7 +1188,9 @@ public final class DocInvoice extends javax.swing.JInternalFrame implements Docu
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;

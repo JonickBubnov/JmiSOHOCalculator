@@ -30,7 +30,7 @@ import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
 import ru.jmirazors.jmiСalculator.entity.Group;
 import ru.jmirazors.jmiСalculator.entity.Stock;
 import ru.jmirazors.jmiСalculator.entity.Storage;
-import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
+import ru.jmirazors.jmiCalculator.MainFrame;
 
 /**
  *

@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Iterator;

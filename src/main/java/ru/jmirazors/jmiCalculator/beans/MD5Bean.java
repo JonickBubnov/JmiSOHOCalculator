@@ -18,8 +18,7 @@ public class MD5Bean {
     
     public String getEncryptedPassword(String pass) {
         MessageDigest md;
-        StringBuffer sb = null;
-        System.out.println("password: " + pass);
+        StringBuffer sb = null;        
         try {
             md = MessageDigest.getInstance("MD5");
             byte[] b = pass.getBytes();

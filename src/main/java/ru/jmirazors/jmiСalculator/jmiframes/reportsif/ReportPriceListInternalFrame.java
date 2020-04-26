@@ -31,7 +31,7 @@ import ru.jmirazors.jmiСalculator.entity.Group;
 import ru.jmirazors.jmiСalculator.entity.Price;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
-import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
+import ru.jmirazors.jmiCalculator.MainFrame;
 
 
 

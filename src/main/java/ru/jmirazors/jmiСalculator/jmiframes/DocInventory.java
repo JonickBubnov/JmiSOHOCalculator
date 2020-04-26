@@ -5,6 +5,8 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.OrganizationSelectDialog;
 import com.sun.glass.events.KeyEvent;
 import java.awt.Color;
 import java.awt.Component;

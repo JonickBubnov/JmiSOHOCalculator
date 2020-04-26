@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -344,7 +345,8 @@ public class ListPayInternalFrame extends javax.swing.JInternalFrame {
             payIf = null;
         }
         payIf = new PayIf();
-        MainFrame.jDesktopPane1.add(payIf);
+        //MainFrame.jDesktopPane1.add(payIf);
+        MainFrame.ifManager.showFrame(payIf, false);
         payIf.show();  
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -360,7 +362,7 @@ public class ListPayInternalFrame extends javax.swing.JInternalFrame {
         }
         String id = tableModel.getValueAt(jTable1.getRowSorter().convertRowIndexToModel(jTable1.getSelectedRow()), 1).toString();
         payIf = new PayIf(id);
-        MainFrame.jDesktopPane1.add(payIf);
+        MainFrame.ifManager.showFrame(payIf, false);
         payIf.show();        
         }         
     }//GEN-LAST:event_jTable1MouseClicked
@@ -416,7 +418,7 @@ public class ListPayInternalFrame extends javax.swing.JInternalFrame {
         }
         String id = tableModel.getValueAt(jTable1.getRowSorter().convertRowIndexToModel(jTable1.getSelectedRow()), 1).toString();
         payIf = new PayIf(id);
-        MainFrame.jDesktopPane1.add(payIf);
+        MainFrame.ifManager.showFrame(payIf, false);
         payIf.show();        
         }  
     }//GEN-LAST:event_jTable1KeyPressed

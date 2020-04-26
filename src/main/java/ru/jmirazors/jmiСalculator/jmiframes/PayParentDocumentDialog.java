@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

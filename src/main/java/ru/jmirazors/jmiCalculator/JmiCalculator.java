@@ -7,7 +7,6 @@ package ru.jmirazors.jmiCalculator;
 
 import javax.swing.JFrame;
 import ru.jmirazors.jmiCalculator.beans.LookAndFeelUtils;
-import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
 
 /**
  *
@@ -16,11 +15,7 @@ import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
 public class JmiCalculator {
     public static void main(String args []) throws Exception {
         LookAndFeelUtils.setWindowsLookAndFeel();
-        JFrame mainFrame = new MainFrame();
-        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        java.awt.EventQueue.invokeLater(() -> {
-            mainFrame.setVisible(true);
-        });
+        JFrame mainFrame = new MainFrame();        
     }
 }
 

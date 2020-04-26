@@ -5,6 +5,8 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ContragentSelectDialog;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -1054,7 +1056,8 @@ public final class DocOffer extends javax.swing.JInternalFrame implements Docume
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         if (docOffer.getId() != 0) {
             PayIf payIf = new PayIf(docOffer, false);
-            MainFrame.jDesktopPane1.add(payIf);
+            //MainFrame.jDesktopPane1.add(payIf);
+            MainFrame.ifManager.showFrame(payIf, false);
             payIf.show(); 
         } else
             JOptionPane.showMessageDialog(null, 

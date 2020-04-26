@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
 import java.awt.Cursor;
 import java.io.File;
 import java.io.IOException;
@@ -276,11 +277,13 @@ public class BillDialog extends javax.swing.JDialog {
         dispose(); 
         if (parentDocument.getDocuments().getId() == 1) {
             DocInvoice docInvoice = new DocInvoice(String.valueOf(parentDocument.getId()));
-            MainFrame.jDesktopPane1.add(docInvoice);
+            //MainFrame.jDesktopPane1.add(docInvoice);
+            MainFrame.ifManager.showFrame(docInvoice, false);
             docInvoice.show();}
         if (parentDocument.getDocuments().getId() == 3) {
             DocOffer docOffer = new DocOffer(String.valueOf(parentDocument.getId()));
-            MainFrame.jDesktopPane1.add(docOffer);
+            //MainFrame.jDesktopPane1.add(docOffer);
+            MainFrame.ifManager.showFrame(docOffer, false);
             docOffer.show();}        
     }//GEN-LAST:event_jLabel2MouseClicked
 
@@ -374,7 +377,7 @@ public class BillDialog extends javax.swing.JDialog {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
             PayIf pay = new PayIf(bill, false);
             dispose();
-            MainFrame.jDesktopPane1.add(pay);
+            MainFrame.ifManager.showFrame(pay, false);
             pay.show();
     }//GEN-LAST:event_jButton3ActionPerformed
 

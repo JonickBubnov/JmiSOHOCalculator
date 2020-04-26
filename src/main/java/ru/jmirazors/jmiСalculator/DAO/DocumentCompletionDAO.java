@@ -35,7 +35,7 @@ import ru.jmirazors.jmiСalculator.entity.Storage;
 import ru.jmirazors.jmiСalculator.entity.Subordin;
 import ru.jmirazors.jmiСalculator.entity.Transfer;
 import ru.jmirazors.jmiСalculator.entity.TransferProduct;
-import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
+import ru.jmirazors.jmiCalculator.MainFrame;
 
 /**
  *

@@ -14,7 +14,7 @@ import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiCalculator.beans.SessionParams;
 import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
 import ru.jmirazors.jmiСalculator.jmiframes.DocInvoice;
-import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
+import ru.jmirazors.jmiCalculator.MainFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.SubordinDocDialog;
 
 /**
@@ -35,6 +35,7 @@ public class Document {
     private DocumentType documents;
     private Organization organization;
     private final SessionParams parameters = MainFrame.sessionParams;
+    private Department department;
     
     public long getId() {
         return id;
@@ -138,6 +139,14 @@ public class Document {
     
     public String getDocumentName() {
         return getDocuments().getName();
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
     
     /**

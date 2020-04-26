@@ -5,6 +5,8 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiCalculator.MainFrame;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.OrganizationSelectDialog;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;

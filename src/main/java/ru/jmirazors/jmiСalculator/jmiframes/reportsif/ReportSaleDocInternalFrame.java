@@ -28,7 +28,7 @@ import ru.jmirazors.jmiСalculator.DAO.ContragentDAO;
 import ru.jmirazors.jmiСalculator.DAO.ReportsDAO;
 import ru.jmirazors.jmiСalculator.entity.Contragent;
 import ru.jmirazors.jmiСalculator.entity.Kassa;
-import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
+import ru.jmirazors.jmiCalculator.MainFrame;
 
 /**
  *

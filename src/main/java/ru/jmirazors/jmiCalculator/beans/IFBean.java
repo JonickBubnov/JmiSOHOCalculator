@@ -10,7 +10,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JTextArea;
 import net.sf.jasperreports.engine.JasperPrint;
 import ru.jmirazors.jmiСalculator.jmiframes.DocumentPreview;
-import ru.jmirazors.jmiСalculator.jmiframes.MainFrame;
+import ru.jmirazors.jmiCalculator.MainFrame;
 
 /**
  *

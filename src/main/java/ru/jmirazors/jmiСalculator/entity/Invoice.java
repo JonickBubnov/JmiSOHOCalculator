@@ -63,6 +63,8 @@ private Organization organization;
 @OneToOne
 private DocumentType documents;
 private float weight;
+@OneToOne
+private Department department;
 
 
 
@@ -205,6 +207,16 @@ public Invoice(){}
 @Override
     public void setDocuments(DocumentType document) {
         this.documents = document;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
     
 }
