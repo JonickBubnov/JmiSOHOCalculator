@@ -57,6 +57,8 @@ private List<ActProduct> actProducts;
 private Organization organization;
 @OneToOne
 private DocumentType documents;
+@OneToOne
+private Department department;
 
 public Act() {}
 
@@ -155,6 +157,16 @@ public Act() {}
 @Override
     public void setDocuments(DocumentType documents) {
         this.documents = documents;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
    
 }

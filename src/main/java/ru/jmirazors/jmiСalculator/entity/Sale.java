@@ -60,6 +60,8 @@ private Organization organization;
 @OneToOne
 private DocumentType documents;
 private long discount;
+@OneToOne
+private Department department;
 
 public Sale(){}
 
@@ -187,6 +189,16 @@ public Sale(){}
 
     public void setDiscount(long discount) {
         this.discount = discount;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
    
 }

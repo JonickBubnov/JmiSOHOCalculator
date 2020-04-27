@@ -60,6 +60,8 @@ private Contragent contragent;
 @OneToOne
 private DocumentType documents;
 private float weight;
+@OneToOne
+private Department department;
 
     public Deduct() {}
 
@@ -177,6 +179,16 @@ private float weight;
 @Override
     public void setContragent(Contragent contragent) {
         this.contragent = contragent;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
  
     

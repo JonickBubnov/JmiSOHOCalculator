@@ -45,6 +45,8 @@ public class Kassa implements Serializable {
     private Contragent contragent;
     @OneToOne
     private Organization organization;
+    @OneToOne
+    private Department department;
     
     public Kassa(){}
 
@@ -118,6 +120,14 @@ public class Kassa implements Serializable {
 
     public void setDocuments(DocumentType documents) {
         this.documents = documents;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
     
 }

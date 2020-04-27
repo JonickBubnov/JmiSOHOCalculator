@@ -60,6 +60,8 @@ private float weight;
 private DocumentType documents;
 @OneToOne
 private Organization organization;
+@OneToOne
+private Department department;
 
 @Override
     public long getId() {
@@ -132,10 +134,6 @@ private Organization organization;
     }
 
     public void setTransferProducts(List<TransferProduct> transferProducts) {
-//        if (this.transferProducts != null) {
-//            this.transferProducts.clear();
-//            this.transferProducts.addAll(transferProducts);
-//        } else
             this.transferProducts = transferProducts;    
     }
 
@@ -167,12 +165,24 @@ private Organization organization;
         this.documents = documents;
     }
 
+@Override
     public Organization getOrganization() {
         return organization;
     }
 
+@Override
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
 

@@ -21,7 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
- * @author User
+ * @author Jonick
  */
 @Entity
 @Table(name="Pay")
@@ -43,10 +43,6 @@ private long id;
 private java.util.Date indate;
 @ManyToOne
 private Contragent contragent;
-//private long docId;
-//@OneToOne
-//@JoinColumn(name="doctype")
-//private DocumentType docType;
 @OneToOne
 private PayType paytype;
 private float total;
@@ -60,6 +56,8 @@ private Organization organization;
 private DocumentType documents;
 @OneToOne
 private DocStatus status;
+@OneToOne
+private Department department;
 
     @Override
     public long getId() {
@@ -90,22 +88,6 @@ private DocStatus status;
     public void setContragent(Contragent contragent) {
         this.contragent = contragent;
     }
-
-//    public long getDocId() {
-//        return docId;
-//    }
-//
-//    public void setDocId(long docId) {
-//        this.docId = docId;
-//    }
-//
-//    public DocumentType getDocumentType() {
-//        return docType;
-//    }
-//
-//    public void setDocumentType(DocumentType docType) {
-//        this.docType = docType;
-//    }
 
     @Override
     public float getTotal() {
@@ -182,8 +164,16 @@ private DocStatus status;
     public void setStatus(DocStatus status) {
         this.status = status;
     }
-    
-  
+
+    @Override
+    public Department getDepartment() {
+        return department;
+    }
+
+    @Override
+    public void setDepartment(Department department) {
+        this.department = department;
+    }   
     
     
 }

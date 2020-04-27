@@ -63,6 +63,8 @@ private Organization organization;
 @OneToOne
 private DocumentType documents;
 private float weight;
+@OneToOne
+private Department department;
 
 @Override
     public long getId() {
@@ -204,6 +206,16 @@ private float weight;
 
     public void setWeight(float weight) {
         this.weight = weight;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
     
 }

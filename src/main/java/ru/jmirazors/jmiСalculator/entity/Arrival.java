@@ -61,6 +61,8 @@ private Organization organization;
 @OneToOne
 private DocumentType documents;
 private float weight;
+@OneToOne
+private Department department;
 
 public Arrival(){}
 
@@ -182,6 +184,16 @@ public Arrival(){}
 
     public void setWeight(float weight) {
         this.weight = weight;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
     
     

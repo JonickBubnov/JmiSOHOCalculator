@@ -55,7 +55,9 @@ private List<InventoryProduct> inventoryProducts;
 @OneToOne
 private Organization organization;
 @OneToOne
-private DocumentType documents;  
+private DocumentType documents; 
+@OneToOne
+private Department department;
 
 public Inventory(){}
 
@@ -145,6 +147,16 @@ public Inventory(){}
 @Override
     public void setDocuments(DocumentType documents) {
         this.documents = documents;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
 

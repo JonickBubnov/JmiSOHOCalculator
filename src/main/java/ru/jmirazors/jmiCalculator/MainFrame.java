@@ -5,8 +5,11 @@
  */
 package ru.jmirazors.jmiCalculator;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import ru.jmirazors.jmiСalculator.jmiframes.reportsif.ReportPriceListInternalFrame;
 import java.awt.Image;
+import java.awt.SplashScreen;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,7 +61,7 @@ public class MainFrame extends javax.swing.JFrame {
 //    private User user;
 //    private Organization organization;
     //компания
-    private final String TITLE = "JMI Калькулятор v1.3.2";
+    private final String TITLE = "JMI Калькулятор v1.4.0";
     
     /**
      * Creates new form MainFrame
@@ -66,8 +69,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() throws Exception, Exception {
         //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        new SelectDatabaseDialog(this, true).setVisible(true);
-        
+        new SelectDatabaseDialog(this, true).setVisible(true);             
         
         sessionParams.setOrganization(new OrganizationDAO().getOrganization(1L));
         

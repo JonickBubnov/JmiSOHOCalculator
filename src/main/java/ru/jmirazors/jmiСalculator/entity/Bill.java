@@ -54,6 +54,8 @@ private DocStatus status;
 //private Storage storage;
 @OneToOne
 private Organization organization;
+@OneToOne
+private Department department;
     
 public Bill(){}
 
@@ -76,14 +78,6 @@ public Bill(){}
     public void setIndate(Date indate) {
         this.indate = indate;
     }
-
-//    public Invoice getInvoice() {
-//        return invoice;
-//    }
-//
-//    public void setInvoice(Invoice invoice) {
-//        this.invoice = invoice;
-//    }
 
 @Override
     public User getUsr() {
@@ -146,15 +140,6 @@ public Bill(){}
         this.status = status;
     }
 
-//@Override
-//    public Storage getStorage() {
-//        return storage;
-//    }
-//
-//@Override
-//    public void setStorage(Storage storage) {
-//        this.storage = storage;
-//    }
 
 @Override
     public Organization getOrganization() {
@@ -164,6 +149,16 @@ public Bill(){}
 @Override
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
 

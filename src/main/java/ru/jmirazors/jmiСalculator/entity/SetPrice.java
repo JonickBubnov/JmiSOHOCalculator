@@ -56,6 +56,8 @@ private List<SetPriceProduct> setPriceProducts;
 private DocumentType documents;
 @OneToOne
 private Organization organization;
+@OneToOne
+private Department department;
 
 
 public SetPrice() {}
@@ -125,10 +127,6 @@ public SetPrice() {}
     }
 
     public void setSetPriceProducts(List<SetPriceProduct> setPriceProducts) {
-//        if (this.setPriceProducts != null) {
-//            this.setPriceProducts.clear();
-//            this.setPriceProducts.addAll(setPriceProducts);            
-//        } else
             this.setPriceProducts = setPriceProducts;
     }
 
@@ -147,8 +145,19 @@ public SetPrice() {}
         return organization;
     }
 
+@Override
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+@Override
+    public Department getDepartment() {
+        return department;
+    }
+
+@Override
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
 
