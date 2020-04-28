@@ -35,8 +35,6 @@ private long id;
 @OneToOne
 private Organization organization;
 @OneToOne
-private Contragent contragent;
-@OneToOne
 private Okv okv;
 @OneToOne
 private Storage storage;     
@@ -55,14 +53,6 @@ private Storage storage;
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
-    }
-
-    public Contragent getContragent() {
-        return contragent;
-    }
-
-    public void setContragent(Contragent contragent) {
-        this.contragent = contragent;
     }
 
     public Okv getOkv() {

@@ -205,7 +205,7 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
         docSale.setDocuments(documentDAO.getDocumentType(12L));
         docSale.setOrganization(docSale.getSessionOrganization());        
         docSale.setUsr(docSale.getSessionUser());
-        docSale.setContragent(MainFrame.sessionParams.getParam().getContragent());
+        docSale.setContragent(null);//MainFrame.sessionParams.getParam().getContragent());
         docSale.setWeight(0);
         docSale.setDiscount(0);
         docSale.setIndate(new Date());
@@ -701,12 +701,13 @@ public class DocSale extends javax.swing.JInternalFrame implements DocumentImpl 
                     .addComponent(jLabel18)
                     .addComponent(jLabel19))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel23)
-                        .addComponent(jLabel22)))
+                        .addComponent(jLabel22))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel10)
+                        .addComponent(jLabel11)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)

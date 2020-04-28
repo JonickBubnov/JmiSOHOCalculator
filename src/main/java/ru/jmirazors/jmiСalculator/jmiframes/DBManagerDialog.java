@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import ru.jmirazors.jmiСalculator.DAO.DBManagerDAO;
 
 /**
  *
@@ -162,6 +163,11 @@ public class DBManagerDialog extends javax.swing.JDialog {
             jButton7.setFocusable(false);
             jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
             jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+            jButton7.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jButton7ActionPerformed(evt);
+                }
+            });
             jToolBar1.add(jButton7);
 
             jButton2.setText("удал");
@@ -258,6 +264,11 @@ public class DBManagerDialog extends javax.swing.JDialog {
         }
         readProperties();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // Создание новой базы
+        new DBManagerDAO().createDB("DB1");
+    }//GEN-LAST:event_jButton7ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

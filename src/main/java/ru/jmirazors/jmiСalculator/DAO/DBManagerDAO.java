@@ -5,11 +5,19 @@
  */
 package ru.jmirazors.jmiСalculator.DAO;
 
+import org.hibernate.query.Query;
+
 /**
  *
  * @author User
  */
 public class DBManagerDAO extends DAO {
     
-    
+    public boolean createDB(String dbname) {
+        Query query;
+        begin();
+            getSession().createQuery("CREATE SCHEMA IF NOT EXISTS "+dbname).executeUpdate();                    
+        commit();
+        return true;
+    }
 }
