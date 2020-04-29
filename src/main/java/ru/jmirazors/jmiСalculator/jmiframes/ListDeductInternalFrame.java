@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocDeduct;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

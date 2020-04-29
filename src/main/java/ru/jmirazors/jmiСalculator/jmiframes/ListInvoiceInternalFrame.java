@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import com.sun.glass.events.KeyEvent;
 import ru.jmirazors.jmiCalculator.beans.ColorTablesRenderer;

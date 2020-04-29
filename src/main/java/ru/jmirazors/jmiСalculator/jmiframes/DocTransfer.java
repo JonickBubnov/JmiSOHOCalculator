@@ -5,6 +5,8 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocArrival;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.OrganizationSelectDialog;
 import java.awt.Cursor;
@@ -50,7 +52,7 @@ import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Storage;
 import ru.jmirazors.jmiСalculator.entity.Transfer;
 import ru.jmirazors.jmiСalculator.entity.TransferProduct;
-import static ru.jmirazors.jmiСalculator.jmiframes.DocOffer.products;
+import static ru.jmirazors.jmiСalculator.jmiframes.Documents.DocOffer.products;
 
 /**
  *

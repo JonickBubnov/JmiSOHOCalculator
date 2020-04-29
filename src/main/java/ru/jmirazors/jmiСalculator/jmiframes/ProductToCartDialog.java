@@ -5,6 +5,11 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocReceipt;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocOffer;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocDeduct;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocArrival;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;

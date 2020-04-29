@@ -5,6 +5,8 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocOffer;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;

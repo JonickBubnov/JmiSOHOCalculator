@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import ru.jmirazors.jmiCalculator.beans.Calc;
 import ru.jmirazors.jmiCalculator.beans.IFBean;
 import ru.jmirazors.jmiCalculator.beans.SessionParams;
 import ru.jmirazors.jmiСalculator.DAO.OrganizationDAO;
@@ -37,6 +38,7 @@ import ru.jmirazors.jmiСalculator.jmiframes.ListReceiptInternalFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.ListSaleInternalFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.ListSetPriceInternalFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.ListTransferInternalFrame;
+import ru.jmirazors.jmiСalculator.jmiframes.LoyaltyIf;
 import ru.jmirazors.jmiСalculator.jmiframes.OrganizationDialog;
 import ru.jmirazors.jmiСalculator.jmiframes.ParametersInternalFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.PriceNameIf;
@@ -150,6 +152,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem19 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -176,8 +179,10 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem30 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem26 = new javax.swing.JMenuItem();
+        jMenu9 = new javax.swing.JMenu();
+        jMenuItem22 = new javax.swing.JMenuItem();
+        jMenuItem21 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
-        jMenuItem19 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem20 = new javax.swing.JMenuItem();
         jMenuItem28 = new javax.swing.JMenuItem();
@@ -446,6 +451,14 @@ public class MainFrame extends javax.swing.JFrame {
 
             jMenu1.setText("Файл");
 
+            jMenuItem19.setText("Сменить пользователя");
+            jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jMenuItem19ActionPerformed(evt);
+                }
+            });
+            jMenu1.add(jMenuItem19);
+
             jMenuItem1.setText("Выход");
             jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -625,15 +638,27 @@ public class MainFrame extends javax.swing.JFrame {
 
             jMenuBar1.add(jMenu4);
 
-            jMenu6.setText("Настройки");
+            jMenu9.setText("Дополнительно");
 
-            jMenuItem19.setText("Сменить пользователя");
-            jMenuItem19.addActionListener(new java.awt.event.ActionListener() {
+            jMenuItem22.setText("Дисконтные карты");
+            jMenuItem22.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    jMenuItem19ActionPerformed(evt);
+                    jMenuItem22ActionPerformed(evt);
                 }
             });
-            jMenu6.add(jMenuItem19);
+            jMenu9.add(jMenuItem22);
+
+            jMenuItem21.setText("Калькулятор");
+            jMenuItem21.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jMenuItem21ActionPerformed(evt);
+                }
+            });
+            jMenu9.add(jMenuItem21);
+
+            jMenuBar1.add(jMenu9);
+
+            jMenu6.setText("Настройки");
 
             jMenuItem8.setText("Пользователи");
             jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
@@ -1102,6 +1127,19 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem19ActionPerformed
 
+    private void jMenuItem21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem21ActionPerformed
+        // Калькулятор        
+        ifManager.showFrame(new Calc(), false);
+
+
+    }//GEN-LAST:event_jMenuItem21ActionPerformed
+
+    private void jMenuItem22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem22ActionPerformed
+        // Дисконтные карты        
+        ifManager.showFrame(new LoyaltyIf(jToolBar2), false);
+        
+    }//GEN-LAST:event_jMenuItem22ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JTextArea infoPanel;
@@ -1132,6 +1170,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenu jMenu8;
+    private javax.swing.JMenu jMenu9;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
@@ -1146,6 +1185,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem19;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem20;
+    private javax.swing.JMenuItem jMenuItem21;
+    private javax.swing.JMenuItem jMenuItem22;
     private javax.swing.JMenuItem jMenuItem23;
     private javax.swing.JMenuItem jMenuItem24;
     private javax.swing.JMenuItem jMenuItem26;

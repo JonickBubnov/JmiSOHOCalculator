@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocSale;
 import java.awt.event.KeyEvent;
 import ru.jmirazors.jmiСalculator.entity.Product;
 

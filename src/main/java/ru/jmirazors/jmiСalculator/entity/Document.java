@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiCalculator.beans.SessionParams;
 import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
-import ru.jmirazors.jmiСalculator.jmiframes.DocInvoice;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.SubordinDocDialog;
 

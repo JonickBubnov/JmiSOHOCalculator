@@ -5,6 +5,9 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocReceipt;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocDeduct;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.OrganizationSelectDialog;
 import com.sun.glass.events.KeyEvent;
