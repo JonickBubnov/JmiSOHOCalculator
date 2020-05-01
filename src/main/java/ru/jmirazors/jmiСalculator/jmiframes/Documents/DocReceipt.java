@@ -34,7 +34,6 @@ import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Receipt;
 import ru.jmirazors.jmiСalculator.entity.ReceiptProduct;
 import ru.jmirazors.jmiСalculator.entity.Storage;
-import ru.jmirazors.jmiСalculator.jmiframes.DocumentImpl;
 import ru.jmirazors.jmiСalculator.jmiframes.ProductToCartDialog;
 
 /**

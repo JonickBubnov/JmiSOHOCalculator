@@ -5,16 +5,22 @@
  */
 package ru.jmirazors.jmiСalculator.DAO;
 
+import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.schema.TargetType;
 import ru.jmirazors.jmiCalculator.MainFrame;
+import ru.jmirazors.jmiСalculator.entity.Log;
 
 /**
  *
@@ -94,9 +100,17 @@ public class DAO {
             ServiceRegistry serviceRegistryObj = new StandardServiceRegistryBuilder().applySettings(configObj.getProperties()).build(); 
             sessionFactoryObj = configObj.buildSessionFactory(serviceRegistryObj);
             return sessionFactoryObj; 
-            } catch (HibernateException e) {JOptionPane.showMessageDialog(null, "[DAO]\nНе могу установить соединение с базой.\n"+e, "Ошибка",
-                    JOptionPane.ERROR_MESSAGE);
-            System.exit(0);}
+            } catch (HibernateException e) {
+                //JOptionPane.showMessageDialog(null, "[DAO]\nНе могу установить соединение с базой.\n"+e, "Ошибка",
+                  //  JOptionPane.ERROR_MESSAGE);
+//                    System.out.println("Создаем базу");
+//                    configObj.setProperty("hibernate.connection.url", MainFrame.sessionParams.getDburl()+"?createDatabaseIfNotExist=true");
+//                    ServiceRegistry serviceRegistryObj = new StandardServiceRegistryBuilder().applySettings(configObj.getProperties()).build(); 
+                    //sessionFactoryObj = configObj.buildSessionFactory(serviceRegistryObj);
+                    
+                                                             
+                    //System.exit(0);
+            }
         return null;
     }
     

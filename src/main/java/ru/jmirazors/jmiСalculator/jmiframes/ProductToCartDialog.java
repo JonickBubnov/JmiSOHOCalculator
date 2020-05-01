@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocTransfer;
 import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocReceipt;
 import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocOffer;
 import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocDeduct;

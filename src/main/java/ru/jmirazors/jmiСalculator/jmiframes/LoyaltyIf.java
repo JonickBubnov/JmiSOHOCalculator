@@ -11,10 +11,10 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
-import ru.jmirazors.jmiCalculator.MainFrame;
 import ru.jmirazors.jmiCalculator.beans.ColorTablesRenderer;
 import ru.jmirazors.jmiСalculator.DAO.LoyaltyDAO;
 import ru.jmirazors.jmiСalculator.entity.Loyalty;
+import ru.jmirazors.jmiСalculator.entity.LoyaltyAddDialog;
 
 /**
  *
@@ -27,6 +27,7 @@ public class LoyaltyIf extends javax.swing.JInternalFrame {
      */
     JToolBar tb;
     JButton dockButton = new JButton("Карты");
+    Loyalty loyalty;
     
     ColorTablesRenderer colorRenderer = new ColorTablesRenderer();
     
@@ -176,11 +177,21 @@ public class LoyaltyIf extends javax.swing.JInternalFrame {
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton1);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
         jTable1.setModel(tableModel);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.LINE_END);
@@ -197,6 +208,25 @@ public class LoyaltyIf extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         hide();
     }//GEN-LAST:event_formInternalFrameIconified
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Добавить карту
+        LoyaltyAddDialog lad = new LoyaltyAddDialog(null, true, null);
+        lad.setLocationRelativeTo(this);
+        lad.setVisible(true);
+        getLoyalty();        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // редактировать карту
+        if (evt.getClickCount() == 2) {
+            loyalty = new LoyaltyDAO().getLoyalty(Long.valueOf(tableModel.getValueAt(jTable1.getSelectedRow(), 0).toString()));
+            LoyaltyAddDialog lad = new LoyaltyAddDialog(null, true, loyalty);
+            lad.setLocationRelativeTo(this);
+            lad.setVisible(true);
+            getLoyalty();
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

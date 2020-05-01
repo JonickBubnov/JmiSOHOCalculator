@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInventory;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import com.sun.glass.events.KeyEvent;
 import java.awt.Component;

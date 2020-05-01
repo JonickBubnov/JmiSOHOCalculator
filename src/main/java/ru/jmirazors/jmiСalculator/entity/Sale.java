@@ -62,6 +62,8 @@ private DocumentType documents;
 private long discount;
 @OneToOne
 private Department department;
+@OneToOne
+private Loyalty loyalty;
 
 public Sale(){}
 
@@ -199,6 +201,14 @@ public Sale(){}
 @Override
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public Loyalty getLoyalty() {
+        return loyalty;
+    }
+
+    public void setLoyalty(Loyalty loyalty) {
+        this.loyalty = loyalty;
     }
    
 }

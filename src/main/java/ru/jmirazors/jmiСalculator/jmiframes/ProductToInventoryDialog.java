@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInventory;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;

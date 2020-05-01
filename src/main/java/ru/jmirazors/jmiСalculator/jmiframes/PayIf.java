@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocumentImpl;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ContragentSelectDialog;
 import java.awt.event.ActionEvent;

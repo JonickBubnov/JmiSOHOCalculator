@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocSetPrice;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Iterator;

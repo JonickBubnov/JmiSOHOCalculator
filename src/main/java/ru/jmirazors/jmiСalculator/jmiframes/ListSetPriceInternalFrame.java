@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocSetPrice;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import ru.jmirazors.jmiCalculator.beans.ColorTablesRenderer;
 import java.awt.Component;
