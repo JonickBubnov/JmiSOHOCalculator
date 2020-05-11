@@ -17,7 +17,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import ru.jmirazors.jmiСalculator.DAO.ContragentDAO;
 import ru.jmirazors.jmiСalculator.entity.Contragent;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 
 /**
  *

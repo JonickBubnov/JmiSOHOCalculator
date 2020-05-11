@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.entity;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;

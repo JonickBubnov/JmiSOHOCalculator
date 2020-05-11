@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.entity;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -55,7 +56,7 @@ private Contragent contragent;
 private Storage storage;
 @ManyToOne
 private PriceName pricename;
-private float discount;
+private int discount;
 @OneToMany(fetch = FetchType.EAGER, mappedBy="invoice", cascade=CascadeType.ALL)
 private List<InvoiceProduct> invoiceProducts;
 @OneToOne
@@ -164,11 +165,13 @@ public Invoice(){}
         this.pricename = pricename;
     }
 
-    public float getDiscount() {
+@Override
+    public int getDiscount() {
         return discount;
     }
 
-    public void setDiscount(float discount) {
+@Override
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 

@@ -11,8 +11,6 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,18 +21,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -48,7 +43,6 @@ import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
 import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
 import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
-import ru.jmirazors.jmiСalculator.entity.Document;
 import ru.jmirazors.jmiСalculator.entity.Invoice;
 import ru.jmirazors.jmiСalculator.entity.InvoiceProduct;
 import ru.jmirazors.jmiСalculator.entity.Offer;
@@ -346,7 +340,7 @@ public final class DocOffer extends javax.swing.JInternalFrame implements Docume
             tableModel.setValueAt(cost, i, 8);
             products.get(i).setCount(Float.parseFloat(jTable1.getValueAt(i, 3).toString()));
             products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
-            products.get(i).setDiscount(Float.parseFloat(jTable1.getValueAt(i, 6).toString()));
+            products.get(i).setDiscount(Integer.valueOf(jTable1.getValueAt(i, 6).toString()));
         }
 
         jLabel10.setText(""+sum);
@@ -455,7 +449,7 @@ public final class DocOffer extends javax.swing.JInternalFrame implements Docume
         try {            
             docOffer.setIndate(jDateChooser1.getDate());
             docOffer.setDescr(jTextField2.getText());
-            docOffer.setDiscount(Float.parseFloat(jFormattedTextField1.getText().replace(",", ".")));
+            docOffer.setDiscount(Integer.valueOf(jFormattedTextField1.getText().replace(",", ".")));
             docOffer.setStorage(getSelectedStorage());
             docOffer.setPriceName(getSelectedPriceName());
             docOffer.setTotal(Float.valueOf(jLabel11.getText().replace(",", ".")));

@@ -15,7 +15,7 @@ import ru.jmirazors.jmiСalculator.entity.Arrival;
 import ru.jmirazors.jmiСalculator.entity.ArrivalProduct;
 import ru.jmirazors.jmiСalculator.entity.Deduct;
 import ru.jmirazors.jmiСalculator.entity.DeductProduct;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.DocumentProduct;
 import ru.jmirazors.jmiСalculator.entity.Invoice;
 import ru.jmirazors.jmiСalculator.entity.Kassa;

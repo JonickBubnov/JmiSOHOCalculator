@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.entity;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -59,7 +60,7 @@ private List<SaleProduct> saleProducts;
 private Organization organization;
 @OneToOne
 private DocumentType documents;
-private long discount;
+private int discount;
 @OneToOne
 private Department department;
 @OneToOne
@@ -185,11 +186,13 @@ public Sale(){}
         this.documents = documents;
     }
 
-    public long getDiscount() {
+@Override
+    public int getDiscount() {
         return discount;
     }
 
-    public void setDiscount(long discount) {
+@Override
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 

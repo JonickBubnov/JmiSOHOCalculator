@@ -5,6 +5,7 @@
  */
 package ru.jmirazors.jmiСalculator.entity;
 
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +60,7 @@ private Organization organization;
 private DocumentType documents;
 @OneToOne
 private Department department;
+private int discount;
 
 public Act() {}
 
@@ -168,5 +170,16 @@ public Act() {}
     public void setDepartment(Department department) {
         this.department = department;
     }
+
+@Override
+    public int getDiscount() {
+        return discount;
+    }
+
+@Override
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
    
 }

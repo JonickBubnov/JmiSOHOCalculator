@@ -54,7 +54,6 @@ import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
 import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
 import ru.jmirazors.jmiСalculator.entity.Arrival;
 import ru.jmirazors.jmiСalculator.entity.ArrivalProduct;
-import ru.jmirazors.jmiСalculator.entity.Document;
 import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Storage;
 import ru.jmirazors.jmiСalculator.entity.Subordin;

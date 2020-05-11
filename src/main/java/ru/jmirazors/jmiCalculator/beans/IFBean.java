@@ -330,7 +330,13 @@ public class IFBean {
     public boolean isDocPayFrameOpen() {
         return docPay;
     } 
-    
+    // --------------- документ акт ---------------
+    public void setDocActFrameOpen(boolean val) {
+        docAct = val;
+    }
+    public boolean isDocActFrameOpen() {
+        return docAct;
+    }     
     public void showFrame(JInternalFrame frame, boolean maximize) {
             jDesktopPane.add(frame);
             if (maximize)

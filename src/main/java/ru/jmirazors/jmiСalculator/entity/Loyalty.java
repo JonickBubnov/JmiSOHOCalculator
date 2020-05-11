@@ -40,7 +40,7 @@ private long id;
 private java.util.Date indate;
 private String name;
 private Float total;
-private long percent;
+private int percent;
 private String code;
 @OneToOne
 private Contragent contragent;
@@ -71,11 +71,11 @@ private byte del;
         this.total = total;
     }
 
-    public long getPercent() {
+    public int getPercent() {
         return percent;
     }
 
-    public void setPercent(long percent) {
+    public void setPercent(int percent) {
         this.percent = percent;
     }
 

@@ -6,14 +6,12 @@
 package ru.jmirazors.jmiСalculator.jmiframes.Documents;
 
 import ru.jmirazors.jmiCalculator.MainFrame;
-import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ContragentSelectDialog;
 import com.sun.glass.events.KeyEvent;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +46,6 @@ import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Storage;
 import ru.jmirazors.jmiСalculator.jmiframes.ProductToCartDialog;
-import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.DepartmentSelectDialog;
 
 /**
  *
@@ -218,18 +215,9 @@ public class DocInvoice extends javax.swing.JInternalFrame implements DocumentIm
     // Инициализировать новый документ
     @Override
     public void docInit() {                        
-        docInvoice.setDocuments(documentDAO.getDocumentType(1L));
-        docInvoice.setOrganization(docInvoice.getSessionOrganization());        
-        docInvoice.setDepartment(docInvoice.getSessionUser().getDepartment());
-        docInvoice.setUsr(docInvoice.getSessionUser());
-        docInvoice.setWeight(0);
-        docInvoice.setDiscount(0);
-        docInvoice.setIndate(new Date());
-        docInvoice.setTotal(0);
-        docInvoice.setStatus(documentDAO.getStatus(1L));
+        docInvoice.init(1L);
         docInvoice.setPriceName(getSelectedPriceName());
         docInvoice.setStorage(getSelectedStorage());
-        docInvoice.setDescr("");
     }
     
     // заполнить отображение документа
@@ -286,8 +274,11 @@ public class DocInvoice extends javax.swing.JInternalFrame implements DocumentIm
             tableModel.setValueAt(cost, i, 8);
             products.get(i).setCount(Float.parseFloat(jTable1.getValueAt(i, 3).toString()));
             products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
-            products.get(i).setDiscount(Float.parseFloat(jTable1.getValueAt(i, 6).toString()));
+            products.get(i).setDiscount(Integer.valueOf(jTable1.getValueAt(i, 6).toString()));
         }
+        
+        docInvoice.getSum(products, 5);
+        
         jLabel10.setText(String.format("%.2f", sum));
         float total = sum-sum*Float.parseFloat(jFormattedTextField1.getText().replace(",", "."))/100;
         float nds = total*docInvoice.getOrganization().getNds()/100;
@@ -399,7 +390,7 @@ public class DocInvoice extends javax.swing.JInternalFrame implements DocumentIm
             try {            
                 docInvoice.setIndate(jDateChooser2.getDate());
                 docInvoice.setDescr(jTextField2.getText());
-                docInvoice.setDiscount(Float.parseFloat(jFormattedTextField1.getText().replace(",", ".")));
+                docInvoice.setDiscount(Integer.parseInt(jFormattedTextField1.getText()));
                 docInvoice.setStorage(getSelectedStorage());
                 docInvoice.setPriceName(getSelectedPriceName());
                 docInvoice.setUsr(docInvoice.getSessionUser());
@@ -805,7 +796,7 @@ public class DocInvoice extends javax.swing.JInternalFrame implements DocumentIm
 
         jLabel21.setText("%");
 
-        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0.00"))));
+        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         jFormattedTextField1.setText("0");
 
         jLabel8.setText("Скидка");
@@ -1068,25 +1059,15 @@ public class DocInvoice extends javax.swing.JInternalFrame implements DocumentIm
         // TODO add your handling code here:
     }//GEN-LAST:event_jPopupMenu1MouseClicked
 
-    // Выбрать организацию
+    // Выбрать подразделение
     private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
-        //OrganizationSelectDialog osd = new OrganizationSelectDialog(null, true, docInvoice);
-//        OrganizationSelectDialog osd = new OrganizationSelectDialog(null, true, docInvoice);
-//        osd.setLocationRelativeTo(this);
-//        osd.setVisible(true);
-//        jTextField1.setText(docInvoice.getOrganization().getName());
-//        recalculateDocument();
-          DepartmentSelectDialog sdd = new DepartmentSelectDialog(null, true, docInvoice);
-          sdd.setLocationRelativeTo(this);
-          sdd.setVisible(true);
+          docInvoice.showDepartmentDialog(docInvoice);
           jTextField1.setText(docInvoice.getDepartment().getName());          
     }//GEN-LAST:event_jTextField1MouseClicked
 
     // Добавить контрагента
     private void jTextField3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField3MouseClicked
-        ContragentSelectDialog csd = new ContragentSelectDialog(null, true, docInvoice);
-        csd.setLocationRelativeTo(this);
-        csd.setVisible(true);
+        docInvoice.showContragentDialog(docInvoice);
         jTextField3.setText(docInvoice.getContragent().getName());
     }//GEN-LAST:event_jTextField3MouseClicked
 

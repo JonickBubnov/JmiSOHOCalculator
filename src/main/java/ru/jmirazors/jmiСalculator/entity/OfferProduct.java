@@ -12,7 +12,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -36,7 +35,7 @@ public class OfferProduct extends DocumentProduct implements Serializable{
 private long id;
 private float count;
 private float cost;
-private float discount;
+private int discount;
 @OneToOne(cascade=CascadeType.DETACH)
 private Product product;
 @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
@@ -73,12 +72,12 @@ private Offer offer;
     }
 
 @Override
-    public float getDiscount() {
+    public int getDiscount() {
         return discount;
     }
 
 @Override
-    public void setDiscount(float discount) {
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 

@@ -35,7 +35,7 @@ import ru.jmirazors.jmiCalculator.beans.NumberToTextBean;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
 import ru.jmirazors.jmiСalculator.entity.Bill;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.Invoice;
 import ru.jmirazors.jmiСalculator.entity.InvoiceProduct;
 import ru.jmirazors.jmiСalculator.entity.Pay;

@@ -10,7 +10,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import org.hibernate.HibernateException;
 import org.hibernate.query.Query;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.Subordin;
 
 /**

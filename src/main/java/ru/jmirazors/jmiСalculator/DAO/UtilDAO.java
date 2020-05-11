@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import ru.jmirazors.jmiСalculator.entity.ArrivalProduct;
 import ru.jmirazors.jmiСalculator.entity.DeductProduct;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.DocumentProduct;
 import ru.jmirazors.jmiСalculator.entity.Kassa;
 import ru.jmirazors.jmiСalculator.entity.OfferProduct;

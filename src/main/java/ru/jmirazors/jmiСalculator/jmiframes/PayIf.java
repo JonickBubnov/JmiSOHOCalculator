@@ -22,7 +22,7 @@ import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiСalculator.DAO.DocumentCompletionDAO;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.DAO.PayDAO;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.DocumentType;
 import ru.jmirazors.jmiСalculator.entity.Pay;
 import ru.jmirazors.jmiСalculator.entity.PayType;

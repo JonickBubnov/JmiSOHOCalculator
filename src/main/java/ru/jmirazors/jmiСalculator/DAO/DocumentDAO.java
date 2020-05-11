@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.lang.time.DateUtils;
 import org.hibernate.HibernateException;
 import ru.jmirazors.jmiСalculator.entity.DocStatus;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.DocumentType;
 import ru.jmirazors.jmiСalculator.entity.Kassa;
 

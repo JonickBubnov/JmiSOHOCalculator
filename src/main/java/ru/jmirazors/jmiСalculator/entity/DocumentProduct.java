@@ -16,7 +16,7 @@ public class DocumentProduct {
    private long product_id;
    private float count;
    private float cost;
-   private float discount;
+   private int discount;
    private Product product;
 
    
@@ -52,11 +52,11 @@ public class DocumentProduct {
         this.cost = cost;
     }
 
-    public float getDiscount() {
+    public int getDiscount() {
         return discount;
     }
 
-    public void setDiscount(float discount) {
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 

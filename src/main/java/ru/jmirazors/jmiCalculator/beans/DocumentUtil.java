@@ -19,7 +19,7 @@ import ru.jmirazors.jmiСalculator.entity.Arrival;
 import ru.jmirazors.jmiСalculator.entity.Bill;
 import ru.jmirazors.jmiСalculator.entity.Deduct;
 import ru.jmirazors.jmiСalculator.entity.DocStatus;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.DocumentProduct;
 import ru.jmirazors.jmiСalculator.entity.Inventory;
 import ru.jmirazors.jmiСalculator.entity.Invoice;

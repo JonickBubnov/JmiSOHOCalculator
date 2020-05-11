@@ -24,6 +24,7 @@ import ru.jmirazors.jmiСalculator.entity.Organization;
 import ru.jmirazors.jmiСalculator.jmiframes.ContragentsIf;
 import ru.jmirazors.jmiСalculator.jmiframes.DBManagerDialog;
 import ru.jmirazors.jmiСalculator.jmiframes.DepartmentIf;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocAct;
 import ru.jmirazors.jmiСalculator.jmiframes.JournalDialog;
 import ru.jmirazors.jmiСalculator.jmiframes.ListActInternalFrame;
 import ru.jmirazors.jmiСalculator.jmiframes.ListArrivalInternalFrame;
@@ -144,6 +145,7 @@ public class MainFrame extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -417,6 +419,17 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton10);
+
+        jButton11.setText("jButton11");
+        jButton11.setFocusable(false);
+        jButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton11.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton11);
 
         jPanel1.add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
@@ -1140,11 +1153,17 @@ public class MainFrame extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jMenuItem22ActionPerformed
 
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        // TODO add your handling code here:
+        ifManager.showFrame(new DocAct(), false);
+    }//GEN-LAST:event_jButton11ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JTextArea infoPanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;

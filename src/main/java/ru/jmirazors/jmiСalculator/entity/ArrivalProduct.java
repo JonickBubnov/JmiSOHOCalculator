@@ -43,7 +43,7 @@ private float cost;
 private Product product;
 @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 private Arrival arrival;
-private float discount;
+private int discount;
     
 
 @Override
@@ -96,11 +96,12 @@ private float discount;
     }
 
 @Override
-    public float getDiscount() {
+    public int getDiscount() {
         return discount;
     }
 
-    public void setDiscount(long discount) {
+@Override
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 

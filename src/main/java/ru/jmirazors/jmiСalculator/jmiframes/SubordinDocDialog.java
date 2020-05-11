@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
-import ru.jmirazors.jmiСalculator.entity.Document;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 import ru.jmirazors.jmiСalculator.entity.Subordin;
 
 /**

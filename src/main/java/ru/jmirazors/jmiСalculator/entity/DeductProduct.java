@@ -40,7 +40,7 @@ private float cost;
 private Product product;
 @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 private Deduct deduct;
-private float discount;
+private int discount;
     
 public DeductProduct(){}    
 
@@ -93,12 +93,12 @@ public DeductProduct(){}
     }
 
 @Override
-    public float getDiscount() {
+    public int getDiscount() {
         return discount;
     }
 
 @Override
-    public void setDiscount(float discount) {
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
  

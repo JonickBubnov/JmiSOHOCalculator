@@ -30,7 +30,6 @@ import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiСalculator.DAO.DocumentCompletionDAO;
 import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
 import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
-import ru.jmirazors.jmiСalculator.entity.Document;
 import ru.jmirazors.jmiСalculator.entity.DocumentProduct;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Storage;
