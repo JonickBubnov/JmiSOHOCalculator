@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +32,7 @@ import ru.jmirazors.jmiСalculator.entity.User;
 import ru.jmirazors.jmiСalculator.jmiframes.SubordinDocDialog;
 import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ContragentSelectDialog;
 import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.DepartmentSelectDialog;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.UserSelectNameDialog;
 
 /**
  *
@@ -222,8 +224,7 @@ public class Document {
         try {           
             List<Subordin> subdocs_l1 = new SubordinDAO().list(getId(), getDocuments().getId());
             if (subdocs_l1 == null || subdocs_l1.isEmpty())
-                JOptionPane.showMessageDialog(null, 
-                    "Нет подчиненных документов", "Сообщение", JOptionPane.INFORMATION_MESSAGE);
+                MainFrame.ifManager.showMessageDialog(null, "Сообщение", "Нет подчиненных документов");
             else
                 new SubordinDocDialog(null, true, subdocs_l1).setVisible(true);
         } catch (Exception ex) {
@@ -273,6 +274,21 @@ public class Document {
         csd.setLocation(x, y);
         csd.setVisible(true);        
     }
-    
+    //диалог пользователи
+    public void showUserDialog(Document doc) {
+        UserSelectNameDialog usnd = new UserSelectNameDialog(null, true, doc);
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - usnd.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - usnd.getHeight()) / 2);
+        usnd.setLocation(x, y);
+        usnd.setVisible(true);         
+    }
+    // форматированный номер документа
+    public String getFormattedID(long id) {
+        StringBuilder sbuf = new StringBuilder();
+        Formatter fmt = new Formatter(sbuf);
+        fmt.format("%06d", id);
+        return sbuf.toString();
+    }
 
 }

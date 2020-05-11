@@ -5,8 +5,11 @@
  */
 package ru.jmirazors.jmiCalculator.beans;
 
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import net.sf.jasperreports.engine.JasperPrint;
 import ru.jmirazors.jmiСalculator.jmiframes.DocumentPreview;
@@ -16,7 +19,10 @@ import ru.jmirazors.jmiCalculator.MainFrame;
  *
  * @author User
  */
-public class IFBean {              
+public class IFBean {
+    
+    ImageIcon question = new ImageIcon(getClass().getResource("/images/question.png"));
+    ImageIcon info = new ImageIcon(getClass().getResource("/images/infomessage.png"));
     
     private boolean organization = false;
     private boolean department = false;
@@ -349,6 +355,16 @@ public class IFBean {
         jDesktopPane.add(docPreview);
         jDesktopPane.getDesktopManager().maximizeFrame(docPreview);
         docPreview.setVisible(true);
+    }
+    
+    public int showYesNoDialog(JComponent parent, String title, String mes) {
+        int val = -1;
+        val = JOptionPane.showOptionDialog(parent, mes, title, JOptionPane.YES_NO_OPTION, 
+                JOptionPane.QUESTION_MESSAGE, question, new Object[]{"Да", "Нет"}, "Да");        
+        return val;
+    }
+    public void showMessageDialog(JComponent parent, String title, String mes) {
+        JOptionPane.showMessageDialog(parent, mes, title, JOptionPane.INFORMATION_MESSAGE, info);
     }
     
 }

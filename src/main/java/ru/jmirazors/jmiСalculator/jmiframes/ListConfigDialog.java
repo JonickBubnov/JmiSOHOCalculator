@@ -267,10 +267,10 @@ public class ListConfigDialog extends javax.swing.JDialog {
 
     private void jTextField2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField2MouseClicked
         // TODO add your handling code here:
-        UserSelectNameDialog csnd = new UserSelectNameDialog(null, true, usrName);
-        csnd.setLocationRelativeTo(this);
-        csnd.setVisible(true);
-        jTextField2.setText(usrName.toString());        
+//        UserSelectNameDialog csnd = new UserSelectNameDialog(null, true, usrName);
+//        csnd.setLocationRelativeTo(this);
+//        csnd.setVisible(true);
+//        jTextField2.setText(usrName.toString());        
     }//GEN-LAST:event_jTextField2MouseClicked
 
     private void jCheckBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBox2ItemStateChanged

@@ -17,6 +17,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import ru.jmirazors.jmiСalculator.DAO.UserDAO;
 import ru.jmirazors.jmiСalculator.entity.User;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 
 /**
  *
@@ -38,11 +39,13 @@ public class UserSelectNameDialog extends javax.swing.JDialog {
     List<User> users;
     User user;
     StringBuffer usrName;
+    Document doc;
     
-    public UserSelectNameDialog(java.awt.Frame parent, boolean modal, StringBuffer name) {
+    public UserSelectNameDialog(java.awt.Frame parent, boolean modal, Document doc) {
         super(parent, modal);
         
-        this.usrName = name;
+        //this.usrName = name;
+        this.doc = doc;
         
         tableModel.addColumn("№");
         tableModel.addColumn("Имя");
@@ -111,7 +114,8 @@ public class UserSelectNameDialog extends javax.swing.JDialog {
         jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Контрагенты");
+        setTitle("Пользователи");
+        setPreferredSize(new java.awt.Dimension(400, 240));
         setResizable(false);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(400, 40));
@@ -193,8 +197,9 @@ public class UserSelectNameDialog extends javax.swing.JDialog {
             String id = tableModel.getValueAt(jTable1.getRowSorter().convertRowIndexToModel(jTable1.getSelectedRow()), 0).toString();
             try {
                 user = new UserDAO().getById(id);
-                usrName.delete(0, usrName.length());
-                usrName.append(user.getName());
+                doc.setUsr(user);
+//                usrName.delete(0, usrName.length());
+//                usrName.append(user.getName());
                 dispose();
             } catch (Exception ex) {
                 Logger.getLogger(UserSelectNameDialog.class.getName()).log(Level.SEVERE, null, ex);

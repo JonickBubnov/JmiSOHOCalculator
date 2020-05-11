@@ -277,7 +277,7 @@ public class DocInvoice extends javax.swing.JInternalFrame implements DocumentIm
             products.get(i).setDiscount(Integer.valueOf(jTable1.getValueAt(i, 6).toString()));
         }
         
-        docInvoice.getSum(products, 5);
+        //docInvoice.getSum(products, 5);
         
         jLabel10.setText(String.format("%.2f", sum));
         float total = sum-sum*Float.parseFloat(jFormattedTextField1.getText().replace(",", "."))/100;

@@ -5,11 +5,8 @@
  */
 package ru.jmirazors.jmiCalculator;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import ru.jmirazors.jmiСalculator.jmiframes.reportsif.ReportPriceListInternalFrame;
 import java.awt.Image;
-import java.awt.SplashScreen;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -15,7 +15,8 @@ import javax.swing.UIManager;
 public class LookAndFeelUtils {
     public static void setWindowsLookAndFeel() {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                    //getSystemLookAndFeelClassName());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(
                     null,

@@ -40,6 +40,7 @@ ru\jmirazors\jmiÑalculator\jmiframes\DocumentPreview.class
 ru\jmirazors\jmiÑalculator\jmiframes\NewDatabaseDialog$1.class
 ru\jmirazors\jmiCalculator\beans\Calc$20.class
 ru\jmirazors\jmiÑalculator\jmiframes\reportsif\ReportPriceListInternalFrame$2.class
+ru\jmirazors\jmiÑalculator\jmiframes\Documents\DocAct$2.class
 ru\jmirazors\jmiCalculator\MainFrame$20.class
 ru\jmirazors\jmiCalculator\MainFrame$38.class
 ru\jmirazors\jmiÑalculator\jmiframes\ListReceiptInternalFrame$8.class
@@ -153,6 +154,7 @@ ru\jmirazors\jmiÑalculator\jmiframes\PayIf$3.class
 ru\jmirazors\jmiÑalculator\jmiframes\reportsif\ReportPriceListInternalFrame.class
 ru\jmirazors\jmiÑalculator\jmiframes\ListInvoiceInternalFrame$7.class
 ru\jmirazors\jmiÑalculator\jmiframes\ListSaleInternalFrame$6.class
+ru\jmirazors\jmiCalculator\MainFrame$47.class
 ru\jmirazors\jmiÑalculator\jmiframes\Documents\DocSetPrice$1.class
 ru\jmirazors\jmiÑalculator\entity\Contragent.class
 ru\jmirazors\jmiÑalculator\jmiframes\ProductToSaleCountDialog.class
@@ -170,6 +172,7 @@ ru\jmirazors\jmiÑalculator\entity\Act.class
 ru\jmirazors\jmiÑalculator\jmiframes\MoveProductDialog$2.class
 ru\jmirazors\jmiÑalculator\entity\DocumentProduct.class
 ru\jmirazors\jmiÑalculator\jmiframes\ListReceiptInternalFrame$4.class
+ru\jmirazors\jmiÑalculator\jmiframes\Documents\DocAct$3.class
 ru\jmirazors\jmiÑalculator\jmiframes\reportsif\ReportPriceListInternalFrame$3.class
 ru\jmirazors\jmiÑalculator\jmiframes\ListArrivalInternalFrame$11.class
 ru\jmirazors\jmiÑalculator\jmiframes\UnitsIf$5.class
@@ -278,6 +281,7 @@ ru\jmirazors\jmiÑalculator\jmiframes\ProductsIf$3.class
 ru\jmirazors\jmiÑalculator\jmiframes\ListOfferInternalFrame$9.class
 ru\jmirazors\jmiÑalculator\jmiframes\ListReceiptInternalFrame$6.class
 ru\jmirazors\jmiCalculator\beans\InvoiceBean.class
+ru\jmirazors\jmiÑalculator\jmiframes\Documents\DocAct$1.class
 ru\jmirazors\jmiÑalculator\jmiframes\selectDialogs\OrganizationSelectDialog$2.class
 ru\jmirazors\jmiÑalculator\jmiframes\Documents\DocDeduct$6.class
 ru\jmirazors\jmiÑalculator\jmiframes\selectDialogs\UserSelectNameDialog$3.class

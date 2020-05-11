@@ -7,17 +7,13 @@ package ru.jmirazors.jmiСalculator.jmiframes.selectDialogs;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import ru.jmirazors.jmiСalculator.DAO.ContragentDAO;
 import ru.jmirazors.jmiСalculator.DAO.OrganizationDAO;
-import ru.jmirazors.jmiСalculator.entity.Contragent;
 import ru.jmirazors.jmiСalculator.entity.Department;
 import ru.jmirazors.jmiСalculator.jmiframes.Documents.Document;
 

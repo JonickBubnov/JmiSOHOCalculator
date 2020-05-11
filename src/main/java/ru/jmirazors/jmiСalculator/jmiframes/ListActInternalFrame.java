@@ -36,6 +36,7 @@ import ru.jmirazors.jmiCalculator.beans.ColorTablesRenderer;
 import ru.jmirazors.jmiCalculator.beans.ListUtil;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.entity.Act;
+import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocAct;
 
 /**
  *
@@ -329,6 +330,12 @@ public class ListActInternalFrame extends javax.swing.JInternalFrame {
     // новый документ
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+         if (!MainFrame.ifManager.isDocActFrameOpen()) {
+            MainFrame.ifManager.showFrame(new DocAct(), false);
+            MainFrame.ifManager.setDocActFrameOpen(true);
+        } else {
+            MainFrame.ifManager.infoMessage("Документ уже открыт. Невозмозможно открыть несколько копий документа.");
+        }         
     }//GEN-LAST:event_jButton1ActionPerformed
     // обновить
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
