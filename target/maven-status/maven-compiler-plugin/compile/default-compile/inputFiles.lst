@@ -31,6 +31,7 @@ D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmiC
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\DAO\GroupDAO.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmiCalculator\beans\ProductBean.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\ContactAddDialog.java
+D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\selectDialogs\ProductAddDialog.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\entity\Parameters.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\entity\Okv.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\selectDialogs\DepartmentSelectDialog.java
@@ -97,6 +98,7 @@ D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\DAO\ContragentStatusDAO.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\entity\DocStatus.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\entity\TransferProduct.java
+D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmiCalculator\beans\CalendarPopup.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmiCalculator\beans\IFBean.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\entity\Receipt.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\ContragentsIf.java
@@ -132,6 +134,7 @@ D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmiCalculator\beans\ColorTablesRenderer.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmiCalculator\beans\MonthToTextBean.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\reportsif\SelectGroupsDialog.java
+D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\selectDialogs\ProductCountDialog.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\DAO\LogDAO.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\ProductToSaleCountDialog.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\entity\ChartGroup.java
@@ -146,6 +149,7 @@ D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmiC
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\ListOfferInternalFrame.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\ListPayInternalFrame.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\DocumentPreview.java
+D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\selectDialogs\ProductToCartDialog.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\entity\DocumentType.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\ProductToCartCountDialog.java
 D:\jonick\Projects\jmi_calculator\jmi_calculator\src\main\java\ru\jmirazors\jmi—alculator\jmiframes\Documents\GetLoyaltyDialog.java

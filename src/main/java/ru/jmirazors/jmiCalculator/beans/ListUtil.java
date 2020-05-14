@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -108,4 +109,12 @@ public class ListUtil {
             Logger.getLogger(ListUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    // форматированный номер документа
+    public String getFormattedID(long id) {
+        StringBuilder sbuf = new StringBuilder();
+        Formatter fmt = new Formatter(sbuf);
+        fmt.format("%06d", id);
+        return sbuf.toString();
+    }    
 }

@@ -6,9 +6,14 @@
 package ru.jmirazors.jmiСalculator.jmiframes.Documents;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,12 +24,15 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.beanutils.BeanUtils;
 import ru.jmirazors.jmiCalculator.MainFrame;
+import ru.jmirazors.jmiCalculator.beans.CalendarPopup;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
 import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
 import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
 import ru.jmirazors.jmiСalculator.entity.Act;
 import ru.jmirazors.jmiСalculator.entity.ActProduct;
+import ru.jmirazors.jmiСalculator.entity.DocumentProduct;
 import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Storage;
@@ -41,16 +49,19 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
      * Creates new form DocAct
      */
     JToolBar tb;
-    JButton dockButton = new JButton("Док. Акт|");    
+    JButton dockButton = new JButton("Док. Акт");    
     
     String frameTitle = "Акт выполненных работ";
     StringBuffer titleComplete = new StringBuffer();
     SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-    public static ArrayList<ActProduct> products = new ArrayList<>();
+    ArrayList<ActProduct> products = new ArrayList<>();
+    ArrayList<ActProduct> newProducts = new ArrayList<>();
     ActProduct actProduct;
     Product product;
     Act docAct;
     DocumentDAO documentDAO;
+    CalendarPopup calendar;
+        
     
     private boolean saved = true;
     
@@ -59,7 +70,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         @Override
         public boolean isCellEditable(int row, int col)
             {
-                if (col == 3 || col == 5 || col == 6)
+                if (col == 3 || col == 5)
                     return true;
                 return false; 
             }
@@ -67,15 +78,18 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     
     public DocAct() {
         
-        documentDAO = new DocumentDAO();        
+        calendar = new CalendarPopup();
+        
+        documentDAO = new DocumentDAO(); 
+        
         initTableColumns();
         docAct = new Act();        
-        products.clear();
+        products.clear();       
+        
         initComponents();
         initVisualComponents(); 
                        
-        docInit();
-        repaintDocument();
+        docInit();                
         
     }
     
@@ -129,7 +143,8 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     // Инициализировать новый документ
     @Override
     public void docInit() {                        
-        docAct.init(1L);
+        docAct.init(11L);
+        recalculateDocument();
     }
     
 // инициализировать таблицу
@@ -156,38 +171,52 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         tb.add(dockButton);        
         
         jTable1.getColumnModel().getColumn(0).setMaxWidth(32);
-        jTable1.getColumnModel().getColumn(1).setMaxWidth(170);
-        jTable1.getColumnModel().getColumn(3).setMaxWidth(50);
+        jTable1.getColumnModel().getColumn(1).setMaxWidth(200);
+        jTable1.getColumnModel().getColumn(3).setMaxWidth(60);
         jTable1.getColumnModel().getColumn(4).setMaxWidth(60);
-        jTable1.getColumnModel().getColumn(5).setMaxWidth(72);
-        jTable1.getColumnModel().getColumn(6).setMaxWidth(40);
+        jTable1.getColumnModel().getColumn(5).setMaxWidth(90);
+        jTable1.getColumnModel().getColumn(6).setMaxWidth(100);
                
         
         jFormattedTextField1.getDocument().addDocumentListener(new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e) {
-                float total = Float.parseFloat(jLabel7.getText().replace(",", ".")) - 
-                        Float.parseFloat(jLabel7.getText().replace(",", ".")) * 
-                        Float.parseFloat(jFormattedTextField1.getText().replace(",", "."))/100;
-                float nds = total*docAct.getOrganization().getNds()/100;
-                jLabel12.setText(String.format("%.2f", total));
-                jLabel18.setText(String.format("%.2f", nds));
-                jLabel7.setText(String.format("%.2f", total - nds));
-                docAct.setTotal(total);
+                docAct.setDiscount(Integer.valueOf(jFormattedTextField1.getText()));
+                totalRenew();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {}
 
             @Override
-            public void changedUpdate(DocumentEvent e) {}
+            public void changedUpdate(DocumentEvent e) {
+                saved = false;
+            }
         });
         
         tableModel.addTableModelListener((TableModelEvent e) -> {
-            if (e.getType() == TableModelEvent.UPDATE && e.getColumn() != 7 && e.getColumn() != 8 && e.getColumn() != 0) {
+            if (e.getType() == TableModelEvent.UPDATE && e.getColumn() != 6 && e.getColumn() != 0) {
                 recalculateDocument();
             }
         });
+
+        calendar.getCPanel().addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            @Override
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                calendarPanel1PropertyChange(evt);
+            }
+            private void calendarPanel1PropertyChange(PropertyChangeEvent evt) {
+                        if (evt.getPropertyName().equals("selectedDate")) {            
+                            calendar.getPopup().hide();
+                            jFormattedTextField2.setText(calendar.getStringDate());
+                            try {
+                                docAct.setIndate(format.parse(jFormattedTextField2.getText()));
+                            } catch (ParseException ex) {
+                                docAct.setIndate(new Date());
+                            }
+                    }
+            }
+        });        
     }  
     
     // **************************************************************************************
@@ -200,61 +229,90 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     // заполнить отображение документа
     @Override
     public void repaintDocument() {
+        // Заголовок 
         titleComplete.setLength(0);
         titleComplete.append(frameTitle).append(" /").append(docAct.getOrganization().getName())
                 .append("/ [").append(docAct.getStatus().getName()).append("]");
         if (!saved)
             titleComplete.append("*");        
-        this.setTitle(titleComplete.toString());                                // Заголовок
+        this.setTitle(titleComplete.toString());                                       
+        // номер документа
+        jLabel2.setText(docAct.getFormattedID(docAct.getId()));                              
+        // Дата документа
+        jFormattedTextField2.setText(format.format(docAct.getIndate()));  
+        // Подразделение
+        jTextField1.setText(docAct.getDepartment().getName());
+        // Пользователь
+        jLabel10.setText(docAct.getUsr().getName());   
+        // Скидка
+        jFormattedTextField1.setText(String.valueOf(docAct.getDiscount())); 
+        // Примечание
+        jTextField2.setText(docAct.getDescr());                 
+        // Валюта
+        jLabel8.setText(MainFrame.sessionParams.getParam().getOkv().getRus());                    
+        jLabel19.setText(MainFrame.sessionParams.getParam().getOkv().getRus());                   
+        jLabel13.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
+        // Cуммы без НДС
+        jLabel7.setText(String.format("%.2f", getSum()));
+        // НДС
+        jLabel18.setText(String.format("%.2f", getNDS()));
+        // Итого
+        jLabel12.setText(String.format("%.2f", getResult()));
+        // наименований
+        jLabel20.setText(String.format("%d", tableModel.getRowCount()));
         
-//        if (docAct.getId() != 0)
-            jLabel2.setText(docAct.getFormattedID(docAct.getId()));                                               // Номер документа
-        
-        jDateChooser1.setDate(docAct.getIndate());                                            // Дата документа
-        jTextField1.setText(docAct.getDepartment().getName());                                // Подразделение
-        jLabel10.setText(docAct.getUsr().getName());                                          // Пользователь
-        jFormattedTextField1.setText(String.valueOf(docAct.getDiscount()));                 // Скидка
-        jTextField2.setText(docAct.getDescr());                                               // Примечание
-        jLabel8.setText(MainFrame.sessionParams.getParam().getOkv().getRus());                    // Валюта
-        jLabel19.setText(MainFrame.sessionParams.getParam().getOkv().getRus());                   // Валюта
-        jLabel13.setText(MainFrame.sessionParams.getParam().getOkv().getRus());                   // Валюта
-        
+        // Контрагент
         if (docAct.getContragent() != null)
-            jTextField3.setText(docAct.getContragent().getName());                            // Контрагент
+            jTextField3.setText(docAct.getContragent().getName());                            
         if (docAct.getStatus().getId() == 2 || docAct.getStatus().getId() == 3) {
             closeButtons();
         }
+        jTable1.requestFocus();
         //firstOpen = false;
-    }          
+    }     
+    // сумма без ндс
+    private float getSum() {
+        float total = getResult();        
+        return (total - getNDS());
+    }
+    // НДС
+    private float getNDS() {
+        return docAct.getTotal()*docAct.getOrganization().getNds()/100;
+    }
+    // private float сумма с НДС
+    private float getResult() {
+        return docAct.getTotal() - docAct.getTotal()*docAct.getDiscount()/100;
+    }
     
-    // пересчитать таблицу
+    private void totalRenew() {
+//        docAct.setDiscount(Integer.valueOf(jFormattedTextField1.getText()));
+//        docAct.setTotal(docAct.getTotal() - docAct.getTotal()*docAct.getDiscount()/100);
+        jLabel12.setText(String.format("%.2f", getResult()));
+        jLabel18.setText(String.format("%.2f", getNDS()));
+        jLabel7.setText(String.format("%.2f", getSum()));
+        jLabel20.setText(String.format("%d", tableModel.getRowCount()));
+//        repaintDocument();
+        
+    }
+    
+    // пересчитать суммы
     void recalculateDocument() {
-        docAct.setTotal(docAct.getSum(products, docAct.getDiscount()));
+        Float sum = 0f;
+        Float cost;
+        
+        for (int i = 0; i < tableModel.getRowCount(); i++) { 
+            cost = Float.parseFloat(jTable1.getValueAt(i, 3).toString())*Float.parseFloat(jTable1.getValueAt(i, 5).toString());            
+            sum += cost;
+            tableModel.setValueAt(i+1, i, 0);
+            tableModel.setValueAt(cost, i, 6);
+            products.get(i).setCount(Float.parseFloat(jTable1.getValueAt(i, 3).toString()));
+            products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
+        }
+        docAct.setTotal(sum);
+        //totalRenew();
+//        docAct.setDiscount(Integer.valueOf(jFormattedTextField1.getText()));
+//        docAct.setTotal(sum - sum*docAct.getDiscount()/100);
         repaintDocument();
-//        Float sum = 0f;
-//        Float price;
-//        Float cost;
-//        for (int i = 0; i < tableModel.getRowCount(); i++) { 
-//            price = Float.parseFloat(jTable1.getValueAt(i, 5).toString()) -
-//                    Float.parseFloat(jTable1.getValueAt(i, 5).toString()) *
-//                    Float.parseFloat(jTable1.getValueAt(i, 6).toString())/100;
-//            cost = Float.parseFloat(jTable1.getValueAt(i, 3).toString())*price;            
-//            
-//            sum += cost;
-//            tableModel.setValueAt(i+1, i, 0);
-//            tableModel.setValueAt(price, i, 7);
-//            tableModel.setValueAt(cost, i, 8);
-//            products.get(i).setCount(Float.parseFloat(jTable1.getValueAt(i, 3).toString()));
-//            products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
-//            products.get(i).setDiscount(Float.parseFloat(jTable1.getValueAt(i, 6).toString()));
-//        }
-//        jLabel10.setText(String.format("%.2f", sum));
-//        float total = sum-sum*Float.parseFloat(jFormattedTextField1.getText().replace(",", "."))/100;
-//        float nds = total*docInvoice.getOrganization().getNds()/100;
-//        jLabel24.setText(String.format("%.2f", nds));
-//        jLabel11.setText(String.format("%.2f", total));
-//        jLabel19.setText(String.format("%.3f", getWeight()));
-//        docInvoice.setTotal(Float.parseFloat(jLabel11.getText().replace(",", ".")));
     }    
     
     // получить товары из документа и заполнить таблицу
@@ -289,6 +347,22 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         recalculateDocument();
     }  
     
+    private void setActProducts(ArrayList<? extends DocumentProduct> prods) throws IllegalAccessException, InvocationTargetException {
+        newProducts.clear();
+        ActProduct ap;
+        for (DocumentProduct pr : prods) {
+            ap = new ActProduct();
+            if (pr.getCount() > 0) {
+                BeanUtils.copyProperties(ap, pr);
+                newProducts.add(ap);
+            }
+        }
+        products = (ArrayList<ActProduct>)newProducts.clone();
+        for (ActProduct pr : products) {
+            pr.setAct(docAct);
+        }
+    }
+    
     @Override
     public void executeDocument() {
         //new DocumentCompletionDAO().completion(docAct);
@@ -298,26 +372,17 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     public void saveDocument(long status) {
         if (docAct.getContragent() != null) {                               
             try {            
-                docAct.setIndate(jDateChooser1.getDate());
                 docAct.setDescr(jTextField2.getText());
-                docAct.setDiscount(Integer.parseInt(jFormattedTextField1.getText()));
-                docAct.setUsr(docAct.getSessionUser());
-                docAct.setOrganization(docAct.getOrganization());
-                docAct.setTotal(Float.valueOf(jLabel12.getText().replace(",", ".")));
                 docAct.setStatus(documentDAO.getStatus(status));
-
-                for (int i = 0; i < products.size(); i++) {                    
-                    products.get(i).setAct(docAct);
-                }  
-            
-                //docAct.setActProducts(products);
+                docAct.setTotal(getResult());
+                docAct.setActProducts(products);
             
                 documentDAO.updateDocument(docAct);
                 
                 if (status == 2)
                     executeDocument();
-            
-                repaintDocument();
+                saved = true;
+                recalculateDocument();
             
             } catch (Exception ex) {
                 Logger.getLogger(DocAct.class.getName()).log(Level.SEVERE, null, ex); }
@@ -348,12 +413,13 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jLabel14 = new javax.swing.JLabel();
         jFormattedTextField1 = new javax.swing.JFormattedTextField();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jTextField3 = new javax.swing.JTextField();
+        jFormattedTextField2 = new javax.swing.JFormattedTextField();
+        jButton8 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -368,6 +434,8 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
@@ -423,6 +491,11 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jButton3.setMinimumSize(new java.awt.Dimension(24, 24));
         jButton3.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton3);
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_save.png"))); // NOI18N
@@ -480,14 +553,14 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         });
         jToolBar1.add(jButton7);
 
-        jLabel1.setText("№");
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel1.setText("№");
 
-        jLabel2.setText("_______");
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel2.setText("_______");
 
-        jLabel3.setText("Дата");
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel3.setText("Дата");
         jLabel3.setToolTipText("");
 
         jLabel4.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
@@ -500,14 +573,6 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTextField1MouseClicked(evt);
-            }
-        });
-
-        jDateChooser1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jDateChooser1.setPreferredSize(new java.awt.Dimension(120, 20));
-        jDateChooser1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                jDateChooser1PropertyChange(evt);
             }
         });
 
@@ -534,6 +599,18 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
             }
         });
 
+        jFormattedTextField2.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm"))));
+        jFormattedTextField2.setPreferredSize(new java.awt.Dimension(105, 20));
+
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/calendar.png"))); // NOI18N
+        jButton8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton8.setFocusPainted(false);
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -552,34 +629,35 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
                             .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 408, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 412, Short.MAX_VALUE)
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel14)))
+                        .addComponent(jLabel14))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jFormattedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton8)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(7, 7, 7)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton8)
+                    .addComponent(jFormattedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1)
                         .addComponent(jLabel2)
-                        .addComponent(jLabel3))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel3)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -588,16 +666,17 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel14)
-                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel15)))
-                .addContainerGap(10, Short.MAX_VALUE))
+                    .addComponent(jLabel14)
+                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jLabel5.setText("Сумма");
+        jPanel2.setPreferredSize(new java.awt.Dimension(838, 110));
+
+        jLabel5.setText("Сумма без НДС");
 
         jLabel6.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel6.setText("Примечание");
@@ -606,7 +685,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jTextField2.setPreferredSize(new java.awt.Dimension(73, 20));
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("2000000.00");
+        jLabel7.setText("jLabel7");
 
         jLabel8.setText("jLabel8");
 
@@ -620,7 +699,6 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         });
 
         jButton2.setText("Закрыть");
-        jButton2.setActionCommand("Закрыть");
         jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jButton2.setFocusPainted(false);
         jButton2.setMaximumSize(new java.awt.Dimension(70, 24));
@@ -632,7 +710,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
             }
         });
 
-        jLabel11.setText("Итого");
+        jLabel11.setText("Итого с НДС");
 
         jLabel12.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -647,40 +725,50 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
 
         jLabel19.setText("jLabel19");
 
+        jLabel9.setText("Всего наименований:");
+
+        jLabel20.setText("jLabel20");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel17)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel17)
-                            .addComponent(jLabel11))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel13)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 392, Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jLabel19))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jLabel19)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel9)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel20)))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(6, 6, 6)
                         .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 313, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -691,39 +779,45 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                     .addComponent(jLabel5)
                     .addComponent(jLabel7)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel10))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel20))
+                .addGap(10, 10, 10)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
                     .addComponent(jLabel18)
                     .addComponent(jLabel19))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel13))
-                .addGap(4, 4, 4)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel13))
+                        .addGap(4, 4, 4)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 5, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
         jTable1.setModel(tableModel);
+        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTable1KeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jDateChooser1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jDateChooser1PropertyChange
-        // TODO add your handling code here:
-        System.out.println("change");
-    }//GEN-LAST:event_jDateChooser1PropertyChange
 
     private void formInternalFrameIconified(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameIconified
         hide();
@@ -736,16 +830,22 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
         // TODO add your handling code here:
         docAct.showDepartmentDialog(docAct);
+        saved = false;
+        repaintDocument();
     }//GEN-LAST:event_jTextField1MouseClicked
 
     private void jTextField3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField3MouseClicked
         // TODO add your handling code here:
         docAct.showContragentDialog(docAct);
+        saved = false;
+        repaintDocument();
     }//GEN-LAST:event_jTextField3MouseClicked
 
     private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
         // TODO add your handling code here:
         docAct.showUserDialog(docAct);
+        saved = false;
+        repaintDocument();
     }//GEN-LAST:event_jLabel10MouseClicked
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -755,15 +855,53 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         try {
-            // TODO add your handling code here:
+            // Диалог выбор товара
             Storage s = new StorageDAO().getStorage("1");
             PriceName p = new PriceNameDAO().getPriceName(1);
-            ProductAddDialog pad = new ProductAddDialog(null, true, s, p);
-            pad.setVisible(true);
+            ProductAddDialog pad = new ProductAddDialog(null, true, s, p, products);
+            pad.setVisible(true);                   
+
+            setActProducts(products);
+            updateProductsTable(); 
+                
+            
         } catch (Exception ex) {
             Logger.getLogger(DocAct.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // Календарь   
+        calendar.getPopup(jButton8).show();
+        docAct.setIndate(calendar.getDate());
+        saved = false;
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // Сохранить документ
+        saveDocument(1L);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
+        // кнопки в таблице
+        if (evt.getKeyCode() == KeyEvent.VK_DELETE) {            
+            int index = jTable1.getSelectedRow();
+            products.remove(index);
+            tableModel.removeRow(index);
+            updateProductsTable();
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_INSERT) {
+            try {
+                Storage s = new StorageDAO().getStorage("1");
+                PriceName p = new PriceNameDAO().getPriceName(1);  
+                ProductAddDialog pad = new ProductAddDialog(null, true, s, p, products);
+                pad.setVisible(true);                   
+
+                setActProducts(products);
+                updateProductsTable();             
+            } catch (Exception e) {}
+        }
+    }//GEN-LAST:event_jTable1KeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -774,8 +912,9 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JButton jButton8;
     private javax.swing.JFormattedTextField jFormattedTextField1;
+    private javax.swing.JFormattedTextField jFormattedTextField2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -788,12 +927,14 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

@@ -39,7 +39,8 @@ private float cost;
 @OneToOne(cascade=CascadeType.DETACH)
 private Product product;
 @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-private Act act;    
+private Act act;  
+private int discount;
     
 public ActProduct(){} 
 
@@ -83,6 +84,16 @@ public ActProduct(){}
         this.product = product;
     }
 
+@Override
+    public int getDiscount() {
+        return discount;
+    }
+
+@Override
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
     public Act getAct() {
         return act;
     }
@@ -91,5 +102,13 @@ public ActProduct(){}
         this.act = act;
     }
 
+    public ActProduct getActProduct(DocumentProduct product) {
+        ActProduct ap = new ActProduct();
+            ap.setCost(product.getCost());
+            ap.setCount(product.getCount());
+            ap.setDiscount(product.getDiscount());
+            ap.setProduct(product.getProduct());
+        return ap;
+    }
 
 }

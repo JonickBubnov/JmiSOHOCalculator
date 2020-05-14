@@ -180,6 +180,8 @@ public Act() {}
     public void setDiscount(int discount) {
         this.discount = discount;
     }
-
+    public void setActProducts(List<ActProduct> actProducts) {
+            this.actProducts = actProducts;
+    }
    
 }

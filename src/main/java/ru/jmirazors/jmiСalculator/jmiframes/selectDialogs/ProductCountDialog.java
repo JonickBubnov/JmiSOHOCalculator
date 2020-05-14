@@ -63,7 +63,7 @@ public class ProductCountDialog extends javax.swing.JDialog {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 109, 240), 3));
 
-        jLabel1.setText("Наименование");
+        jLabel1.setText("Наименование:");
 
         jLabel2.setText("jLabel2");
 
@@ -103,7 +103,7 @@ public class ProductCountDialog extends javax.swing.JDialog {
                     .addComponent(jLabel2)
                     .addComponent(jFormattedTextField2)
                     .addComponent(jFormattedTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
-                .addContainerGap(76, Short.MAX_VALUE))
+                .addContainerGap(73, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -152,7 +152,8 @@ public class ProductCountDialog extends javax.swing.JDialog {
                 documentProduct.setCost(0);            
             documentProduct.setDiscount(0);
             documentProduct.setProduct(product);
-            ProductAddDialog.cartProduct = documentProduct;
+            if (documentProduct.getCount() > 0)
+                ProductAddDialog.cartProduct = documentProduct;
             dispose();
         }
     }//GEN-LAST:event_jFormattedTextField2KeyPressed

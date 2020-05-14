@@ -183,10 +183,12 @@ public Invoice(){}
             this.invoiceProducts = invoiceProducts;
     }
 
+@Override
     public float getWeight() {
         return weight;
     }
 
+@Override
     public void setWeight(float weight) {
         this.weight = weight;
     }

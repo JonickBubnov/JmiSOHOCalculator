@@ -250,9 +250,10 @@ public class Document {
     public float getSum(List prods, int discount) {
         ArrayList<DocumentProduct> products = (ArrayList<DocumentProduct>) prods;
         float sum = 0;
-        for (DocumentProduct product : products) {
-            sum += (product.getCost()-product.getCost()*product.getDiscount()/100)*product.getCount();
-        }
+        if (!products.isEmpty()) 
+            for (DocumentProduct product : products) {
+                sum += (product.getCost()-product.getCost()*product.getDiscount()/100)*product.getCount();
+            }
         return sum;
     }
     
