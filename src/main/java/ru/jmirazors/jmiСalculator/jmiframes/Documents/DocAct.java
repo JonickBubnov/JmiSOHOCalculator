@@ -681,7 +681,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel6.setText("Примечание");
 
         jTextField2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jTextField2.setMaximumSize(new java.awt.Dimension(200, 20));
+        jTextField2.setMaximumSize(new java.awt.Dimension(300, 20));
         jTextField2.setMinimumSize(new java.awt.Dimension(200, 20));
         jTextField2.setPreferredSize(new java.awt.Dimension(300, 20));
 
@@ -752,7 +752,6 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -773,7 +772,8 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jLabel8)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel22))))
+                            .addComponent(jLabel22)))
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()

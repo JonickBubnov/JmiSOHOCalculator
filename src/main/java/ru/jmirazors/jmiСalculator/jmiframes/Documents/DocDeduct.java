@@ -99,7 +99,7 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
         initComponents();
         initVisualComponents();
         getDeductProducts(docDeduct);        
-        recalculateDocument();
+        //recalculateDocument();
     }
     
     public DocDeduct(Document doc, List<DocumentProduct> iproducts) {
@@ -189,7 +189,7 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
             jTable1.setEnabled(false);
             jComboBox1.setEnabled(false);
             jTextField1.setEnabled(false);
-            jFormattedTextField1.setEnabled(false);
+            jFormattedTextField1.setEditable(false);
             jButton9.setEnabled(false);
     }  
     
@@ -271,7 +271,7 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
         // Валюта
         jLabel17.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
         // Вес
-        jLabel11.setText(String.format("%.3f", docDeduct.getWeight() ));
+        jLabel11.setText(String.format("%.3f", docDeduct.getWeight()));
         // Склад
         jComboBox1.setSelectedItem(docDeduct.getStorage().getName());
         // Сумма
@@ -294,8 +294,8 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
     // расчитать вес
     Float getWeight() {
         float weight = 0f;
-        for (DeductProduct ip: products) 
-            weight += ip.getProduct().getWeight()*ip.getCount();
+        for (DeductProduct dp: products) 
+            weight += dp.getProduct().getWeight()*dp.getCount();
         docDeduct.setWeight(weight);
         return weight;
     } 
@@ -504,14 +504,16 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
         jLabel1.setText("№");
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("_______");
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel3.setText("Дата");
 
-        jComboBox1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jComboBox1.setMinimumSize(new java.awt.Dimension(33, 22));
-        jComboBox1.setPreferredSize(new java.awt.Dimension(33, 22));
+        jComboBox1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        jComboBox1.setMaximumSize(new java.awt.Dimension(200, 22));
+        jComboBox1.setMinimumSize(new java.awt.Dimension(200, 22));
+        jComboBox1.setPreferredSize(new java.awt.Dimension(200, 22));
         jComboBox1.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboBox1ItemStateChanged(evt);
@@ -519,7 +521,7 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
         });
 
         jLabel6.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel6.setText("Склад");
+        jLabel6.setText("Склад:");
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -654,6 +656,8 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
 
         jFormattedTextField1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd.MM.yyyy H:mm"))));
+        jFormattedTextField1.setMaximumSize(new java.awt.Dimension(105, 20));
+        jFormattedTextField1.setMinimumSize(new java.awt.Dimension(105, 20));
         jFormattedTextField1.setPreferredSize(new java.awt.Dimension(105, 20));
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/calendar.png"))); // NOI18N
@@ -670,22 +674,22 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jLabel15))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton9))
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 240, Short.MAX_VALUE)
+                        .addComponent(jButton9)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 252, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel6)
@@ -754,6 +758,7 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
 
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel14.setText("____");
+        jLabel14.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jLabel14.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel14MouseClicked(evt);
@@ -874,9 +879,9 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
     private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
             int index = jTable1.getSelectedRow();
-            docDeduct.getDeductProducts().remove((DeductProduct)products.get(index));            
             products.remove(index);
             tableModel.removeRow(index);
+            updateProductsTable();
 
             updateProductsTable();
         }  
@@ -938,6 +943,7 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
     private void jTextField2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField2MouseClicked
         // Подразделение
         docDeduct.showDepartmentDialog(docDeduct);
+        jTextField2.setText(docDeduct.getDepartment().getName());
     }//GEN-LAST:event_jTextField2MouseClicked
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -959,8 +965,8 @@ public final class DocDeduct extends javax.swing.JInternalFrame implements Docum
     private void jLabel14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel14MouseClicked
         // TODO add your handling code here:
         docDeduct.showUserDialog(docDeduct);
+        jLabel14.setText(docDeduct.getUsr().getName());
         saved = false;
-        repaintDocument();        
     }//GEN-LAST:event_jLabel14MouseClicked
 
 

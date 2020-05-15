@@ -49,7 +49,7 @@ public class ListInvoiceInternalFrame extends javax.swing.JInternalFrame {
      * Creates new form ListInvoiceInternalFrame
      */
     JToolBar tb;
-    JButton dockButton = new JButton("Спр. заказы |");
+    JButton dockButton = new JButton("Спр. заказы");
     
     // **************  Параметры списка *****************************
     Map <String, String> properties;

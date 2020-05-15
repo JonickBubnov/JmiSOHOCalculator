@@ -10,15 +10,14 @@ package ru.jmirazors.jmiСalculator.jmiframes.Documents;
  * @author Jonick
  */
 
-import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import ru.jmirazors.jmiCalculator.MainFrame;
-import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ContragentSelectDialog;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,36 +28,33 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
-import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.commons.beanutils.BeanUtils;
 import ru.jmirazors.jmiCalculator.beans.ArrivalBean;
+import ru.jmirazors.jmiCalculator.beans.CalendarPopup;
 import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiCalculator.beans.MonthToTextBean;
 import ru.jmirazors.jmiCalculator.beans.NumberToTextBean;
 import ru.jmirazors.jmiСalculator.DAO.DocumentCompletionDAO;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
-import ru.jmirazors.jmiСalculator.DAO.ProductDAO;
+import ru.jmirazors.jmiСalculator.DAO.PriceNameDAO;
 import ru.jmirazors.jmiСalculator.DAO.StorageDAO;
-import ru.jmirazors.jmiСalculator.DAO.SubordinDAO;
 import ru.jmirazors.jmiСalculator.entity.Arrival;
 import ru.jmirazors.jmiСalculator.entity.ArrivalProduct;
+import ru.jmirazors.jmiСalculator.entity.DocumentProduct;
+import ru.jmirazors.jmiСalculator.entity.PriceName;
 import ru.jmirazors.jmiСalculator.entity.Product;
 import ru.jmirazors.jmiСalculator.entity.Storage;
-import ru.jmirazors.jmiСalculator.entity.Subordin;
-import ru.jmirazors.jmiСalculator.jmiframes.ProductToCartDialog;
-import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.DepartmentSelectDialog;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ProductAddDialog;
 
 public class DocArrival extends javax.swing.JInternalFrame implements DocumentImpl{
 
@@ -66,16 +62,20 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
      * Creates new form DocArrival
      */
     JToolBar tb;
-    JButton dockButton = new JButton("Док. поступление|");     
+    JButton dockButton = new JButton("Док. поступление");     
     
     String frameTitle = "Поступление товаров";
+    StringBuffer titleComplete = new StringBuffer();
     SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-    public static ArrayList<ArrivalProduct> products = new ArrayList<>();
+    ArrayList<ArrivalProduct> products = new ArrayList<>();
+    ArrayList<ArrivalProduct> newProducts = new ArrayList<>();
     ArrivalProduct arrivalProduct;
     Product product;
-    static Arrival docArrival;
+    Arrival docArrival;
     DocumentDAO documentDAO;
     Document parentDoc = null;
+    CalendarPopup calendar;
+    boolean saved = true;    
 
     // модель таблицы
     DefaultTableModel tableModel = new DefaultTableModel(){
@@ -90,31 +90,31 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
     
     public DocArrival() {
         
+        calendar = new CalendarPopup();
+        documentDAO = new DocumentDAO();
         initTableColumns();
         docArrival = new Arrival();
         products.clear();
         initComponents();
-        initVisualComponents(); 
-        
-        documentDAO = new DocumentDAO();
+        initVisualComponents();                 
         docInit();
-        repaintDocument();        
+              
                
     }
     
     public DocArrival(String id){
-        
+        calendar = new CalendarPopup();        
         documentDAO = new DocumentDAO();
         initTableColumns();
         try {
-            docArrival = (Arrival) documentDAO.getDocument(id.trim(), Arrival.class);
+            docArrival = (Arrival)documentDAO.getDocument(id.trim(), Arrival.class);
         } catch (Exception ex) {
-            Logger.getLogger(DocArrival.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.ifManager.showWarningDialog(this, "Ошибка!", "Не удалось получить документ.\n"+ex);
         }
         initComponents();
         initVisualComponents();
         getArrivalProducts(docArrival);
-        repaintDocument();
+        //recalculateDocument();
 
     }
 
@@ -151,7 +151,9 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             jTextField2.setEnabled(false);
             jComboBox1.setEnabled(false);            
             jButton6.setEnabled(false);            
-            jButton4.setEnabled(false);        
+            jButton4.setEnabled(false); 
+            jFormattedTextField1.setEditable(false);
+            jButton8.setEnabled(false);
     }    
     
     // инициализировать таблицу
@@ -186,17 +188,17 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         getStorageList(); 
                 
                
-        Subordin sd = null;
-        if (docArrival.getId() != 0) {
-            sd = new SubordinDAO().getSubDocument(docArrival);
-        }
-        if (sd != null) {
-            parentDoc = new DocumentUtil().getMainDocument(sd);
-            jLabel24.setText(parentDoc.getDocuments().getName()+" №"+parentDoc.getId()+" от "+format.format(parentDoc.getIndate()));
-        } else {
-            jLabel24.setText("Нет");
-        }         
-        
+//        Subordin sd = null;
+//        if (docArrival.getId() != 0) {
+//            sd = new SubordinDAO().getSubDocument(docArrival);
+//        }
+//        if (sd != null) {
+//            parentDoc = new DocumentUtil().getMainDocument(sd);
+//            jLabel24.setText(parentDoc.getDocuments().getName()+" №"+parentDoc.getId()+" от "+format.format(parentDoc.getIndate()));
+//        } else {
+//            jLabel24.setText("Нет");
+//        }         
+//        
         tableModel.addTableModelListener(new TableModelListener(){
             @Override
             public void tableChanged(TableModelEvent e) {
@@ -205,46 +207,95 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
                 }
             }
         });
+        calendar.getCPanel().addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            @Override
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                calendarPanel1PropertyChange(evt);
+            }
+            private void calendarPanel1PropertyChange(PropertyChangeEvent evt) {
+                        if (evt.getPropertyName().equals("selectedDate")) {            
+                            calendar.getPopup().hide();
+                            jFormattedTextField1.setText(calendar.getStringDate());
+                            try {
+                                docArrival.setIndate(format.parse(jFormattedTextField1.getText()));
+                            } catch (ParseException ex) {
+                                docArrival.setIndate(new Date());
+                            }
+                    }
+            }
+        });         
     } 
     
     // инициализировать новый документ
     @Override
     public void docInit() {
-        docArrival.setDocuments(documentDAO.getDocumentType(2L));
-        docArrival.setOrganization(docArrival.getSessionOrganization());        
-        docArrival.setDepartment(docArrival.getSessionUser().getDepartment());
-        docArrival.setUsr(docArrival.getSessionUser());        
-        docArrival.setWeight(0);
-        docArrival.setTotal(0);        
-        docArrival.setIndate(new Date());
-        docArrival.setStatus(documentDAO.getStatus(1L));
-        docArrival.setStorage(getSelectedStorage());        
-        docArrival.setDescr("");       
+        docArrival.init(2L);
+        docArrival.setStorage(getSelectedStorage());
+        recalculateDocument();      
     }   
     
     // заполнить отображение документа
     @Override
     public void repaintDocument() {
-        this.setTitle(frameTitle + " ["+docArrival.getStatus().getName()+"]");        
-        if (docArrival.getId() != 0)
-            jLabel2.setText(""+docArrival.getId()); 
-        jDateChooser1.setDate(docArrival.getIndate());
+         // Заголовок 
+        titleComplete.setLength(0);
+        titleComplete.append(frameTitle).append(" /").append(docArrival.getOrganization().getName())
+                .append("/ [").append(docArrival.getStatus().getName()).append("]");
+        if (!saved)
+            titleComplete.append("*");        
+        this.setTitle(titleComplete.toString());
+        // номер документа
+        jLabel2.setText(docArrival.getFormattedID(docArrival.getId())); 
+        // дата
+        jFormattedTextField1.setText(format.format(docArrival.getIndate()));
+        // описание
         jTextField2.setText(docArrival.getDescr());
+        // пользователь
         jLabel14.setText(docArrival.getUsr().getName());
-        jLabel11.setText(""+docArrival.getTotal()); // итого
-        jTextField1.setText(docArrival.getDepartment().getName());
+        // вылюта
         jLabel6.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
         jLabel16.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
-        jLabel22.setText(MainFrame.sessionParams.getParam().getOkv().getRus());        
-        jLabel25.setText(docArrival.getOrganization().getName());
+        jLabel22.setText(MainFrame.sessionParams.getParam().getOkv().getRus());         
+        //вес
+        jLabel17.setText(String.format("%.3f", docArrival.getWeight()));
+        // подразделение
+        jTextField1.setText(docArrival.getDepartment().getName());
+        // Склад
+        jComboBox1.setSelectedItem(docArrival.getStorage().getName()); 
+        // Cуммы без НДС
+        jLabel10.setText(String.format("%.2f", getSum()));
+        // НДС
+        jLabel21.setText(String.format("%.2f", getNDS()));        
+        // Сумма
+        jLabel11.setText(String.format("%.2f", getResult()));
+        // наименований
+        jLabel4.setText(String.format("%d", tableModel.getRowCount()));  
+        // контрагент
         if (docArrival.getContragent() != null)        
             jTextField3.setText(docArrival.getContragent().getName());
-        jComboBox1.setSelectedItem(docArrival.getStorage().getName());
-    
+        
         if (docArrival.getStatus().getId() == 2 || docArrival.getStatus().getId() == 3) {
             closeButtons();
-        }          
+        }              
+        // основание
+        if (parentDoc != null)
+            jLabel24.setText(parentDoc.getDocumentName()+" №"+docArrival.getFormattedID(parentDoc.getId()) + " от " +format.format(parentDoc.getIndate()));
+        else
+            jLabel24.setText("НЕТ");                     
+    }  
+    // сумма без ндс
+    private float getSum() {
+        float total = getResult();        
+        return (total - getNDS());
+    }
+    // НДС
+    private float getNDS() {
+        return docArrival.getTotal()*docArrival.getOrganization().getNds()/100;
     }    
+    // private float сумма с НДС
+    private float getResult() {
+        return docArrival.getTotal();
+    }     
     
     // расчитать вес
     Float getWeight() {
@@ -269,19 +320,16 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             products.get(i).setCount(Float.parseFloat(jTable1.getValueAt(i, 3).toString()));
             products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
         }
-        jLabel10.setText(""+sum);
-        jLabel11.setText(""+sum);
-        jLabel17.setText(""+getWeight());
-        docArrival.setTotal(Float.parseFloat(jLabel11.getText()));
+        docArrival.setTotal(sum);
+        getWeight();
+        repaintDocument();
     } 
     
     // получить товары из документа и заполнить таблицу
-    void getArrivalProducts(Arrival arrival) {
-
+    void getArrivalProducts(Arrival arrival) {      
         products.clear();
-        if (arrival.getArrivalProducts() != null)
+        if (!arrival.getArrivalProducts().isEmpty())
             products.addAll(arrival.getArrivalProducts());
-            
         updateProductsTable();
     }
     
@@ -298,8 +346,7 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             Iterator it = products.iterator();
             while (it.hasNext()) {
                 arrivalProduct = (ArrivalProduct) it.next();                
-                product = new ProductDAO().getProduct(""+arrivalProduct.getProduct_id());
-                arrivalProduct.setProduct(product);
+                product = arrivalProduct.getProduct();
                 i++;
                 tableModel.addRow(new Object[]{i, product.getArticul(), product.getName(), 
                     arrivalProduct.getCount(),  
@@ -311,6 +358,22 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         tableModel.fireTableDataChanged();
         recalculateDocument();
     }   
+    // добавить продукты в документ
+    private void setArrivalProducts(ArrayList<? extends DocumentProduct> prods) throws IllegalAccessException, InvocationTargetException {
+        newProducts.clear();
+        ArrivalProduct ap;
+        for (DocumentProduct pr : prods) {
+            ap = new ArrivalProduct();
+            if (pr.getCount() > 0) {
+                BeanUtils.copyProperties(ap, pr);
+                newProducts.add(ap);
+            }
+        }
+        products = (ArrayList<ArrivalProduct>)newProducts.clone();
+        for (ArrivalProduct pr : products) {
+            pr.setArrival(docArrival);
+        }
+    }     
     
     // установить склады
     void getStorageList() {        
@@ -350,29 +413,23 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         
         if (docArrival.getContragent() != null) {
         try {            
-            docArrival.setIndate(jDateChooser1.getDate());
             docArrival.setDescr(jTextField2.getText());
-            docArrival.setStorage(getSelectedStorage());
-            docArrival.setTotal(Float.valueOf(jLabel11.getText().replace(",", ".")));
-            docArrival.setStatus(documentDAO.getStatus(status));
-            
-            for (int i = 0; i < products.size(); i++) {                    
-                    products.get(i).setArrival(docArrival);
-            }  
-            
-            docArrival.setArrivalProducts(products);             
-            
-            new DocumentUtil().saveParent(parentDoc, docArrival);            
+            docArrival.setStatus(documentDAO.getStatus(status));                
+            docArrival.setTotal(getResult());
+            docArrival.setArrivalProducts(products);                                            
             
             documentDAO.updateDocument(docArrival);
+            if (parentDoc != null)
+                new DocumentUtil().saveParent(parentDoc, docArrival);              
+            if (status == 2)
+                executeDocument();            
+            saved = true;
             repaintDocument();            
             
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Не удалось сохранить документ \n" + ex, "Ошибка",
-                    JOptionPane.ERROR_MESSAGE);} 
+             MainFrame.ifManager.showWarningDialog(this, "Ошибка", "Не удалось сохранить документ. " +ex);} 
         } else {
-                JOptionPane.showMessageDialog(null, 
-                    "Не удалось сохранить документ. \n Заполните поле контрагент.", "Ошибка", JOptionPane.ERROR_MESSAGE);                    
+             MainFrame.ifManager.showWarningDialog(this, "Ошибка", "Не удалось сохранить документ. \nЗаполните поле контрагент.");
         }                                    
     }
 
@@ -402,8 +459,8 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -425,10 +482,12 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         jLabel8 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        jButton8 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 109, 240), 3));
         setClosable(true);
         setIconifiable(true);
         setTitle(frameTitle);
@@ -452,35 +511,53 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             }
         });
 
-        jLabel7.setText("Сумма");
+        jLabel7.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel7.setText("Сумма без НДС");
 
-        jLabel9.setText("Итого");
+        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel9.setText("Итого с НДС");
 
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel10.setText("0.00");
 
-        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel11.setText("0.00");
 
         jButton1.setText("Закрыть");
+        jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(76, 88, 102)));
+        jButton1.setPreferredSize(new java.awt.Dimension(70, 24));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
+        jLabel12.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel12.setText("Примечание");
 
-        jLabel13.setText("Пользователь");
+        jTextField2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jTextField2.setMaximumSize(new java.awt.Dimension(300, 20));
+        jTextField2.setMinimumSize(new java.awt.Dimension(200, 20));
+        jTextField2.setPreferredSize(new java.awt.Dimension(300, 20));
+
+        jLabel13.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel13.setText("Пользователь:");
 
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel14.setText("_____");
+        jLabel14.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel14.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel14MouseClicked(evt);
+            }
+        });
 
         jLabel6.setText("__");
 
         jLabel16.setText("__");
 
+        jLabel20.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel20.setText("НДС");
 
         jLabel21.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -488,13 +565,15 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
         jLabel22.setText("__");
 
-        jLabel23.setText("Основание");
+        jLabel23.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel23.setText("Документ основание:");
 
         jLabel24.setText("_____");
 
-        jLabel4.setText("Организация");
+        jLabel26.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel26.setText("Всего наименований:");
 
-        jLabel25.setText("_____");
+        jLabel4.setText("jLabel4");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -502,85 +581,89 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel9)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel20)
-                                        .addGap(26, 26, 26)
-                                        .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+                                            .addComponent(jLabel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(2, 2, 2)
+                                        .addComponent(jLabel7)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
-                                    .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(2, 2, 2)
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                                    .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(60, 60, 60)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel26)
+                                            .addComponent(jLabel23))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel4)))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel13)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(9, 9, 9)
-                                .addComponent(jLabel4))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel23)
-                                .addComponent(jLabel13)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 149, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 179, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel23)
+                            .addComponent(jLabel24))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel13)
+                            .addComponent(jLabel14)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel20)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel22)
+                            .addComponent(jLabel26))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel16))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 25, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel23)
-                    .addComponent(jLabel24))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel13)
-                        .addComponent(jLabel14))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel20)
-                        .addComponent(jLabel21)
-                        .addComponent(jLabel22)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel16)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel25))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(9, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12))
                 .addContainerGap())
         );
 
@@ -588,16 +671,26 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
         jPanel2.setPreferredSize(new java.awt.Dimension(791, 120));
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText("№");
 
-        jLabel2.setText("_____");
+        jLabel2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("______");
 
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel3.setText("Дата");
 
+        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel5.setText("Контрагент");
 
-        jLabel15.setText("Склад");
+        jLabel15.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel15.setText("Склад:");
 
+        jComboBox1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        jComboBox1.setMaximumSize(new java.awt.Dimension(200, 22));
+        jComboBox1.setMinimumSize(new java.awt.Dimension(200, 22));
+        jComboBox1.setPreferredSize(new java.awt.Dimension(200, 22));
         jComboBox1.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboBox1ItemStateChanged(evt);
@@ -605,6 +698,7 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         });
 
         jTextField3.setEditable(false);
+        jTextField3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jTextField3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jTextField3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -612,6 +706,7 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             }
         });
 
+        jLabel19.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel19.setText("Подразделение");
 
         jToolBar1.setFloatable(false);
@@ -619,16 +714,25 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/trash.png"))); // NOI18N
         jButton2.setToolTipText("Удалить");
+        jButton2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton2.setFocusPainted(false);
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton2.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton2.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButton2);
 
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exe.png"))); // NOI18N
         jButton7.setToolTipText("Выполнить");
+        jButton7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton7.setFocusPainted(false);
         jButton7.setFocusable(false);
         jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton7.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton7.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton7.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -639,9 +743,13 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save.png"))); // NOI18N
         jButton9.setToolTipText("Сохранить");
+        jButton9.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton9.setFocusPainted(false);
         jButton9.setFocusable(false);
         jButton9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton9.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton9.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton9.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -652,8 +760,11 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_save.png"))); // NOI18N
         jButton5.setToolTipText("Сохранить документ");
+        jButton5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton5.setFocusPainted(false);
-        jButton5.setPreferredSize(new java.awt.Dimension(20, 20));
+        jButton5.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton5.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton5.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
@@ -663,8 +774,11 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cartadd.png"))); // NOI18N
         jButton6.setToolTipText("Подбор товара");
+        jButton6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton6.setFocusPainted(false);
-        jButton6.setPreferredSize(new java.awt.Dimension(20, 20));
+        jButton6.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton6.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton6.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -674,14 +788,19 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/documentadd.png"))); // NOI18N
         jButton4.setToolTipText("Ввести на основании");
+        jButton4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton4.setFocusPainted(false);
-        jButton4.setPreferredSize(new java.awt.Dimension(20, 20));
+        jButton4.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton4.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton4.setPreferredSize(new java.awt.Dimension(24, 24));
         jToolBar1.add(jButton4);
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/family-tree.png"))); // NOI18N
         jButton3.setToolTipText("Подчиненные документы");
+        jButton3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton3.setFocusPainted(false);
-        jButton3.setPreferredSize(new java.awt.Dimension(20, 20));
+        jButton3.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton3.setMinimumSize(new java.awt.Dimension(24, 24));
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -690,6 +809,7 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         jToolBar1.add(jButton3);
 
         jTextField1.setEditable(false);
+        jTextField1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jTextField1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -700,11 +820,24 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
         jLabel8.setText("Вес");
 
         jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel17.setText("0.00");
+        jLabel17.setText("0.000");
 
         jLabel18.setText("кг.");
 
-        jDateChooser1.setPreferredSize(new java.awt.Dimension(130, 20));
+        jFormattedTextField1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd.MM.yyyy H:mm"))));
+        jFormattedTextField1.setMaximumSize(new java.awt.Dimension(105, 20));
+        jFormattedTextField1.setMinimumSize(new java.awt.Dimension(105, 20));
+        jFormattedTextField1.setPreferredSize(new java.awt.Dimension(105, 20));
+
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/calendar.png"))); // NOI18N
+        jButton8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton8.setFocusPainted(false);
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -712,52 +845,51 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel19)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))))
-                .addGap(52, 138, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+                        .addGap(18, 333, Short.MAX_VALUE)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel18)))
+                        .addComponent(jLabel18))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 206, Short.MAX_VALUE)
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(jLabel2)
-                        .addComponent(jLabel15)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel3))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel15)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
@@ -771,8 +903,6 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
-
-        jLabel17.getAccessibleContext().setAccessibleName("0.000");
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
@@ -812,46 +942,44 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
     // кнопка ДОБАВИТЬ ТОВАРЫ
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        ProductToCartDialog pdtcd = new ProductToCartDialog(null, true, getSelectedStorage(), products, null, "arrival");
-        pdtcd.setLocationRelativeTo(this);
-        pdtcd.setVisible(true);
-                
-        updateProductsTable();
+        try {            
+            PriceName p = new PriceNameDAO().getPriceName(1);
+            ProductAddDialog pad = new ProductAddDialog(null, true, docArrival.getStorage(), p, products);
+            pad.setVisible(true);                   
+
+            setArrivalProducts(products);
+            updateProductsTable(); 
+                            
+        } catch (Exception ex) {
+            Logger.getLogger(DocAct.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
     // клавиши в таблице    
     private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
             int index = jTable1.getSelectedRow();
-            docArrival.getArrivalProducts().remove((ArrivalProduct)products.get(index));            
             products.remove(index);
             tableModel.removeRow(index);
-
             updateProductsTable();
+
         }  
         if (evt.getKeyCode() == KeyEvent.VK_INSERT) {
-            ProductToCartDialog pdtcd = new ProductToCartDialog(null, true, getSelectedStorage(), products, null, "arrival");
-            pdtcd.setLocationRelativeTo(this);
-            pdtcd.setVisible(true);
-        
-            updateProductsTable();            
+            try {
+                PriceName p = new PriceNameDAO().getPriceName(1);
+                ProductAddDialog pad = new ProductAddDialog(null, true, docArrival.getStorage(), p, products);
+                pad.setVisible(true);
+                
+                setArrivalProducts(products);          
+                updateProductsTable();
+            } catch (Exception ex) {
+                Logger.getLogger(DocDeduct.class.getName()).log(Level.SEVERE, null, ex);
+            }         
         }
     }//GEN-LAST:event_jTable1KeyPressed
 
     // кнопка СОХРАНИТЬ ШАБЛОН
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-//        UIManager.put("FileChooser.saveButtonText", "Сохранить");
-//        UIManager.put("FileChooser.cancelButtonText", "Отмена");
-//        JFileChooser fileChooser = new JFileChooser();
-//        
-//        fileChooser.setDialogTitle("Сохранить файл");   
-// 
-//        int userSelection = fileChooser.showSaveDialog(this);
-//        
-//        if (userSelection == JFileChooser.APPROVE_OPTION) {            
-//            File fileToSave = fileChooser.getSelectedFile();
-//            if (!fileToSave.getName().endsWith(".pdf"))
-//                fileToSave = new File(fileToSave.getAbsolutePath()+".pdf");
         
         try {
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -859,7 +987,7 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
             jr = JasperCompileManager.compileReport( getClass().getClassLoader().getResource("reports/Arrival.jrxml").getFile() );
             Map<String, Object> parameters = new HashMap<String, Object>();
                 parameters.put("docId", jLabel2.getText());
-                parameters.put("date",  new MonthToTextBean().dateToText(format.format(jDateChooser1.getDate())));
+                parameters.put("date",  new MonthToTextBean().dateToText(jFormattedTextField1.getText()));
                 parameters.put("storage", docArrival.getStorage().getName());
                 parameters.put("company", docArrival.getUsr().getName());
                 parameters.put("contragent", docArrival.getContragent().getName());
@@ -881,13 +1009,7 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
                parameters,  new JRBeanCollectionDataSource(ab));
             
             MainFrame.ifManager.showPreviw(jasperPrint);
-            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-//            JasperExportManager.exportReportToPdfFile(jasperPrint,
-//               fileToSave.getCanonicalPath());  
-//            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//            MainFrame.ifManager.infoMessage("Файл " + fileToSave.getCanonicalPath() + " сохранен.");
-            
+            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));            
             
         } catch (JRException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -897,21 +1019,18 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
     // Выбрать контрагента  
     private void jTextField3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField3MouseClicked
-        ContragentSelectDialog csd = new ContragentSelectDialog(null, true, docArrival);
-        csd.setLocationRelativeTo(this);
-        csd.setVisible(true);
+        docArrival.showContragentDialog(docArrival);
         jTextField3.setText(docArrival.getContragent().getName());        
     }//GEN-LAST:event_jTextField3MouseClicked
 
     // Выполнить    
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        saveDocument(2l);                        
-        executeDocument();  
+        saveDocument(2L);                        
     }//GEN-LAST:event_jButton7ActionPerformed
 
     // Сохранить
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        saveDocument(1l);
+        saveDocument(1L);
     }//GEN-LAST:event_jButton9ActionPerformed
 
     // скрыть при сворачивании
@@ -921,11 +1040,22 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
 
     private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
         // Подразделение
-          DepartmentSelectDialog sdd = new DepartmentSelectDialog(null, true, docArrival);
-          sdd.setLocationRelativeTo(this);
-          sdd.setVisible(true);
-          jTextField1.setText(docArrival.getDepartment().getName());        
+        docArrival.showDepartmentDialog(docArrival);
+        jTextField1.setText(docArrival.getDepartment().getName());
     }//GEN-LAST:event_jTextField1MouseClicked
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // TODO add your handling code here:
+        calendar.getPopup(jButton8).show();
+        docArrival.setIndate(calendar.getDate());
+        saved = false;          
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jLabel14MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel14MouseClicked
+        // TODO add your handling code here:
+        docArrival.showUserDialog(docArrival);
+        jLabel14.setText(docArrival.getUsr().getName());        
+    }//GEN-LAST:event_jLabel14MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -936,9 +1066,10 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -956,7 +1087,7 @@ public class DocArrival extends javax.swing.JInternalFrame implements DocumentIm
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

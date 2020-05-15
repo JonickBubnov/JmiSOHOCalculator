@@ -80,16 +80,17 @@ public class SelectDatabaseDialog extends javax.swing.JDialog {
         setTitle("База данных");
         setResizable(false);
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText("Выберите базу данных");
 
-        jComboBox1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jComboBox1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         jComboBox1.setFocusable(false);
         jComboBox1.setPreferredSize(new java.awt.Dimension(33, 24));
 
         jButton1.setText("Отмена");
         jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(76, 88, 102)));
         jButton1.setFocusPainted(false);
-        jButton1.setPreferredSize(new java.awt.Dimension(80, 24));
+        jButton1.setPreferredSize(new java.awt.Dimension(70, 24));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -99,7 +100,7 @@ public class SelectDatabaseDialog extends javax.swing.JDialog {
         jButton2.setText("Ок");
         jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(76, 88, 102)));
         jButton2.setFocusPainted(false);
-        jButton2.setPreferredSize(new java.awt.Dimension(80, 24));
+        jButton2.setPreferredSize(new java.awt.Dimension(70, 24));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -121,7 +122,7 @@ public class SelectDatabaseDialog extends javax.swing.JDialog {
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 120, Short.MAX_VALUE)))
+                        .addGap(0, 126, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(

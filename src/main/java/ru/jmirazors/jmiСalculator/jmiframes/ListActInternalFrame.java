@@ -224,6 +224,7 @@ public class ListActInternalFrame extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(76, 88, 102)));
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);

@@ -55,7 +55,7 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
      * Creates new form ListArrivalInternalFrame
      */
     JToolBar tb;
-    JButton dockButton = new JButton("Спр. поступл. |");
+    JButton dockButton = new JButton("Спр. поступл.");
     
     // **************  Параметры списка *****************************
     Map <String, String> properties;
@@ -112,6 +112,7 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
         tableModel.addColumn("Сумма");
         tableModel.addColumn("Склад");
         tableModel.addColumn("Пользователь");
+        tableModel.addColumn("Подразделение");
         tableModel.addColumn("Примечание");
         
         rowSorter = new TableRowSorter(tableModel);
@@ -142,6 +143,9 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
         //user
         jTable1.getColumnModel().getColumn(6).setMaxWidth(156);
         jTable1.getColumnModel().getColumn(6).setMinWidth(156);
+        //department
+        jTable1.getColumnModel().getColumn(7).setMaxWidth(156);
+        jTable1.getColumnModel().getColumn(7).setMinWidth(156);        
         
         jTable1.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
         jTable1.setDefaultRenderer(Object.class, colorRenderer);
@@ -206,9 +210,9 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
             Iterator it = arrivals.iterator();
             while (it.hasNext()) {
                 Arrival arrival = (Arrival)it.next(); 
-                tableModel.addRow(new Object[]{arrival.getStatus().getId(), arrival.getId(), format.format(arrival.getIndate()), arrival.getOrganization().getName(),
+                tableModel.addRow(new Object[]{arrival.getStatus().getId(), listUtil.getFormattedID(arrival.getId()), format.format(arrival.getIndate()), arrival.getOrganization().getName(),
                 arrival.getContragent().getName(), arrival.getTotal(), arrival.getStorage().getName(), arrival.getUsr().getName(), 
-                arrival.getDescr()});                
+                arrival.getDepartment().getName(), arrival.getDescr()});                
             }
         } catch (Exception e) {System.out.print(e);} 
         jScrollPane1.getVerticalScrollBar().setValue(jScrollPane1.getVerticalScrollBar().getMaximum());
@@ -234,12 +238,13 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(76, 88, 102)));
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Справочник \"Поступления товаров\"");
-        setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/box_arrival.png"))); // NOI18N
+        setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/arrival.png"))); // NOI18N
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -262,10 +267,14 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
         jToolBar1.setRollover(true);
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add-with-pen-tool.png"))); // NOI18N
-        jButton1.setToolTipText("Новый документ");
-        jButton1.setBorderPainted(false);
+        jButton1.setToolTipText("Новый документ \"Поступление товаров\"");
+        jButton1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton1.setFocusPainted(false);
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton1.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton1.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -276,8 +285,13 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_save.png"))); // NOI18N
         jButton3.setToolTipText("Сохранить список");
+        jButton3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton3.setFocusPainted(false);
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton3.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton3.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton3.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -286,10 +300,15 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
         });
         jToolBar1.add(jButton3);
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/funnel.png"))); // NOI18N
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settings.png"))); // NOI18N
         jButton4.setToolTipText("Настройка отображения");
+        jButton4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton4.setFocusPainted(false);
         jButton4.setFocusable(false);
         jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton4.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton4.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton4.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -300,9 +319,13 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/refresh.png"))); // NOI18N
         jButton2.setToolTipText("Обновить список");
+        jButton2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton2.setFocusPainted(false);
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton2.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton2.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -311,30 +334,12 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
         });
         jToolBar1.add(jButton2);
 
-        jLabel1.setText("Поиск");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/funnel.png"))); // NOI18N
+        jPanel1.add(jLabel1);
 
-        jTextField1.setPreferredSize(new java.awt.Dimension(267, 20));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(193, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(8, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        jTextField1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jTextField1.setPreferredSize(new java.awt.Dimension(200, 20));
+        jPanel1.add(jTextField1);
 
         jToolBar1.add(jPanel1);
 
@@ -379,10 +384,11 @@ public class ListArrivalInternalFrame extends javax.swing.JInternalFrame {
 
     // действия в таблице
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        if (evt.getClickCount() == 2 && !MainFrame.ifManager.isDocArrivalFrameOpen()) {            
-            MainFrame.ifManager.showFrame(new DocArrival(), false);
-            MainFrame.ifManager.setDocArrivalFrameOpen(true);
-        } else {
+        if (evt.getClickCount() == 2 && !MainFrame.ifManager.isDocArrivalFrameOpen()) { 
+                String id = tableModel.getValueAt(jTable1.getRowSorter().convertRowIndexToModel(jTable1.getSelectedRow()), 1).toString();
+                MainFrame.ifManager.showFrame(new DocArrival(id), false);
+                MainFrame.ifManager.setDocArrivalFrameOpen(true);
+        } else if (MainFrame.ifManager.isDocArrivalFrameOpen()){
             MainFrame.ifManager.infoMessage("Документ уже открыт. Невозмозможно открыть несколько копий документа.");
         }              
     }//GEN-LAST:event_jTable1MouseClicked

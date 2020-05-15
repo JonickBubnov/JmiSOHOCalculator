@@ -47,7 +47,7 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
      * Creates new form ListDeductInternalFrame
      */
     JToolBar tb;
-    JButton dockButton = new JButton("Спр. списание |"); 
+    JButton dockButton = new JButton("Спр. списание");         
 
     // **************  Параметры списка *****************************
     Map <String, String> properties;
@@ -84,7 +84,7 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         }
     };    
     
-    public ListDeductInternalFrame(JToolBar toolBar) {
+    public ListDeductInternalFrame(JToolBar toolBar) {        
         this.tb = toolBar;
           dockButton.setFocusPainted(false);
           dockButton.addActionListener((ActionEvent evt) -> {
@@ -224,6 +224,7 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(76, 88, 102)));
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);

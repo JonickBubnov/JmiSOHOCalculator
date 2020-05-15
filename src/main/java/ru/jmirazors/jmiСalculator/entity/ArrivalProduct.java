@@ -104,6 +104,5 @@ private int discount;
     public void setDiscount(int discount) {
         this.discount = discount;
     }
-
     
 }

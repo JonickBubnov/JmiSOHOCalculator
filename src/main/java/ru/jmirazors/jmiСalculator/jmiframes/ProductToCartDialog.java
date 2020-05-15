@@ -486,9 +486,9 @@ public final class ProductToCartDialog extends javax.swing.JDialog {
             case "invoice":
                 DocInvoice.products = (ArrayList<InvoiceProduct>)cartProducts.clone();
                 break;
-            case "arrival":
-                DocArrival.products = (ArrayList<ArrivalProduct>)cartProducts.clone();
-                break;
+//            case "arrival":
+//                DocArrival.products = (ArrayList<ArrivalProduct>)cartProducts.clone();
+//                break;
             case "offer":
                 DocOffer.products = (ArrayList<OfferProduct>)cartProducts.clone();
                 break;
@@ -498,9 +498,9 @@ public final class ProductToCartDialog extends javax.swing.JDialog {
 //            case "deduct":
 //                DocDeduct.products = (ArrayList<DeductProduct>)cartProducts.clone();
 //                break; 
-            case "receipt":
-                DocReceipt.products = (ArrayList<ReceiptProduct>)cartProducts.clone();
-                break;
+//            case "receipt":
+//                DocReceipt.products = (ArrayList<ReceiptProduct>)cartProducts.clone();
+//                break;
         }
         dispose();
     }//GEN-LAST:event_jButton10ActionPerformed

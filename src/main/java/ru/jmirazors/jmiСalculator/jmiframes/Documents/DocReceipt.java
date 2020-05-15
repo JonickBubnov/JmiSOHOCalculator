@@ -5,11 +5,13 @@
  */
 package ru.jmirazors.jmiСalculator.jmiframes.Documents;
 
-import ru.jmirazors.jmiСalculator.jmiframes.Documents.DocInvoice;
 import ru.jmirazors.jmiCalculator.MainFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +24,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.beanutils.BeanUtils;
+import ru.jmirazors.jmiCalculator.beans.CalendarPopup;
 import ru.jmirazors.jmiCalculator.beans.DocumentUtil;
 import ru.jmirazors.jmiСalculator.DAO.DocumentCompletionDAO;
 import ru.jmirazors.jmiСalculator.DAO.DocumentDAO;
@@ -34,6 +38,7 @@ import ru.jmirazors.jmiСalculator.entity.Receipt;
 import ru.jmirazors.jmiСalculator.entity.ReceiptProduct;
 import ru.jmirazors.jmiСalculator.entity.Storage;
 import ru.jmirazors.jmiСalculator.jmiframes.ProductToCartDialog;
+import ru.jmirazors.jmiСalculator.jmiframes.selectDialogs.ProductAddDialog;
 
 /**
  *
@@ -45,16 +50,21 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
      * Creates new form DocReceipt
      */
     JToolBar tb;
-    JButton dockButton = new JButton("Док. оприходование|");      
+    JButton dockButton = new JButton("Док. оприход.");      
     
     String frameTitle = "Оприходование товаров";
+    StringBuffer titleComplete = new StringBuffer();
     SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-    public static ArrayList<ReceiptProduct> products = new ArrayList<>();
+    ArrayList<ReceiptProduct> products = new ArrayList<>();
+    ArrayList<ReceiptProduct> newProducts = new ArrayList<>();
     ReceiptProduct receiptProduct;
     Product product;
     Receipt docReceipt;
     DocumentDAO documentDAO;
     Document parentDoc = null;
+    CalendarPopup calendar;
+    boolean saved = true;    
+    
     
     // модель таблицы
     DefaultTableModel tableModel = new DefaultTableModel(){
@@ -68,31 +78,28 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
     };      
     
     public DocReceipt() {
+        calendar = new CalendarPopup();
+        documentDAO = new DocumentDAO();
         initTableColumns();
-        docReceipt = new Receipt();        
+        docReceipt = new Receipt();
         products.clear();
         initComponents();
-        initVisualComponents(); 
-        
-        documentDAO = new DocumentDAO();
+        initVisualComponents();                 
         docInit();
-        repaintDocument();
         
     }
     public DocReceipt(String id) {
+        calendar = new CalendarPopup();                
         documentDAO = new DocumentDAO();
         initTableColumns();
         try {
             docReceipt = (Receipt)documentDAO.getDocument(id.trim(), Receipt.class);
         } catch (Exception ex) {
-            Logger.getLogger(DocInvoice.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.ifManager.showWarningDialog(this, "Ошибка!", "Не удалось получить документ.\n"+ex);
         }
-        products.clear();
         initComponents();
         initVisualComponents();
         getReceiptProducts(docReceipt);
-        repaintDocument();
-      
     }
     
     public DocReceipt(Document doc, List<DocumentProduct> iproducts) {
@@ -177,7 +184,8 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
             jTable1.setEnabled(false);
             jComboBox1.setEnabled(false);
             jTextField1.setEnabled(false);
-            jDateChooser1.setEnabled(false);
+            jFormattedTextField1.setEditable(false);
+            jButton9.setEnabled(false);
     }  
     
     // инициализировать таблицу
@@ -216,42 +224,71 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
                 recalculateDocument();
             }
         });
+        calendar.getCPanel().addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            @Override
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                calendarPanel1PropertyChange(evt);
+            }
+            private void calendarPanel1PropertyChange(PropertyChangeEvent evt) {
+                        if (evt.getPropertyName().equals("selectedDate")) {            
+                            calendar.getPopup().hide();
+                            jFormattedTextField1.setText(calendar.getStringDate());
+                            try {
+                                docReceipt.setIndate(format.parse(jFormattedTextField1.getText()));
+                            } catch (ParseException ex) {
+                                docReceipt.setIndate(new Date());
+                            }
+                    }
+            }
+        });        
     } 
     
     // инициализировать документ
     @Override
     public void docInit() {
-        docReceipt.setDocuments(documentDAO.getDocumentType(10L));
-        docReceipt.setOrganization(docReceipt.getSessionOrganization());        
-        docReceipt.setUsr(docReceipt.getSessionUser());
-        docReceipt.setDepartment(docReceipt.getSessionUser().getDepartment());
-        docReceipt.setWeight(0);
-        docReceipt.setTotal(0);
-        docReceipt.setIndate(new Date());
-        docReceipt.setStatus(documentDAO.getStatus(1L));
+        docReceipt.init(10L);
         docReceipt.setStorage(getSelectedStorage());
-        docReceipt.setDescr("");          
+        recalculateDocument();         
     }
     
     // перерисовать документ
     @Override
     public void repaintDocument() {
-        this.setTitle(frameTitle + " ["+docReceipt.getStatus().getName()+"]");
-        if (docReceipt.getId() != 0)
-            jLabel4.setText(""+docReceipt.getId());
-        jDateChooser1.setDate(docReceipt.getIndate());
+         // Заголовок 
+        titleComplete.setLength(0);
+        titleComplete.append(frameTitle).append(" /").append(docReceipt.getOrganization().getName())
+                .append("/ [").append(docReceipt.getStatus().getName()).append("]");
+        if (!saved)
+            titleComplete.append("*");        
+        this.setTitle(titleComplete.toString());
+        // Номер документа
+        jLabel4.setText(docReceipt.getFormattedID(docReceipt.getId()));
+        // дата
+        jFormattedTextField1.setText(format.format(docReceipt.getIndate()));
+        // подразделение
         jTextField2.setText(docReceipt.getDepartment().getName());
-        jLabel18.setText(docReceipt.getOrganization().getName());
+        // пользователь
         jLabel12.setText(docReceipt.getUsr().getName());
+        // Валюта
         jLabel17.setText(MainFrame.sessionParams.getParam().getOkv().getRus());
+        // сумма
         jLabel8.setText(String.format("%.2f", docReceipt.getTotal()));
+        // примечание
         jTextField1.setText(docReceipt.getDescr());
+        // вес
         jLabel9.setText(String.format("%.3f", docReceipt.getWeight() ));
+        // склад
         jComboBox1.setSelectedItem(docReceipt.getStorage().getName());
+        
         if (docReceipt.getStatus().getId() == 2 || docReceipt.getStatus().getId() == 3) 
             closeButtons();        
+        // основание
         if (parentDoc != null)
-            jLabel7.setText(parentDoc.getDocuments().getName()+" №"+parentDoc.getId()+" от "+format.format(parentDoc.getIndate()));        
+            jLabel14.setText(parentDoc.getDocumentName()+" №"+docReceipt.getFormattedID(parentDoc.getId()) + " от " +format.format(parentDoc.getIndate()));
+        else
+            jLabel14.setText("НЕТ"); 
+        // наименований
+        jLabel18.setText(String.format("%d", tableModel.getRowCount()));         
     }
     
     // расчитать вес
@@ -262,6 +299,10 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         docReceipt.setWeight(weight);
         return weight;
     } 
+    // private float сумма с НДС
+    private float getResult() {
+        return docReceipt.getTotal();
+    }      
     
     // пересчитать таблицу
     void recalculateDocument() {
@@ -277,17 +318,16 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
             products.get(i).setCount(Float.parseFloat(jTable1.getValueAt(i, 3).toString()));
             products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
         }
-        jLabel8.setText(""+sum);
-        jLabel9.setText(""+getWeight());
-        docReceipt.setTotal(Float.parseFloat(jLabel8.getText()));
+        docReceipt.setTotal(sum);
+        getWeight();
+        repaintDocument();
     } 
     
     // получить товары из документа и заполнить таблицу
     void getReceiptProducts(Receipt receipt) {
         products.clear();
             if (!receipt.getReceiptProducts().isEmpty())
-                products.addAll(receipt.getReceiptProducts());
-            
+                products.addAll(receipt.getReceiptProducts());            
             updateProductsTable();
     }     
     
@@ -314,6 +354,22 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         tableModel.fireTableDataChanged();
         recalculateDocument();
     }
+    // добавить продукты в документ
+    private void setReceiptProducts(ArrayList<? extends DocumentProduct> prods) throws IllegalAccessException, InvocationTargetException {
+        newProducts.clear();
+        ReceiptProduct rp;
+        for (DocumentProduct pr : prods) {
+            rp = new ReceiptProduct();
+            if (pr.getCount() > 0) {
+                BeanUtils.copyProperties(rp, pr);
+                newProducts.add(rp);
+            }
+        }
+        products = (ArrayList<ReceiptProduct>)newProducts.clone();
+        for (ReceiptProduct pr : products) {
+            pr.setReceipt(docReceipt);
+        }
+    }       
     
     // установить склады
     void getStorageList() {        
@@ -352,31 +408,23 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
     @Override
     public void saveDocument(long status){        
         try {            
-            docReceipt.setIndate(jDateChooser1.getDate());
             docReceipt.setDescr(jTextField1.getText());
-            docReceipt.setStorage(getSelectedStorage());
-            docReceipt.setUsr(MainFrame.sessionParams.getUser());
-            docReceipt.setOrganization(docReceipt.getOrganization());
-            //ocReceipt.setTotal(Float.valueOf(jLabel8.getText()));  
-            docReceipt.setStatus(documentDAO.getStatus(status));
-
-            for (int i = 0; i < products.size(); i++) {                    
-                    products.get(i).setReceipt(docReceipt);
-            }  
-            
-            docReceipt.setReceiptProducts(products);                        
+            docReceipt.setStatus(documentDAO.getStatus(status));                
+            docReceipt.setTotal(getResult());
+            docReceipt.setReceiptProducts(products);                      
+                    
             
             documentDAO.updateDocument(docReceipt); 
             if (parentDoc != null)
                 new DocumentUtil().saveParent(parentDoc, docReceipt); 
             if (status == 2)
                 executeDocument();            
-            
+            saved = true;
             repaintDocument();
             
             
         } catch (Exception ex) {
-            Logger.getLogger(DocInvoice.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.ifManager.showWarningDialog(this, "Ошибка", "Не удалось сохранить документ. " +ex);
         }      
     }    
     /**
@@ -400,12 +448,15 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         jButton6 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        jButton9 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
@@ -422,8 +473,10 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 109, 240), 3));
         setClosable(true);
         setIconifiable(true);
+        setTitle(frameTitle);
         setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/doc-plus.png"))); // NOI18N
         setPreferredSize(new java.awt.Dimension(840, 460));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -446,28 +499,38 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
 
         jPanel1.setPreferredSize(new java.awt.Dimension(648, 100));
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText("№");
 
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel2.setText("Дата");
 
-        jLabel4.setText("____");
+        jLabel4.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel4.setText("_______");
 
+        jComboBox1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        jComboBox1.setPreferredSize(new java.awt.Dimension(200, 22));
         jComboBox1.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboBox1ItemStateChanged(evt);
             }
         });
 
-        jLabel5.setText("Склад");
+        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel5.setText("Склад:");
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/trash.png"))); // NOI18N
         jButton2.setToolTipText("Удалить документ");
+        jButton2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton2.setFocusPainted(false);
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton2.setMinimumSize(new java.awt.Dimension(24, 24));
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -478,9 +541,13 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
 
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exe.png"))); // NOI18N
         jButton7.setToolTipText("Выполнить");
+        jButton7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton7.setFocusPainted(false);
         jButton7.setFocusable(false);
         jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton7.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton7.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton7.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -491,9 +558,13 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
 
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/save.png"))); // NOI18N
         jButton6.setToolTipText("Сохранить");
+        jButton6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton6.setFocusPainted(false);
         jButton6.setFocusable(false);
         jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton6.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton6.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton6.setPreferredSize(new java.awt.Dimension(24, 24));
         jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -504,13 +575,19 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_save.png"))); // NOI18N
         jButton5.setToolTipText("Сохранить документ");
+        jButton5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton5.setFocusPainted(false);
-        jButton5.setPreferredSize(new java.awt.Dimension(20, 20));
+        jButton5.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton5.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton5.setPreferredSize(new java.awt.Dimension(24, 24));
         jToolBar1.add(jButton5);
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cartadd.png"))); // NOI18N
         jButton4.setToolTipText("Подбор товара");
+        jButton4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton4.setFocusPainted(false);
+        jButton4.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton4.setMinimumSize(new java.awt.Dimension(24, 24));
         jButton4.setPreferredSize(new java.awt.Dimension(20, 20));
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -519,6 +596,35 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         });
         jToolBar1.add(jButton4);
 
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/documentadd.png"))); // NOI18N
+        jButton3.setToolTipText("Ввести на основании");
+        jButton3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton3.setFocusPainted(false);
+        jButton3.setFocusable(false);
+        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton3.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton3.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton3.setPreferredSize(new java.awt.Dimension(24, 24));
+        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButton3);
+
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/family-tree.png"))); // NOI18N
+        jButton8.setToolTipText("Подчиненные документы");
+        jButton8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton8.setFocusPainted(false);
+        jButton8.setFocusable(false);
+        jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton8.setMaximumSize(new java.awt.Dimension(24, 24));
+        jButton8.setMinimumSize(new java.awt.Dimension(24, 24));
+        jButton8.setPreferredSize(new java.awt.Dimension(24, 24));
+        jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton8);
+
         jLabel7.setText("Вес");
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -526,47 +632,65 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
 
         jLabel15.setText("кг.");
 
+        jLabel16.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel16.setText("Подразделение");
 
         jTextField2.setEditable(false);
+        jTextField2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jTextField2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jTextField2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextField2MouseClicked(evt);
+            }
+        });
+
+        jFormattedTextField1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd.MM.yyyy H:mm"))));
+        jFormattedTextField1.setPreferredSize(new java.awt.Dimension(105, 20));
+
+        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/calendar.png"))); // NOI18N
+        jButton9.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton9.setFocusPainted(false);
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(21, 21, 21)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel16))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel16)
+                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 344, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel7)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel15)
-                        .addGap(142, 142, 142))))
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel15)))
+                .addContainerGap())
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -574,59 +698,76 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel15)
-                            .addComponent(jLabel7)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel1)
-                                .addComponent(jLabel4)
-                                .addComponent(jLabel2)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel16))))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(jLabel4)
+                        .addComponent(jLabel2)
+                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton9))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel5)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel16))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel9)
+                        .addComponent(jLabel15)
+                        .addComponent(jLabel7)))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
         jButton1.setText("Закрыть");
+        jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(76, 88, 102)));
         jButton1.setFocusPainted(false);
+        jButton1.setMaximumSize(new java.awt.Dimension(70, 24));
+        jButton1.setMinimumSize(new java.awt.Dimension(70, 24));
+        jButton1.setPreferredSize(new java.awt.Dimension(70, 24));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
+        jLabel6.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel6.setText("Сумма");
 
+        jLabel8.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("0.00");
 
+        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel10.setText("Примечание");
 
-        jLabel11.setText("Пользователь");
+        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel11.setText("Пользователь:");
+
+        jTextField1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jTextField1.setPreferredSize(new java.awt.Dimension(300, 20));
 
         jLabel12.setText("____");
+        jLabel12.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel12MouseClicked(evt);
+            }
+        });
 
-        jLabel13.setText("Основание");
+        jLabel13.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel13.setText("Документ основание:");
 
         jLabel14.setText("____");
 
         jLabel17.setText("___");
 
-        jLabel3.setText("Организация");
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel3.setText("Всего наименований:");
 
-        jLabel18.setText("____");
+        jLabel18.setText("jLabel18");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -638,52 +779,54 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel17)
-                        .addGap(30, 30, 30)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel13))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(465, 465, 465))
+                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel18)
+                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)
-                        .addContainerGap())))
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel17))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel14))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel18))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jLabel10)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel13)
+                            .addComponent(jLabel14))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel18))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel12))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
 
@@ -702,11 +845,6 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // закрыть документ
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     // Комбобокс склад
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
         if (evt.getStateChange() == 2) {
@@ -723,28 +861,38 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
             int index = jTable1.getSelectedRow();
-            docReceipt.getReceiptProducts().remove((ReceiptProduct)products.get(index));            
             products.remove(index);
             tableModel.removeRow(index);
-
             updateProductsTable();
         }  
         if (evt.getKeyCode() == KeyEvent.VK_INSERT) {
-            ProductToCartDialog pdtcd = new ProductToCartDialog(null, true, getSelectedStorage(), products, null, "receipt");
-            pdtcd.setLocationRelativeTo(this);
-            pdtcd.setVisible(true);
-        
-            updateProductsTable();            
+        try {            
+            PriceName p = new PriceNameDAO().getPriceName(1);
+            ProductAddDialog pad = new ProductAddDialog(null, true, docReceipt.getStorage(), p, products);
+            pad.setVisible(true);                   
+
+            setReceiptProducts(products);
+            updateProductsTable(); 
+                            
+        } catch (Exception ex) {
+            MainFrame.ifManager.showWarningDialog(this, "Ошибка", ex.toString());
+        }             
         }         
     }//GEN-LAST:event_jTable1KeyPressed
 
     // Кнопка добавить товары
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        ProductToCartDialog pdtcd = new ProductToCartDialog(null, true, getSelectedStorage(), products, null, "receipt");
-        pdtcd.setLocationRelativeTo(this);
-        pdtcd.setVisible(true);
-        
-        updateProductsTable();        
+        try {            
+            PriceName p = new PriceNameDAO().getPriceName(1);
+            ProductAddDialog pad = new ProductAddDialog(null, true, docReceipt.getStorage(), p, products);
+            pad.setVisible(true);                   
+
+            setReceiptProducts(products);
+            updateProductsTable(); 
+                            
+        } catch (Exception ex) {
+            MainFrame.ifManager.showWarningDialog(this, "Ошибка", ex.toString());
+        }       
     }//GEN-LAST:event_jButton4ActionPerformed
 
     // Выполнить
@@ -773,16 +921,48 @@ public final class DocReceipt extends javax.swing.JInternalFrame implements Docu
         } 
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    // закрыть документ
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // TODO add your handling code here:
+        docReceipt.showSubordins();
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        // TODO add your handling code here:
+        calendar.getPopup(jButton8).show();
+        docReceipt.setIndate(calendar.getDate());
+        saved = false;          
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jTextField2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField2MouseClicked
+        // TODO add your handling code here:
+        docReceipt.showDepartmentDialog(docReceipt);
+        jTextField2.setText(docReceipt.getDepartment().getName());        
+    }//GEN-LAST:event_jTextField2MouseClicked
+
+    private void jLabel12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel12MouseClicked
+        // TODO add your handling code here:
+        docReceipt.showUserDialog(docReceipt);
+        jLabel12.setText(docReceipt.getUsr().getName());         
+    }//GEN-LAST:event_jLabel12MouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
