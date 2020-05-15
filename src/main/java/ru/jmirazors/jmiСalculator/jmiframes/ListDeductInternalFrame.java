@@ -99,6 +99,7 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         tableModel.addColumn("Склад");
         tableModel.addColumn("Сумма");        
         tableModel.addColumn("Пользователь");
+        tableModel.addColumn("Подразделение");
         tableModel.addColumn("Примечание");
         
 
@@ -127,6 +128,9 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         //user
         jTable1.getColumnModel().getColumn(6).setMaxWidth(156);
         jTable1.getColumnModel().getColumn(6).setMinWidth(156);
+        // department
+        jTable1.getColumnModel().getColumn(7).setMaxWidth(156);
+        jTable1.getColumnModel().getColumn(7).setMinWidth(156);        
         
         jTable1.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
         jTable1.setDefaultRenderer(Object.class, colorRenderer);         
@@ -191,8 +195,9 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
             Iterator it = deducts.iterator();
             while (it.hasNext()) {
                 Deduct deduct = (Deduct)it.next(); 
-                tableModel.addRow(new Object[]{deduct.getStatus().getId(), deduct.getId(), format.format(deduct.getIndate()),
-                deduct.getOrganization().getName(), deduct.getStorage().getName(), deduct.getTotal(), deduct.getUsr().getName(), 
+                tableModel.addRow(new Object[]{deduct.getStatus().getId(), listUtil.getFormattedID(deduct.getId()), 
+                format.format(deduct.getIndate()),deduct.getOrganization().getName(), deduct.getStorage().getName(), deduct.getTotal(), 
+                deduct.getUsr().getName(), deduct.getDepartment().getName(),
                 deduct.getDescr()});                
             }
         } catch (Exception e) {System.out.print(e);} 
@@ -245,12 +250,17 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
+        jToolBar1.setMinimumSize(new java.awt.Dimension(181, 34));
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add-with-pen-tool.png"))); // NOI18N
-        jButton1.setToolTipText("Новый документ списание товаров");
+        jButton1.setToolTipText("Новый документ \"Списание товаров\"");
+        jButton1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton1.setFocusPainted(false);
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton1.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton1.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -260,8 +270,14 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         jToolBar1.add(jButton1);
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/file_save.png"))); // NOI18N
+        jButton4.setToolTipText("Сохранить список");
+        jButton4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton4.setFocusPainted(false);
         jButton4.setFocusable(false);
         jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton4.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton4.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton4.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -270,10 +286,15 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         });
         jToolBar1.add(jButton4);
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/funnel.png"))); // NOI18N
-        jButton3.setToolTipText("Настройки");
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settings.png"))); // NOI18N
+        jButton3.setToolTipText("Настройки списка");
+        jButton3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jButton3.setFocusPainted(false);
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton3.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton3.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton3.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -283,10 +304,14 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         jToolBar1.add(jButton3);
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/refresh.png"))); // NOI18N
-        jButton2.setToolTipText("Обновить");
+        jButton2.setToolTipText("Обновить список");
+        jButton2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton2.setFocusPainted(false);
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setMaximumSize(new java.awt.Dimension(28, 28));
+        jButton2.setMinimumSize(new java.awt.Dimension(28, 28));
+        jButton2.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -295,28 +320,12 @@ public final class ListDeductInternalFrame extends javax.swing.JInternalFrame {
         });
         jToolBar1.add(jButton2);
 
-        jLabel1.setText("Поиск");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/funnel.png"))); // NOI18N
+        jPanel1.add(jLabel1);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(80, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jTextField1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jTextField1.setPreferredSize(new java.awt.Dimension(200, 20));
+        jPanel1.add(jTextField1);
 
         jToolBar1.add(jPanel1);
 

@@ -137,11 +137,6 @@
             <artifactId>swingx</artifactId>
             <version>1.6</version>
         </dependency>
-        <dependency>
-            <groupId>unknown.binary</groupId>
-            <artifactId>AbsoluteLayout</artifactId>
-            <version>SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
   

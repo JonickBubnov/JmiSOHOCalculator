@@ -495,9 +495,9 @@ public final class ProductToCartDialog extends javax.swing.JDialog {
             case "transfer":
                 DocTransfer.products = (ArrayList<TransferProduct>)cartProducts.clone();
                 break;
-            case "deduct":
-                DocDeduct.products = (ArrayList<DeductProduct>)cartProducts.clone();
-                break; 
+//            case "deduct":
+//                DocDeduct.products = (ArrayList<DeductProduct>)cartProducts.clone();
+//                break; 
             case "receipt":
                 DocReceipt.products = (ArrayList<ReceiptProduct>)cartProducts.clone();
                 break;

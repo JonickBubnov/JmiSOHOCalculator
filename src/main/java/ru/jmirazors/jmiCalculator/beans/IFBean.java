@@ -23,6 +23,7 @@ public class IFBean {
     
     ImageIcon question = new ImageIcon(getClass().getResource("/images/question.png"));
     ImageIcon info = new ImageIcon(getClass().getResource("/images/infomessage.png"));
+    ImageIcon warning = new ImageIcon(getClass().getResource("/images/infomessage.png"));
     
     private boolean organization = false;
     private boolean department = false;
@@ -365,6 +366,9 @@ public class IFBean {
     }
     public void showMessageDialog(JComponent parent, String title, String mes) {
         JOptionPane.showMessageDialog(parent, mes, title, JOptionPane.INFORMATION_MESSAGE, info);
+    }
+    public void showWarningDialog(JComponent parent, String title, String mes) {
+        JOptionPane.showMessageDialog(parent, mes, title, JOptionPane.ERROR_MESSAGE, warning);
     }
     
 }

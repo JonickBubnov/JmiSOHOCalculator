@@ -164,10 +164,12 @@ private Department department;
         this.documents = documents;
     }
 
+@Override
     public float getWeight() {
         return weight;
     }
 
+@Override
     public void setWeight(float weight) {
         this.weight = weight;
     }

@@ -195,7 +195,8 @@ public class ListActInternalFrame extends javax.swing.JInternalFrame {
             Iterator it = acts.iterator();
             while (it.hasNext()) {
                 Act act = (Act)it.next(); 
-                tableModel.addRow(new Object[]{act.getStatus().getId(), listUtil.getFormattedID(act.getId()), format.format(act.getIndate()), act.getOrganization().getName(),
+                tableModel.addRow(new Object[]{act.getStatus().getId(), listUtil.getFormattedID(act.getId()), 
+                format.format(act.getIndate()), act.getOrganization().getName(),
                 act.getContragent().getName(), String.format("%.2f", act.getTotal()),
                 act.getUsr().getName(), act.getDepartment().getName(), act.getDescr()});                
             }
@@ -334,6 +335,12 @@ public class ListActInternalFrame extends javax.swing.JInternalFrame {
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
         jTable1.setModel(tableModel);
+        jTable1.setRowSorter(rowSorter);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -387,6 +394,18 @@ public class ListActInternalFrame extends javax.swing.JInternalFrame {
             }
         }        
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        if (evt.getClickCount() == 2 && !MainFrame.ifManager.isDocActFrameOpen()) { 
+            System.out.println(tableModel.getValueAt(jTable1.getRowSorter().convertRowIndexToModel(jTable1.getSelectedRow()), 1).toString());
+            String id = tableModel.getValueAt(jTable1.getRowSorter().convertRowIndexToModel(jTable1.getSelectedRow()), 1).toString();
+            MainFrame.ifManager.showFrame(new DocAct(id), false);
+            MainFrame.ifManager.setDocActFrameOpen(true);
+        } else {
+            MainFrame.ifManager.infoMessage("Документ уже открыт. Невозмозможно открыть несколько копий документа.");
+        }                     
+    }//GEN-LAST:event_jTable1MouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

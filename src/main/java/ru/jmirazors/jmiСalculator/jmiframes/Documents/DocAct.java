@@ -60,6 +60,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     Product product;
     Act docAct;
     DocumentDAO documentDAO;
+    Document parentDoc = null;
     CalendarPopup calendar;
         
     
@@ -78,34 +79,31 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     
     public DocAct() {
         
-        calendar = new CalendarPopup();
-        
-        documentDAO = new DocumentDAO(); 
-        
+        calendar = new CalendarPopup();        
+        documentDAO = new DocumentDAO();         
         initTableColumns();
         docAct = new Act();        
-        products.clear();       
-        
+        products.clear();               
         initComponents();
-        initVisualComponents(); 
-                       
+        initVisualComponents();                        
         docInit();                
         
     }
     
     public DocAct(String id) { 
         
+        calendar = new CalendarPopup();
         documentDAO = new DocumentDAO();
         initTableColumns();
         try {
             docAct = (Act)documentDAO.getDocument(id.trim(), Act.class);            
         } catch (Exception ex) {
-            Logger.getLogger(DocAct.class.getName()).log(Level.SEVERE, null, ex);
+            MainFrame.ifManager.showWarningDialog(this, "Ошибка!", "Не удалось получить документ.\n"+ex);
         }
         initComponents();
         initVisualComponents();
         getActProducts(docAct);
-        repaintDocument();                
+        recalculateDocument();                
     } 
     
     // ************ имплементированные методы документа ********************
@@ -219,10 +217,6 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         });        
     }  
     
-    // **************************************************************************************
-    public void updateDocument() {
-        
-    }
     
     // **************************************************************************************
     
@@ -260,6 +254,11 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel12.setText(String.format("%.2f", getResult()));
         // наименований
         jLabel20.setText(String.format("%d", tableModel.getRowCount()));
+        // основание
+        if (parentDoc != null)
+            jLabel21.setText(parentDoc.getDocumentName()+" №"+docAct.getFormattedID(parentDoc.getId()) + " от " +format.format(parentDoc.getIndate()));
+        else
+            jLabel21.setText("НЕТ");
         
         // Контрагент
         if (docAct.getContragent() != null)
@@ -291,8 +290,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel18.setText(String.format("%.2f", getNDS()));
         jLabel7.setText(String.format("%.2f", getSum()));
         jLabel20.setText(String.format("%d", tableModel.getRowCount()));
-//        repaintDocument();
-        
+//        repaintDocument();        
     }
     
     // пересчитать суммы
@@ -309,9 +307,6 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
             products.get(i).setCost(Float.parseFloat(jTable1.getValueAt(i, 5).toString()));
         }
         docAct.setTotal(sum);
-        //totalRenew();
-//        docAct.setDiscount(Integer.valueOf(jFormattedTextField1.getText()));
-//        docAct.setTotal(sum - sum*docAct.getDiscount()/100);
         repaintDocument();
     }    
     
@@ -347,6 +342,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         recalculateDocument();
     }  
     
+    // добавить продукты в документ
     private void setActProducts(ArrayList<? extends DocumentProduct> prods) throws IllegalAccessException, InvocationTargetException {
         newProducts.clear();
         ActProduct ap;
@@ -382,13 +378,13 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                 if (status == 2)
                     executeDocument();
                 saved = true;
-                recalculateDocument();
+                repaintDocument();
             
             } catch (Exception ex) {
-                Logger.getLogger(DocAct.class.getName()).log(Level.SEVERE, null, ex); }
-        } else {
-                JOptionPane.showMessageDialog(null, 
-                    "Не удалось сохранить документ. \n Заполните поле контрагент.", "Ошибка", JOptionPane.ERROR_MESSAGE);                    
+                MainFrame.ifManager.showWarningDialog(this, "Ошибка", ex.toString());
+            }
+        } else { 
+            MainFrame.ifManager.showWarningDialog(this, "Ошибка", "Не удалось сохранить документ. \n Заполните поле контрагент.");
         }        
     }    
     /**
@@ -425,8 +421,6 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel6 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -434,14 +428,19 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
 
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 109, 240), 3));
         setClosable(true);
         setIconifiable(true);
-        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 109, 240), 3));
         setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/images/complete.png"))); // NOI18N
         setPreferredSize(new java.awt.Dimension(840, 460));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -470,6 +469,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jToolBar1.setPreferredSize(new java.awt.Dimension(76, 26));
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exe.png"))); // NOI18N
+        jButton1.setToolTipText("Выполнить документ");
         jButton1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton1.setFocusPainted(false);
         jButton1.setFocusable(false);
@@ -477,7 +477,6 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jButton1.setMaximumSize(new java.awt.Dimension(24, 24));
         jButton1.setMinimumSize(new java.awt.Dimension(24, 24));
         jButton1.setPreferredSize(new java.awt.Dimension(24, 24));
-        jButton1.setToolTipText("Выполнить документ");
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButton1);
 
@@ -632,7 +631,7 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
                             .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 412, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 418, Short.MAX_VALUE)
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -682,21 +681,12 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
         jLabel6.setText("Примечание");
 
         jTextField2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jTextField2.setPreferredSize(new java.awt.Dimension(73, 20));
+        jTextField2.setMaximumSize(new java.awt.Dimension(200, 20));
+        jTextField2.setMinimumSize(new java.awt.Dimension(200, 20));
+        jTextField2.setPreferredSize(new java.awt.Dimension(300, 20));
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel7.setText("jLabel7");
-
-        jLabel8.setText("jLabel8");
-
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel10.setText("jLabel10");
-        jLabel10.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel10.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel10MouseClicked(evt);
-            }
-        });
 
         jButton2.setText("Закрыть");
         jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -725,9 +715,29 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
 
         jLabel19.setText("jLabel19");
 
+        jLabel21.setText("___");
+
+        jLabel22.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel22.setText("Документ основание:");
+
+        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel9.setText("Всего наименований:");
 
         jLabel20.setText("jLabel20");
+
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jLabel10.setText("jLabel10");
+        jLabel10.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel10MouseClicked(evt);
+            }
+        });
+
+        jLabel23.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jLabel23.setText("Пользователь:");
+
+        jLabel8.setText("jLabel8");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -737,38 +747,44 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel5)
+                    .addComponent(jLabel6)
                     .addComponent(jLabel17)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel13)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel23))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel19)
+                                    .addGap(46, 46, 46)
+                                    .addComponent(jLabel9))))
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel8)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel22))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 392, Short.MAX_VALUE)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel19)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel9)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel20)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel20)
+                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 159, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -778,30 +794,29 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jLabel7)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel20))
-                .addGap(10, 10, 10)
+                    .addComponent(jLabel22)
+                    .addComponent(jLabel21)
+                    .addComponent(jLabel8))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
                     .addComponent(jLabel18)
-                    .addComponent(jLabel19))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel13))
-                        .addGap(4, 4, 4)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 5, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(14, Short.MAX_VALUE))
+                    .addComponent(jLabel19)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel20))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel23))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
@@ -854,8 +869,8 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // Диалог выбор товара
         try {
-            // Диалог выбор товара
             Storage s = new StorageDAO().getStorage("1");
             PriceName p = new PriceNameDAO().getPriceName(1);
             ProductAddDialog pad = new ProductAddDialog(null, true, s, p, products);
@@ -928,6 +943,9 @@ public class DocAct extends javax.swing.JInternalFrame implements DocumentImpl {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
